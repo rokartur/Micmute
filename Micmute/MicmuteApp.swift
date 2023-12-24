@@ -9,37 +9,31 @@ import SwiftUI
 import ServiceManagement
 import CoreAudio
 import HotKey
+import MenuBarExtraAccess
 
 @main
 struct MicmuteApp: App {
     @AppStorage("isMute") var isMute: Bool = false
     @AppStorage("openAtLogin") var openAtLogin: Bool = true
-    let hotKey = HotKey(key: .m, modifiers: [.control, .option, .command])
+    var hotKey = HotKey(key: .m, modifiers: [.control, .option, .command])
     
     var body: some Scene {
-        MenuBarExtra("Micmute", systemImage: isMute ? "mic.slash" : "mic") {
+        MenuBarExtra {
             Button("Toggle mute") {
-                isMute.toggle()
-                setDefaultInputVolumeDevice(isMute: isMute)
-                
-                hotKey.keyDownHandler = {
-                    isMute.toggle()
-                    setDefaultInputVolumeDevice(isMute: isMute)
-                }
+                toggleMute()
+                hotKey.keyDownHandler = toggleMute
             }
             .keyboardShortcut("M", modifiers: [.control, .option, .command])
             
             Divider()
             
-            HStack {
-                Button(action: {
-                    openAtLogin.toggle()
-                    setLaunchAtLogin(enabled: openAtLogin)
-                }) {
-                    HStack {
-                        Image(systemName: openAtLogin ? "checkmark.circle" : "")
-                        Text("Open at Login")
-                    }
+            Button(action: {
+                openAtLogin.toggle()
+                setLaunchAtLogin(enabled: openAtLogin)
+            }) {
+                HStack {
+                    Image(systemName: openAtLogin ? "checkmark.circle" : "circle")
+                    Text("Open at Login")
                 }
             }
             
@@ -47,12 +41,36 @@ struct MicmuteApp: App {
                 NSApplication.shared.terminate(nil)
             }
             .keyboardShortcut("q")
+        } label: {
+            HStack {
+                let micMute: NSImage = {
+                        let ratio = $0.size.height / $0.size.width
+                        $0.size.height = 18
+                        $0.size.width = 18 / ratio
+                        return $0
+                    }(NSImage(named: "mic.mute")!)
+                
+                let micUnmute: NSImage = {
+                        let ratio = $0.size.height / $0.size.width
+                        $0.size.height = 18
+                        $0.size.width = 18 / ratio
+                        return $0
+                    }(NSImage(named: "mic.unmute")!)
+                
+                Image(nsImage: isMute ? micMute : micUnmute)
+            }
         }
     }
     
     init() {
         NSApplication.shared.setActivationPolicy(.accessory)
         setLaunchAtLogin(enabled: openAtLogin)
+        hotKey.keyDownHandler = toggleMute
+    }
+    
+    private func toggleMute() {
+        isMute.toggle()
+        setDefaultInputVolumeDevice(isMute: isMute)
     }
     
     private func setLaunchAtLogin(enabled: Bool) {
@@ -70,8 +88,6 @@ struct MicmuteApp: App {
     private func setDefaultInputVolumeDevice(isMute: Bool) {
         var defaultInputDeviceID = kAudioObjectUnknown
         var defaultInputDeviceIDSize = UInt32(MemoryLayout<AudioObjectID>.size)
-        
-        // Get the default input device ID
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDefaultInputDevice,
             mScope: kAudioObjectPropertyScopeGlobal,
