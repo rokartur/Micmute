@@ -10,3 +10,8 @@ Micmute require macOS 14 or latest.
 
 ## Install
 [Download](https://github.com/rokartur/micmute/releases/download/v1.0.0/Micmute.dmg)
+
+## Screenshot
+<div align="start">
+  <img src="Images/preview.png">
+</div>
