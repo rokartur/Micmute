@@ -9,7 +9,6 @@ import SwiftUI
 import ServiceManagement
 import CoreAudio
 import HotKey
-import MenuBarExtraAccess
 
 @main
 struct MicmuteApp: App {

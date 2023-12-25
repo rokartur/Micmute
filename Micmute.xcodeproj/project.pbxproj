@@ -14,6 +14,7 @@
 		42C067A52B3855720002A8E1 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067A42B3855720002A8E1 /* AlertToast */; };
 		42C067A82B3857610002A8E1 /* SimpleToast in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067A72B3857610002A8E1 /* SimpleToast */; };
 		42C067AB2B385C350002A8E1 /* MenuBarExtraAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067AA2B385C350002A8E1 /* MenuBarExtraAccess */; };
+		42C067AD2B385FE20002A8E1 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067AC2B385FE20002A8E1 /* AlertToast */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 				421B6B0E2B37787800946AF4 /* HotKey in Frameworks */,
 				42C067A82B3857610002A8E1 /* SimpleToast in Frameworks */,
 				42C067AB2B385C350002A8E1 /* MenuBarExtraAccess in Frameworks */,
+				42C067AD2B385FE20002A8E1 /* AlertToast in Frameworks */,
 				42C067A52B3855720002A8E1 /* AlertToast in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,6 +99,7 @@
 				42C067A42B3855720002A8E1 /* AlertToast */,
 				42C067A72B3857610002A8E1 /* SimpleToast */,
 				42C067AA2B385C350002A8E1 /* MenuBarExtraAccess */,
+				42C067AC2B385FE20002A8E1 /* AlertToast */,
 			);
 			productName = Micmute;
 			productReference = 421B6AF92B37504000946AF4 /* Micmute.app */;
@@ -419,6 +422,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 42C067A92B385C350002A8E1 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */;
 			productName = MenuBarExtraAccess;
+		};
+		42C067AC2B385FE20002A8E1 /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AlertToast;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
