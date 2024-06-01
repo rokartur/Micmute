@@ -1,41 +1,33 @@
 {
+  "originHash" : "d0739aa4b933427dc20da70c7b2a206ad617e383a62dd503e8be53043862f484",
   "pins" : [
     {
-      "identity" : "alerttoast",
+      "identity" : "keyboardshortcuts",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/elai950/AlertToast/",
+      "location" : "https://github.com/sindresorhus/KeyboardShortcuts.git",
       "state" : {
-        "revision" : "b39252eacd159904afd7d718bba0afabb87f2f2f",
-        "version" : "1.3.9"
+        "revision" : "2e5f15581fefb821d4b366e57d817be8bf12aa58",
+        "version" : "2.0.1"
       }
     },
     {
-      "identity" : "hotkey",
+      "identity" : "launchatlogin-legacy",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/soffes/HotKey",
+      "location" : "https://github.com/sindresorhus/LaunchAtLogin-Legacy",
       "state" : {
         "branch" : "main",
-        "revision" : "4d02d80de143d69b7eeb5962729591a157a57ede"
+        "revision" : "f326e3d9be46aff3b68ede6061721f639e0840e0"
       }
     },
     {
-      "identity" : "menubarextraaccess",
+      "identity" : "settingsaccess",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/orchetect/MenuBarExtraAccess",
+      "location" : "https://github.com/orchetect/SettingsAccess",
       "state" : {
-        "revision" : "f5896b47e15e114975897354c7e1082c51a2bffd",
-        "version" : "1.0.5"
-      }
-    },
-    {
-      "identity" : "simpletoast",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sanzaru/SimpleToast",
-      "state" : {
-        "revision" : "8dbc2e7c33cda25c0b2efafd59716cb9820c83eb",
-        "version" : "0.8.1"
+        "revision" : "0fd73c8b5892e88acb13adb7f36a4ba9293a0061",
+        "version" : "1.4.0"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

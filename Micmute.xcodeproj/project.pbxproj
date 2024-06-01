@@ -10,11 +10,17 @@
 		421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B6AFC2B37504000946AF4 /* MicmuteApp.swift */; };
 		421B6B012B37504100946AF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B002B37504100946AF4 /* Assets.xcassets */; };
 		421B6B042B37504100946AF4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B032B37504100946AF4 /* Preview Assets.xcassets */; };
-		421B6B0E2B37787800946AF4 /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 421B6B0D2B37787800946AF4 /* HotKey */; };
-		42C067A52B3855720002A8E1 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067A42B3855720002A8E1 /* AlertToast */; };
-		42C067A82B3857610002A8E1 /* SimpleToast in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067A72B3857610002A8E1 /* SimpleToast */; };
-		42C067AB2B385C350002A8E1 /* MenuBarExtraAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067AA2B385C350002A8E1 /* MenuBarExtraAccess */; };
-		42C067AD2B385FE20002A8E1 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = 42C067AC2B385FE20002A8E1 /* AlertToast */; };
+		427A86A12C0A02C1000AFAD4 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 427A86A02C0A02C1000AFAD4 /* KeyboardShortcuts */; };
+		427A86A42C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */; };
+		427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A82C0A0B1A000AFAD4 /* Constants.swift */; };
+		427A86AB2C0A0B84000AFAD4 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86AA2C0A0B84000AFAD4 /* SettingsView.swift */; };
+		427A86AE2C0A0BE8000AFAD4 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 427A86AD2C0A0BE8000AFAD4 /* LaunchAtLogin */; };
+		427A86C12C0A52D1000AFAD4 /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C02C0A52D1000AFAD4 /* GeneralView.swift */; };
+		427A86C32C0A5358000AFAD4 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C22C0A5358000AFAD4 /* AboutView.swift */; };
+		427A86C52C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */; };
+		427A86C72C0A5B75000AFAD4 /* GetMicImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */; };
+		427A86CC2C0A83B8000AFAD4 /* SettingsAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 427A86CB2C0A83B8000AFAD4 /* SettingsAccess */; };
+		42A96F2E2C0AA4E8002F679E /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +30,14 @@
 		421B6B032B37504100946AF4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		421B6B052B37504100946AF4 /* Micmute.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Micmute.entitlements; sourceTree = "<group>"; };
 		421B6B0B2B3764BC00946AF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardShortcuts+Global.swift"; sourceTree = "<group>"; };
+		427A86A82C0A0B1A000AFAD4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		427A86AA2C0A0B84000AFAD4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		427A86C02C0A52D1000AFAD4 /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
+		427A86C22C0A5358000AFAD4 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDefaultInputVolumeDevice.swift; sourceTree = "<group>"; };
+		427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMicImage.swift; sourceTree = "<group>"; };
+		427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 1; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,22 +45,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				421B6B0E2B37787800946AF4 /* HotKey in Frameworks */,
-				42C067A82B3857610002A8E1 /* SimpleToast in Frameworks */,
-				42C067AB2B385C350002A8E1 /* MenuBarExtraAccess in Frameworks */,
-				42C067AD2B385FE20002A8E1 /* AlertToast in Frameworks */,
-				42C067A52B3855720002A8E1 /* AlertToast in Frameworks */,
+				427A86CC2C0A83B8000AFAD4 /* SettingsAccess in Frameworks */,
+				427A86AE2C0A0BE8000AFAD4 /* LaunchAtLogin in Frameworks */,
+				427A86A12C0A02C1000AFAD4 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		42180DB52C0AD3970013CC91 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		421B6AF02B37504000946AF4 = {
 			isa = PBXGroup;
 			children = (
 				421B6AFB2B37504000946AF4 /* Micmute */,
 				421B6AFA2B37504000946AF4 /* Products */,
+				42180DB52C0AD3970013CC91 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,8 +81,11 @@
 		421B6AFB2B37504000946AF4 /* Micmute */ = {
 			isa = PBXGroup;
 			children = (
-				421B6B0B2B3764BC00946AF4 /* Info.plist */,
+				427A86A72C0A0B0C000AFAD4 /* Utilities */,
+				427A86A22C0A0343000AFAD4 /* Models */,
+				427A869D2C0A0142000AFAD4 /* Views */,
 				421B6AFC2B37504000946AF4 /* MicmuteApp.swift */,
+				421B6B0B2B3764BC00946AF4 /* Info.plist */,
 				421B6B002B37504100946AF4 /* Assets.xcassets */,
 				421B6B052B37504100946AF4 /* Micmute.entitlements */,
 				421B6B022B37504100946AF4 /* Preview Content */,
@@ -76,6 +99,35 @@
 				421B6B032B37504100946AF4 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		427A869D2C0A0142000AFAD4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				427A86AA2C0A0B84000AFAD4 /* SettingsView.swift */,
+				427A86C02C0A52D1000AFAD4 /* GeneralView.swift */,
+				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
+				427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		427A86A22C0A0343000AFAD4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		427A86A72C0A0B0C000AFAD4 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				427A86A82C0A0B1A000AFAD4 /* Constants.swift */,
+				427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */,
+				427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -95,11 +147,9 @@
 			);
 			name = Micmute;
 			packageProductDependencies = (
-				421B6B0D2B37787800946AF4 /* HotKey */,
-				42C067A42B3855720002A8E1 /* AlertToast */,
-				42C067A72B3857610002A8E1 /* SimpleToast */,
-				42C067AA2B385C350002A8E1 /* MenuBarExtraAccess */,
-				42C067AC2B385FE20002A8E1 /* AlertToast */,
+				427A86A02C0A02C1000AFAD4 /* KeyboardShortcuts */,
+				427A86AD2C0A0BE8000AFAD4 /* LaunchAtLogin */,
+				427A86CB2C0A83B8000AFAD4 /* SettingsAccess */,
 			);
 			productName = Micmute;
 			productReference = 421B6AF92B37504000946AF4 /* Micmute.app */;
@@ -111,9 +161,9 @@
 		421B6AF12B37504000946AF4 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
+				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1510;
-				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					421B6AF82B37504000946AF4 = {
 						CreatedOnToolsVersion = 15.1;
@@ -130,10 +180,9 @@
 			);
 			mainGroup = 421B6AF02B37504000946AF4;
 			packageReferences = (
-				421B6B0C2B37787800946AF4 /* XCRemoteSwiftPackageReference "HotKey" */,
-				42C067A32B3855720002A8E1 /* XCRemoteSwiftPackageReference "AlertToast" */,
-				42C067A62B3857610002A8E1 /* XCRemoteSwiftPackageReference "SimpleToast" */,
-				42C067A92B385C350002A8E1 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */,
+				427A869F2C0A02C1000AFAD4 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				427A86AC2C0A0BE8000AFAD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
+				427A86CA2C0A83B8000AFAD4 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 			);
 			productRefGroup = 421B6AFA2B37504000946AF4 /* Products */;
 			projectDirPath = "";
@@ -161,7 +210,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				42A96F2E2C0AA4E8002F679E /* MenuBarView.swift in Sources */,
+				427A86C12C0A52D1000AFAD4 /* GeneralView.swift in Sources */,
+				427A86C32C0A5358000AFAD4 /* AboutView.swift in Sources */,
+				427A86C72C0A5B75000AFAD4 /* GetMicImage.swift in Sources */,
+				427A86AB2C0A0B84000AFAD4 /* SettingsView.swift in Sources */,
 				421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */,
+				427A86A42C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift in Sources */,
+				427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */,
+				427A86C52C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +259,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -265,6 +323,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -296,18 +355,22 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Micmute/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Micmute;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -325,18 +388,22 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Micmute/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Micmute;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -368,64 +435,47 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		421B6B0C2B37787800946AF4 /* XCRemoteSwiftPackageReference "HotKey" */ = {
+		427A869F2C0A02C1000AFAD4 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/soffes/HotKey";
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.1;
+			};
+		};
+		427A86AC2C0A0BE8000AFAD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Legacy";
 			requirement = {
 				branch = main;
 				kind = branch;
 			};
 		};
-		42C067A32B3855720002A8E1 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+		427A86CA2C0A83B8000AFAD4 /* XCRemoteSwiftPackageReference "SettingsAccess" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/elai950/AlertToast/";
+			repositoryURL = "https://github.com/orchetect/SettingsAccess";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.9;
-			};
-		};
-		42C067A62B3857610002A8E1 /* XCRemoteSwiftPackageReference "SimpleToast" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sanzaru/SimpleToast";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.8.1;
-			};
-		};
-		42C067A92B385C350002A8E1 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/orchetect/MenuBarExtraAccess";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.5;
+				minimumVersion = 1.4.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		421B6B0D2B37787800946AF4 /* HotKey */ = {
+		427A86A02C0A02C1000AFAD4 /* KeyboardShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 421B6B0C2B37787800946AF4 /* XCRemoteSwiftPackageReference "HotKey" */;
-			productName = HotKey;
+			package = 427A869F2C0A02C1000AFAD4 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
 		};
-		42C067A42B3855720002A8E1 /* AlertToast */ = {
+		427A86AD2C0A0BE8000AFAD4 /* LaunchAtLogin */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 42C067A32B3855720002A8E1 /* XCRemoteSwiftPackageReference "AlertToast" */;
-			productName = AlertToast;
+			package = 427A86AC2C0A0BE8000AFAD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */;
+			productName = LaunchAtLogin;
 		};
-		42C067A72B3857610002A8E1 /* SimpleToast */ = {
+		427A86CB2C0A83B8000AFAD4 /* SettingsAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 42C067A62B3857610002A8E1 /* XCRemoteSwiftPackageReference "SimpleToast" */;
-			productName = SimpleToast;
-		};
-		42C067AA2B385C350002A8E1 /* MenuBarExtraAccess */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 42C067A92B385C350002A8E1 /* XCRemoteSwiftPackageReference "MenuBarExtraAccess" */;
-			productName = MenuBarExtraAccess;
-		};
-		42C067AC2B385FE20002A8E1 /* AlertToast */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AlertToast;
+			package = 427A86CA2C0A83B8000AFAD4 /* XCRemoteSwiftPackageReference "SettingsAccess" */;
+			productName = SettingsAccess;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

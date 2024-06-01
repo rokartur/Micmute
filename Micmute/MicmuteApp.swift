@@ -6,116 +6,61 @@
 //
 
 import SwiftUI
-import ServiceManagement
-import CoreAudio
-import HotKey
+import KeyboardShortcuts
+import SettingsAccess
 
-@main
-struct MicmuteApp: App {
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, ObservableObject {
     @AppStorage("isMute") var isMute: Bool = false
-    @AppStorage("openAtLogin") var openAtLogin: Bool = true
-    var hotKey = HotKey(key: .m, modifiers: [.control, .option, .command])
     
-    var body: some Scene {
-        MenuBarExtra {
-            Button("Toggle mute") {
-                toggleMute()
-                hotKey.keyDownHandler = toggleMute
-            }
-            .keyboardShortcut("M", modifiers: [.control, .option, .command])
-            
-            Divider()
-            
-            Button(action: {
-                openAtLogin.toggle()
-                setLaunchAtLogin(enabled: openAtLogin)
-            }) {
-                HStack {
-                    Image(systemName: openAtLogin ? "checkmark.circle" : "circle")
-                    Text("Open at Login")
-                }
-            }
-            
-            Button("Quit") {
-                NSApplication.shared.terminate(nil)
-            }
-            .keyboardShortcut("q")
-        } label: {
-            HStack {
-                let micMute: NSImage = {
-                        let ratio = $0.size.height / $0.size.width
-                        $0.size.height = 18
-                        $0.size.width = 18 / ratio
-                        return $0
-                    }(NSImage(named: "mic.mute")!)
-                
-                let micUnmute: NSImage = {
-                        let ratio = $0.size.height / $0.size.width
-                        $0.size.height = 18
-                        $0.size.width = 18 / ratio
-                        return $0
-                    }(NSImage(named: "mic.unmute")!)
-                
-                Image(nsImage: isMute ? micMute : micUnmute)
-            }
+    var menuBarSetup: MenuBarSetup!
+    static private(set) var instance: AppDelegate!
+    lazy var statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    let micMute: NSImage = getMicMuteImage()
+    let micUnmute: NSImage = getMicUnmuteImage()
+
+    override init() {
+        super.init()
+        KeyboardShortcuts.onKeyUp(for: .toggleMuteShortcut) { [self] in
+            self.toggleMute()
         }
+        menuBarSetup = MenuBarSetup(statusBarMenu: NSMenu(), statusBarItem: statusBarItem, isMute: isMute, micMute: micMute, micUnmute: micUnmute)
     }
-    
-    init() {
-        NSApplication.shared.setActivationPolicy(.accessory)
-        setLaunchAtLogin(enabled: openAtLogin)
-        hotKey.keyDownHandler = toggleMute
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        menuBarSetup.setupMenuBar()
     }
-    
-    private func toggleMute() {
+
+    func toggleMute() {
         isMute.toggle()
+        statusBarItem.button?.image = isMute ? micMute : micUnmute
         setDefaultInputVolumeDevice(isMute: isMute)
     }
     
-    private func setLaunchAtLogin(enabled: Bool) {
-        do {
-            if enabled {
-                try SMAppService().register()
-            } else {
-                try SMAppService().unregister()
-            }
-        } catch {
-            print("Error: \(error)")
+    @objc public func clickMenuBar(_ sender: AnyObject?) {
+        guard let event = NSApp.currentEvent else { return }
+        
+        switch event.type {
+            case .rightMouseUp:
+                statusBarItem.menu = menuBarSetup.statusBarMenu
+                statusBarItem.button?.performClick(nil)
+            case .leftMouseUp:
+                toggleMute()
+            default:
+                return
+        }
+
+        statusBarItem.menu = nil
+    }
+}
+
+@main
+struct MicmuteApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    var body: some Scene {
+        Settings {
+            SettingsView()
         }
     }
-    
-    private func setDefaultInputVolumeDevice(isMute: Bool) {
-        var defaultInputDeviceID = kAudioObjectUnknown
-        var defaultInputDeviceIDSize = UInt32(MemoryLayout<AudioObjectID>.size)
-        var address = AudioObjectPropertyAddress(
-            mSelector: kAudioHardwarePropertyDefaultInputDevice,
-            mScope: kAudioObjectPropertyScopeGlobal,
-            mElement: kAudioObjectPropertyElementMain
-        )
-        AudioObjectGetPropertyData(
-            AudioObjectID(kAudioObjectSystemObject),
-            &address,
-            0,
-            nil,
-            &defaultInputDeviceIDSize,
-            &defaultInputDeviceID
-        )
-
-        var mute: UInt32 = isMute ? 1 : 0
-        let muteSize = UInt32(MemoryLayout<UInt32>.size)
-        address = AudioObjectPropertyAddress(
-            mSelector: kAudioDevicePropertyMute,
-            mScope: kAudioDevicePropertyScopeInput,
-            mElement: kAudioObjectPropertyElementMain
-        )
-        AudioObjectSetPropertyData(
-            defaultInputDeviceID,
-            &address,
-            0,
-            nil,
-            muteSize,
-            &mute
-        )
-    }
-
 }
