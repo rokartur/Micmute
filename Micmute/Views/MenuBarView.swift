@@ -10,20 +10,20 @@ import SettingsAccess
 
 struct MenuBarView: View {
     @Environment(\.openSettings) private var openSettings
-    
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         VStack(spacing: 16) {
             Text("Click icon with left mouse button\n or use shortcut to mute/unmute")
-                .foregroundStyle(Color(.gray))
-            
+                .foregroundStyle(colorScheme == .dark ? Color.gray : Color.black)
+
             HStack(spacing: 148) {
                 Button(action: {
+                    NSApp.hide(nil)
                     let settingsWindow = NSApp.windows.first { $0.title == "Settings" }
                     if let window = settingsWindow, !window.isKeyWindow {
-                        NSApp.hide(nil)
                         window.makeKeyAndOrderFront(nil)
                     } else {
-                        NSApp.hide(nil)
                         try? openSettings()
                     }
                     NSApp.activate(ignoringOtherApps: true)

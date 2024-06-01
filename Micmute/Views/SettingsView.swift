@@ -20,6 +20,6 @@ struct SettingsView: View {
                     Label("About", systemImage: "rectangle.topthird.inset.filled")
                 }
         }
-        .frame(minWidth: 300, maxWidth: 300, minHeight: 128, maxHeight: 128)
+        .frame(minWidth: 352, maxWidth: 352, minHeight: 128, maxHeight: 128)
     }
 }

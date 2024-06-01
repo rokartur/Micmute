@@ -21,10 +21,11 @@
 		427A86C72C0A5B75000AFAD4 /* GetMicImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */; };
 		427A86CC2C0A83B8000AFAD4 /* SettingsAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 427A86CB2C0A83B8000AFAD4 /* SettingsAccess */; };
 		42A96F2E2C0AA4E8002F679E /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */; };
+		42E82CA62C0B682700768A23 /* CustomNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E82CA52C0B682700768A23 /* CustomNotificationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		421B6AF92B37504000946AF4 /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Micmute.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		421B6AF92B37504000946AF4 /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Micmute.app; path = /Users/rokartur/Developer/Micmute/build/Debug/Micmute.app; sourceTree = "<absolute>"; };
 		421B6AFC2B37504000946AF4 /* MicmuteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicmuteApp.swift; sourceTree = "<group>"; };
 		421B6B002B37504100946AF4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		421B6B032B37504100946AF4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -38,6 +39,7 @@
 		427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDefaultInputVolumeDevice.swift; sourceTree = "<group>"; };
 		427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMicImage.swift; sourceTree = "<group>"; };
 		427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 1; };
+		42E82CA52C0B682700768A23 /* CustomNotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNotificationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,28 +56,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		42180DB52C0AD3970013CC91 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		421B6AF02B37504000946AF4 = {
 			isa = PBXGroup;
 			children = (
 				421B6AFB2B37504000946AF4 /* Micmute */,
-				421B6AFA2B37504000946AF4 /* Products */,
-				42180DB52C0AD3970013CC91 /* Frameworks */,
 			);
-			sourceTree = "<group>";
-		};
-		421B6AFA2B37504000946AF4 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				421B6AF92B37504000946AF4 /* Micmute.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		421B6AFB2B37504000946AF4 /* Micmute */ = {
@@ -116,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */,
+				42E82CA52C0B682700768A23 /* CustomNotificationView.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -184,7 +170,7 @@
 				427A86AC2C0A0BE8000AFAD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
 				427A86CA2C0A83B8000AFAD4 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 			);
-			productRefGroup = 421B6AFA2B37504000946AF4 /* Products */;
+			productRefGroup = 421B6AF02B37504000946AF4;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -214,6 +200,7 @@
 				427A86C12C0A52D1000AFAD4 /* GeneralView.swift in Sources */,
 				427A86C32C0A5358000AFAD4 /* AboutView.swift in Sources */,
 				427A86C72C0A5B75000AFAD4 /* GetMicImage.swift in Sources */,
+				42E82CA62C0B682700768A23 /* CustomNotificationView.swift in Sources */,
 				427A86AB2C0A0B84000AFAD4 /* SettingsView.swift in Sources */,
 				421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */,
 				427A86A42C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift in Sources */,
@@ -351,6 +338,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -371,8 +359,10 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 2.0.0;
+				"OTHER_CODE_SIGN_FLAGS[sdk=*]" = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -384,6 +374,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -404,8 +395,10 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 2.0.0;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};

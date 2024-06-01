@@ -8,17 +8,21 @@
 import SwiftUI
 
 func getMicMuteImage() -> NSImage {
-    let image = NSImage(named: "mic.mute")!
+    let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    let imageName = isDarkMode ? "mic.mute.dark" : "mic.mute.light"
+    let image = NSImage(named: imageName)!
     let ratio = image.size.height / image.size.width
-    image.size.height = 17
-    image.size.width = 17 / ratio
+    image.size.height = 16
+    image.size.width = 16 / ratio
     return image
 }
 
 func getMicUnmuteImage() -> NSImage {
-    let image = NSImage(named: "mic.unmute")!
+    let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    let imageName = isDarkMode ? "mic.unmute.dark" : "mic.unmute.light"
+    let image = NSImage(named: imageName)!
     let ratio = image.size.height / image.size.width
-    image.size.height = 17
-    image.size.width = 17 / ratio
+    image.size.height = 16
+    image.size.width = 16 / ratio
     return image
 }
