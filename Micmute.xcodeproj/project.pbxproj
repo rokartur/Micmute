@@ -364,7 +364,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
@@ -381,7 +381,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.0.0;
 				"OTHER_CODE_SIGN_FLAGS[sdk=*]" = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -402,7 +402,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
@@ -419,7 +419,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 2.2.0;
+				MARKETING_VERSION = 2.0.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
