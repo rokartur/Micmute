@@ -27,7 +27,7 @@ struct AboutView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Micmute")
                             .font(.title)
-                        Text("Version \(Constants.AppInfo.appVersion) (\(Constants.AppInfo.appBuildNumber))")
+                        Text("Version \(Constants.AppInfo.appVersion)")
                             .font(.system(size: 16))
                             .fontWeight(.light)
                             .foregroundColor(.secondary)
