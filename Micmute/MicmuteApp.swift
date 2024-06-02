@@ -8,13 +8,19 @@
 import SwiftUI
 import KeyboardShortcuts
 import SettingsAccess
+import Sparkle
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     @AppStorage("isMute") var isMute: Bool = false
     @AppStorage("animationType") var animationType: String = "Fade"
     @AppStorage("animationDuration") var animationDuration: Double = 1.3
+    @AppStorage("isNotificationEnabled") var isNotificationEnabled: Bool = true
+    @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
+    @AppStorage("placement") var placement: Placement = .centerBottom
+    @AppStorage("padding") var padding: Double = 70.0
 
+    var notificationWindowController: NotificationWindowController?
     var appearanceObservation: NSObjectProtocol?
     var showNotification = false
     var menuBarSetup: MenuBarSetup!
@@ -22,13 +28,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     var micMute: NSImage = getMicMuteImage()
     var micUnmute: NSImage = getMicUnmuteImage()
-    
+    lazy var updaterController: SPUStandardUpdaterController = {
+        return SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+    }()
+
     override init() {
         super.init()
         KeyboardShortcuts.onKeyUp(for: .toggleMuteShortcut) { [self] in
             self.toggleMute()
         }
-        menuBarSetup = MenuBarSetup(statusBarMenu: NSMenu(), statusBarItem: statusBarItem, isMute: isMute, micMute: micMute, micUnmute: micUnmute)
+        menuBarSetup = MenuBarSetup(statusBarMenu: NSMenu(), statusBarItem: statusBarItem, isMute: isMute, micMute: micMute, micUnmute: micUnmute, updater: updaterController.updater)
         DistributedNotificationCenter.default().addObserver(self, selector: #selector(handleWallpaperChange), name: NSNotification.Name(rawValue: "AppleInterfaceThemeChangedNotification"), object: nil)
     }
 
@@ -50,8 +59,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem.button?.image = isMute ? micMute : micUnmute
         setDefaultInputVolumeDevice(isMute: isMute)
 
-        let muteNotificationWindowController = MuteNotificationWindowController(isMute: isMute, animationType: animationType, animationDuration: animationDuration)
-        muteNotificationWindowController.showWindow(nil)
+        if isNotificationEnabled {
+            notificationWindowController?.close()
+            notificationWindowController = NotificationWindowController(isMute: isMute, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
+            notificationWindowController?.showWindow(nil)
+        }
     }
     
     @objc func handleWallpaperChange() {
@@ -60,7 +72,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem.button?.image = isMute ? micMute : micUnmute
     }
     
-    @objc public func clickMenuBar(_ sender: AnyObject?) {
+    @objc public func openMenuBar(_ sender: AnyObject?) {
         guard let event = NSApp.currentEvent else { return }
         
         switch event.type {
@@ -82,6 +94,7 @@ struct MicmuteApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
+        WindowGroup {}
         Settings {
             SettingsView()
         }

@@ -16,4 +16,13 @@ enum Constants {
         static let author = URL(string: "https://github.com/rokartur")!
         static let whatsNew = URL(string: "https://github.com/rokartur/Micmute/releases")!
     }
+    
+    enum Appearance {
+        static let smallPreview = 78 as CGFloat
+        static let smallCornerRadius = 16 as CGFloat
+        static let largePreview = 212 as CGFloat
+        static let largeCornerRadius = 20 as CGFloat
+        static let largeIcon = 108 as CGFloat
+        static let smallIcon = 48 as CGFloat
+    }
 }

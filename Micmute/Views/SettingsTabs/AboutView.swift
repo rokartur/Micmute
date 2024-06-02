@@ -8,9 +8,7 @@
 import SwiftUI
 import Sparkle
 
-struct AboutView: View {
-    @AppStorage("automaticallyUpdates") var automaticallyUpdates: Bool = false
-    
+struct AboutView: View {    
     private let updaterController: SPUStandardUpdaterController
 
     init() {
