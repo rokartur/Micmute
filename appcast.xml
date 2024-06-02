@@ -4,11 +4,11 @@
         <title>Micmute</title>
         <item>
             <title>2.1.0</title>
-            <pubDate>Sun, 02 Jun 2024 22:55:50 +0200</pubDate>
+            <pubDate>Sun, 02 Jun 2024 22:54:10 +0200</pubDate>
             <sparkle:version>3</sparkle:version>
             <sparkle:shortVersionString>2.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.0/Micmute.zip" length="5964509" type="application/octet-stream" sparkle:edSignature="oavCLZvboz3p5TOiQgzmA9skKOYqRYTSvaCsPvBQOUfQ/HaKmRY1nnt9qUrCNJvLWu2h9TMoBhcK20RBk2Y2DA=="/>
+            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.0/Micmute.zip" length="5883234" type="application/octet-stream" sparkle:edSignature="2JhMJN8HpoZWjYrlLQzRpkYywqaYDbpSfOM0acf0DrTvX24RtiDhfH+f/UdNPsScT5d1uDh7VEy6xNwMY3pPAg=="/>
         </item>
     </channel>
 </rss>
