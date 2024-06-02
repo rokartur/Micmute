@@ -16,10 +16,14 @@ class MuteNotificationWindow: NSWindow {
 
 class MuteNotificationWindowController: NSWindowController {
     var isMute: Bool
+    var animationType: String
+    var animationDuration: Double
     let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
 
-    init(isMute: Bool) {
+    init(isMute: Bool, animationType: String, animationDuration: Double) {
         self.isMute = isMute
+        self.animationType = animationType
+        self.animationDuration = animationDuration
 
         let muteNotificationWindow = MuteNotificationWindow(
             contentRect: NSRect(x: 0, y: 0, width: 200, height: 200),
@@ -70,12 +74,38 @@ class MuteNotificationWindowController: NSWindowController {
             muteNotificationWindow.setFrame(windowRect, display: true)
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.255) {
+        if self.animationType == "Fade" {
+            muteNotificationWindow.alphaValue = 0
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.5
-                muteNotificationWindow.animator().alphaValue = 0
-            } completionHandler: {
+                muteNotificationWindow.animator().alphaValue = 1
+            }
+        } else if self.animationType == "Scale" {
+            let originalFrame = muteNotificationWindow.frame
+            muteNotificationWindow.setFrame(NSRect(x: originalFrame.midX, y: originalFrame.midY, width: 0, height: 0), display: true)
+            muteNotificationWindow.alphaValue = 0
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.5
+                muteNotificationWindow.animator().setFrame(originalFrame, display: true)
+                muteNotificationWindow.animator().alphaValue = 1
+            }
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
+            if self.animationType == "None" {
                 muteNotificationWindow.orderOut(nil)
+            } else {
+                NSAnimationContext.runAnimationGroup { context in
+                    context.duration = 0.5
+                    if self.animationType == "Fade" {
+                        muteNotificationWindow.animator().alphaValue = 0
+                    } else if self.animationType == "Scale" {
+                        muteNotificationWindow.animator().setFrame(NSRect(x: muteNotificationWindow.frame.midX, y: muteNotificationWindow.frame.midY, width: 0, height: 0), display: true)
+                        muteNotificationWindow.animator().alphaValue = 0
+                    }
+                } completionHandler: {
+                    muteNotificationWindow.orderOut(nil)
+                }
             }
         }
     }

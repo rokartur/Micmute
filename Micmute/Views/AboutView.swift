@@ -6,38 +6,66 @@
 //
 
 import SwiftUI
+import Sparkle
 
 struct AboutView: View {
+    @AppStorage("automaticallyUpdates") var automaticallyUpdates: Bool = false
+    
+    private let updaterController: SPUStandardUpdaterController
+
+    init() {
+        updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+    }
+
     var body: some View {
-        VStack(spacing: 16) {
-            HStack {
+        VStack {
+            HStack(alignment: .center) {
                 Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 64, height: 64)
+                    .frame(width: 112, height: 112)
+
                 VStack(alignment: .leading) {
-                    Text("Micmute").font(.headline)
-                    Text("Version \(Constants.AppInfo.appVersion ?? "?")")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Micmute")
+                            .font(.title)
+                        Text("Version \(Constants.AppInfo.appVersion) (\(Constants.AppInfo.appBuildNumber))")
+                            .font(.system(size: 16))
+                            .fontWeight(.light)
+                            .foregroundColor(.secondary)
+                    }
+                    CheckForUpdatesView(updater: updaterController.updater)
                 }
+                Spacer()
             }
+            .padding(24)
+            
+            Divider()
             
             HStack {
+                Spacer()
+                
+                Button {
+                    NSWorkspace.shared.open(Constants.AppInfo.whatsNew)
+                } label: {
+                    Text("What's New")
+                }
+                
                 Button {
                     NSWorkspace.shared.open(Constants.AppInfo.repo)
                 } label: {
-                    Text("GitHub").font(.system(size: 12))
+                    Text("Repository")
                 }
-                .buttonStyle(LinkButtonStyle())
                 
                 Button {
                     NSWorkspace.shared.open(Constants.AppInfo.author)
                 } label: {
-                    Text("Author").font(.system(size: 12))
+                    Text("Author")
                 }
-                .buttonStyle(LinkButtonStyle())
             }
+            .padding([.top], 16)
+            .padding([.bottom], 24)
+            .padding([.trailing])
         }
     }
 }

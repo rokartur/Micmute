@@ -12,6 +12,8 @@ import SettingsAccess
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     @AppStorage("isMute") var isMute: Bool = false
+    @AppStorage("animationType") var animationType: String = "Fade"
+    @AppStorage("animationDuration") var animationDuration: Double = 1.3
 
     var appearanceObservation: NSObjectProtocol?
     var showNotification = false
@@ -48,7 +50,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem.button?.image = isMute ? micMute : micUnmute
         setDefaultInputVolumeDevice(isMute: isMute)
 
-        let muteNotificationWindowController = MuteNotificationWindowController(isMute: isMute)
+        let muteNotificationWindowController = MuteNotificationWindowController(isMute: isMute, animationType: animationType, animationDuration: animationDuration)
         muteNotificationWindowController.showWindow(nil)
     }
     

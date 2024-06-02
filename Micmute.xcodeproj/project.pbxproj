@@ -10,6 +10,9 @@
 		421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B6AFC2B37504000946AF4 /* MicmuteApp.swift */; };
 		421B6B012B37504100946AF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B002B37504100946AF4 /* Assets.xcassets */; };
 		421B6B042B37504100946AF4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B032B37504100946AF4 /* Preview Assets.xcassets */; };
+		42698EBD2C0BE7CB00648D4C /* AnimationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42698EBC2C0BE7CB00648D4C /* AnimationView.swift */; };
+		42698EC02C0BFF5900648D4C /* CheckForUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42698EBF2C0BFF5900648D4C /* CheckForUpdate.swift */; };
+		42698EC32C0C008C00648D4C /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 42698EC22C0C008C00648D4C /* Sparkle */; };
 		427A86A12C0A02C1000AFAD4 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 427A86A02C0A02C1000AFAD4 /* KeyboardShortcuts */; };
 		427A86A42C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */; };
 		427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A82C0A0B1A000AFAD4 /* Constants.swift */; };
@@ -25,12 +28,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		421B6AF92B37504000946AF4 /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Micmute.app; path = /Users/rokartur/Developer/Micmute/build/Debug/Micmute.app; sourceTree = "<absolute>"; };
 		421B6AFC2B37504000946AF4 /* MicmuteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicmuteApp.swift; sourceTree = "<group>"; };
 		421B6B002B37504100946AF4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		421B6B032B37504100946AF4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		421B6B052B37504100946AF4 /* Micmute.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Micmute.entitlements; sourceTree = "<group>"; };
 		421B6B0B2B3764BC00946AF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		42698EBB2C0BD99D00648D4C /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Micmute.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		42698EBC2C0BE7CB00648D4C /* AnimationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationView.swift; sourceTree = "<group>"; };
+		42698EBF2C0BFF5900648D4C /* CheckForUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckForUpdate.swift; sourceTree = "<group>"; };
 		427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardShortcuts+Global.swift"; sourceTree = "<group>"; };
 		427A86A82C0A0B1A000AFAD4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		427A86AA2C0A0B84000AFAD4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -48,6 +53,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				427A86CC2C0A83B8000AFAD4 /* SettingsAccess in Frameworks */,
+				42698EC32C0C008C00648D4C /* Sparkle in Frameworks */,
 				427A86AE2C0A0BE8000AFAD4 /* LaunchAtLogin in Frameworks */,
 				427A86A12C0A02C1000AFAD4 /* KeyboardShortcuts in Frameworks */,
 			);
@@ -60,6 +66,8 @@
 			isa = PBXGroup;
 			children = (
 				421B6AFB2B37504000946AF4 /* Micmute */,
+				42698EBB2C0BD99D00648D4C /* Micmute.app */,
+				42698EC12C0C008C00648D4C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -86,11 +94,19 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		42698EC12C0C008C00648D4C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		427A869D2C0A0142000AFAD4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				427A86AA2C0A0B84000AFAD4 /* SettingsView.swift */,
 				427A86C02C0A52D1000AFAD4 /* GeneralView.swift */,
+				42698EBC2C0BE7CB00648D4C /* AnimationView.swift */,
 				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
 				427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */,
 			);
@@ -112,6 +128,7 @@
 				427A86A82C0A0B1A000AFAD4 /* Constants.swift */,
 				427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */,
 				427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */,
+				42698EBF2C0BFF5900648D4C /* CheckForUpdate.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -136,9 +153,10 @@
 				427A86A02C0A02C1000AFAD4 /* KeyboardShortcuts */,
 				427A86AD2C0A0BE8000AFAD4 /* LaunchAtLogin */,
 				427A86CB2C0A83B8000AFAD4 /* SettingsAccess */,
+				42698EC22C0C008C00648D4C /* Sparkle */,
 			);
 			productName = Micmute;
-			productReference = 421B6AF92B37504000946AF4 /* Micmute.app */;
+			productReference = 42698EBB2C0BD99D00648D4C /* Micmute.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -169,6 +187,7 @@
 				427A869F2C0A02C1000AFAD4 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				427A86AC2C0A0BE8000AFAD4 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
 				427A86CA2C0A83B8000AFAD4 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
+				42698EBE2C0BFC5200648D4C /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = 421B6AF02B37504000946AF4;
 			projectDirPath = "";
@@ -203,7 +222,9 @@
 				42E82CA62C0B682700768A23 /* CustomNotificationView.swift in Sources */,
 				427A86AB2C0A0B84000AFAD4 /* SettingsView.swift in Sources */,
 				421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */,
+				42698EC02C0BFF5900648D4C /* CheckForUpdate.swift in Sources */,
 				427A86A42C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift in Sources */,
+				42698EBD2C0BE7CB00648D4C /* AnimationView.swift in Sources */,
 				427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */,
 				427A86C52C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift in Sources */,
 			);
@@ -337,12 +358,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
@@ -358,7 +380,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.2.0;
 				"OTHER_CODE_SIGN_FLAGS[sdk=*]" = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -373,12 +396,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
@@ -394,7 +418,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 2.0.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -428,6 +453,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		42698EBE2C0BFC5200648D4C /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.2;
+			};
+		};
 		427A869F2C0A02C1000AFAD4 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts.git";
@@ -455,6 +488,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		42698EC22C0C008C00648D4C /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 42698EBE2C0BFC5200648D4C /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
 		427A86A02C0A02C1000AFAD4 /* KeyboardShortcuts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 427A869F2C0A02C1000AFAD4 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;

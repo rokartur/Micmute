@@ -11,14 +11,20 @@ import LaunchAtLogin
 
 struct GeneralView: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            KeyboardShortcuts.Recorder("Keyboard shortcut:", name: .toggleMuteShortcut)
-            HStack {
+        VStack(spacing: 16) {
+            HStack(spacing: 12) {
                 Text("Startup:")
                 LaunchAtLogin.Toggle {
-                    Text("Launch Micmute at login")
+                    Text("Start at login")
                 }
-            }.padding([.leading], 67)
-        }.padding(.horizontal, 24)
+            }
+            .padding([.leading], 36)
+            
+            HStack(spacing: 0) {
+                Text("Keyboard shortcut:")
+                KeyboardShortcuts.Recorder("", name: .toggleMuteShortcut)
+                    
+            }
+        }.padding(24)
     }
 }

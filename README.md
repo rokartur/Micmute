@@ -17,6 +17,7 @@ Micmute require macOS 14 or latest.
   <img style="border-radius: 16px" src="Images/about.png">
 </div>
 
-<div align="center">
-  <img style="border-radius: 16px" src="Images/notify.gif">
-</div>
+## Package dependencies
+- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
+- [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin-Legacy)
+- [SettingsAccess](https://github.com/orchetect/SettingsAccess)

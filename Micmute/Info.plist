@@ -2,7 +2,17 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
 	<key>SMLoginItemEnabled</key>
 	<true/>
+	<key>SUEnableDownloaderService</key>
+	<true/>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://rokartur.github.io/Micmute/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>+wdoSXdVfUtgIGgJa9kBlmJZ7O1DNYDEuQTD7rhRamA=</string>
 </dict>
 </plist>
