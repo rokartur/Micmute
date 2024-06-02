@@ -8,7 +8,7 @@
             <sparkle:version>2</sparkle:version>
             <sparkle:shortVersionString>2.0.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/rokartur/Micmute/releases/download/Production/Micmute.zip" length="5903799" type="application/octet-stream" sparkle:edSignature="6cVPei9o/didSZeLOUdKevRK3TSyKZ8UbVbh0b9tggfp3mTAen9bKq+lL8QW24PW6tLUBOod1Pe2H21BjmcDAw=="/>
+            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.0.0/Micmute.zip" length="5903799" type="application/octet-stream" sparkle:edSignature="6cVPei9o/didSZeLOUdKevRK3TSyKZ8UbVbh0b9tggfp3mTAen9bKq+lL8QW24PW6tLUBOod1Pe2H21BjmcDAw=="/>
         </item>
     </channel>
 </rss>
