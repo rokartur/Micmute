@@ -3,12 +3,12 @@
     <channel>
         <title>Micmute</title>
         <item>
-            <title>2.0.0</title>
-            <pubDate>Sun, 02 Jun 2024 05:00:46 +0200</pubDate>
-            <sparkle:version>2</sparkle:version>
-            <sparkle:shortVersionString>2.0.0</sparkle:shortVersionString>
+            <title>2.1.0</title>
+            <pubDate>Sun, 02 Jun 2024 22:24:37 +0200</pubDate>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>2.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.0.0/Micmute.zip" length="5903799" type="application/octet-stream" sparkle:edSignature="6cVPei9o/didSZeLOUdKevRK3TSyKZ8UbVbh0b9tggfp3mTAen9bKq+lL8QW24PW6tLUBOod1Pe2H21BjmcDAw=="/>
+            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.0/Micmute.zip" length="5964509" type="application/octet-stream" sparkle:edSignature="oGRuua91fSWl/Se78rTmp38wjouiKiq1H3cq5zPOmslic19lHFBcrncY3/0tCslPE/3/kcL2qFIa3nZoM52LAA=="/>
         </item>
     </channel>
 </rss>
