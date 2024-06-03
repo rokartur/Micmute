@@ -13,7 +13,7 @@ Micmute require macOS 14 or latest.
 
 ## Install
 <a href="https://github.com/rokartur/Micmute/releases/download/v2.1.1/Micmute.zip">
-  <img width=200 src="Images/download.svg">
+  <img width=200 src="https://files.lowtechguys.com/macos-app.svg">
 </a>
 
 ## Usage
