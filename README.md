@@ -24,3 +24,4 @@ Micmute require macOS 14 or latest.
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin-Legacy)
 - [SettingsAccess](https://github.com/orchetect/SettingsAccess)
+- [Sparkle](https://sparkle-project.org/)
