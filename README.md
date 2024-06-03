@@ -13,6 +13,8 @@ Micmute require macOS 14 or latest.
   <img width=200 src="https://files.lowtechguys.com/macos-app.svg">
 </a>
 
+<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Frokartur%2FMicmute&count_bg=%23FF5F57&title_bg=%230D1117&icon=&icon_color=%23FF0000&title=Views&edge_flat=false"/>
+
 ## Usage
 <div align="center">
   <img style="border-radius: 16px" src="Images/general-v2.png" height="356px">
