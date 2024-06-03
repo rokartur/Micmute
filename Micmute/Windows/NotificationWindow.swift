@@ -79,10 +79,11 @@ struct NotificationView: View {
 }
 
 class NotificationWindowController: NSWindowController {
+    @AppStorage("animationType") var animationType: AnimationType = .scale
+    @AppStorage("animationDuration") var animationDuration: Double = 1.3
+
     var isMute: Bool
     let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-    var animationDuration: Double = UserDefaults.standard.double(forKey: "animationDuration")
-    var animationType: String = UserDefaults.standard.string(forKey: "animationType")!
     var displayOption: DisplayOption
     var placement: Placement
     var padding: Double
@@ -92,7 +93,7 @@ class NotificationWindowController: NSWindowController {
     let largePreview = Constants.Appearance.largePreview
     let largeCornerRadius = Constants.Appearance.largeCornerRadius
     
-    init(isMute: Bool, animationType: String, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double) {
+    init(isMute: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double) {
         self.isMute = isMute
         self.animationType = animationType
         self.animationDuration = animationDuration
@@ -165,13 +166,13 @@ class NotificationWindowController: NSWindowController {
             notificationWindow.setFrame(windowRect, display: true)
         }
 
-        if self.animationType == "Fade" {
+        if self.animationType == .fade {
             notificationWindow.alphaValue = 0
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.5
                 notificationWindow.animator().alphaValue = 1
             }
-        } else if self.animationType == "Scale" {
+        } else if self.animationType == .scale {
             let originalFrame = notificationWindow.frame
             notificationWindow.setFrame(NSRect(x: originalFrame.midX, y: originalFrame.midY, width: 0, height: 0), display: true)
             notificationWindow.alphaValue = 0
@@ -183,14 +184,14 @@ class NotificationWindowController: NSWindowController {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
-            if self.animationType == "None" {
+            if self.animationType == .none {
                 notificationWindow.orderOut(nil)
             } else {
                 NSAnimationContext.runAnimationGroup { context in
                     context.duration = 0.5
-                    if self.animationType == "Fade" {
+                    if self.animationType == .fade {
                         notificationWindow.animator().alphaValue = 0
-                    } else if self.animationType == "Scale" {
+                    } else if self.animationType == .scale {
                         notificationWindow.animator().setFrame(NSRect(x: notificationWindow.frame.midX, y: notificationWindow.frame.midY, width: 0, height: 0), display: true)
                         notificationWindow.animator().alphaValue = 0
                     }

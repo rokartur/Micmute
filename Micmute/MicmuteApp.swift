@@ -13,7 +13,7 @@ import Sparkle
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     @AppStorage("isMute") var isMute: Bool = false
-    @AppStorage("animationType") var animationType: String = "Fade"
+    @AppStorage("animationType") var animationType: AnimationType = .scale
     @AppStorage("animationDuration") var animationDuration: Double = 1.3
     @AppStorage("isNotificationEnabled") var isNotificationEnabled: Bool = true
     @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
