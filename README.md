@@ -9,12 +9,13 @@ Micmute is native & lightweight menu bar application for toggling microphone mut
 Micmute require macOS 14 or latest.
 
 ## Install
-[Download](https://github.com/rokartur/Micmute/releases/download/v2.0.0/Micmute.zip)
+[Download](https://github.com/rokartur/Micmute/releases/download/v2.1.1/Micmute.zip)
 
-## Screenshots
+## Usage
 <div align="center">
-  <img style="border-radius: 16px" src="Images/general.png">
-  <img style="border-radius: 16px" src="Images/about.png">
+  <img style="border-radius: 16px" src="Images/general-v2.png" height="356px">
+  <img style="border-radius: 16px" src="Images/animation-v2.png" height="356px">
+  <img style="border-radius: 16px" src="Images/appearance-v2.png">
 </div>
 
 ## Package dependencies
