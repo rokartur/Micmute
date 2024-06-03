@@ -11,7 +11,7 @@
             <sparkle:version>2.1.0</sparkle:version>
             <sparkle:shortVersionString>2.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.0/Micmute.dmg" sparkle:version="2.1.0" sparkle:shortVersionString="2.1.0" length="5883119" type="application/octet-stream" sparkle:edSignature="J7MTla5tSu1b3bVe2Y8MsUKwq/eNlNmd240Ue/XtzQ1bg5NPP9qX5DJ753imtgUj3yeTmQR7g35htq8y00P3AQ=="/>
+            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.0/Micmute-v2.1.0.dmg" sparkle:version="2.1.0" sparkle:shortVersionString="2.1.0" length="5883119" type="application/octet-stream" sparkle:edSignature="J7MTla5tSu1b3bVe2Y8MsUKwq/eNlNmd240Ue/XtzQ1bg5NPP9qX5DJ753imtgUj3yeTmQR7g35htq8y00P3AQ=="/>
         </item>
     </channel>
 </rss>
