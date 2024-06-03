@@ -1,6 +1,9 @@
 <div align="center">
   <img src="Images/micmute.png" width="256">
 </div>
+<div align="center"> 
+  <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Frokartur%2FMicmute&count_bg=%23FF5F57&title_bg=%230D1117&icon=&icon_color=%23FF0000&title=Views&edge_flat=false"/>
+</div>
 
 ## About 
 Micmute is native & lightweight menu bar application for toggling microphone mute.
@@ -12,8 +15,6 @@ Micmute require macOS 14 or latest.
 <a href="https://github.com/rokartur/Micmute/releases/download/v2.1.1/Micmute.zip">
   <img width=200 src="https://files.lowtechguys.com/macos-app.svg">
 </a>
-
-<img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Frokartur%2FMicmute&count_bg=%23FF5F57&title_bg=%230D1117&icon=&icon_color=%23FF0000&title=Views&edge_flat=false"/>
 
 ## Usage
 <div align="center">
