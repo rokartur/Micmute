@@ -4,11 +4,14 @@
         <title>Micmute</title>
         <item>
             <title>2.1.0</title>
+            <description>
+                <![CDATA[ <ul> <li> In this release, I have added 5 new notification display settings. 6 placement settings and 3 padding size. Now you can further customize notifications to your preferences. Check out the updated appearance settings in the Micmute app. </li> </ul> ]]>
+            </description>
             <pubDate>Sun, 02 Jun 2024 23:11:50 +0200</pubDate>
             <sparkle:version>2.1.0</sparkle:version>
             <sparkle:shortVersionString>2.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.0/Micmute.dmg" length="5883119" type="application/octet-stream" sparkle:edSignature="J7MTla5tSu1b3bVe2Y8MsUKwq/eNlNmd240Ue/XtzQ1bg5NPP9qX5DJ753imtgUj3yeTmQR7g35htq8y00P3AQ=="/>
+            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.0/Micmute.dmg" sparkle:version="2.1.0" sparkle:shortVersionString="2.1.0" length="5883119" type="application/octet-stream" sparkle:edSignature="J7MTla5tSu1b3bVe2Y8MsUKwq/eNlNmd240Ue/XtzQ1bg5NPP9qX5DJ753imtgUj3yeTmQR7g35htq8y00P3AQ=="/>
         </item>
     </channel>
 </rss>
