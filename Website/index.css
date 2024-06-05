@@ -1,0 +1,198 @@
+main {
+    padding: 112px 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    max-width: 550px;
+    font-size: 72px;
+    font-weight: 700;
+    text-align: center;
+}
+
+@media (width <= 765px) {
+    h1 {
+        max-width: 320px;
+        font-size: 48px;
+    }
+}
+
+h1 span {
+    color: var(--branding);
+}
+
+.heroContainer {
+    padding: 0 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+}
+
+.heroContainer p {
+    max-width: 550px;
+    font: 400 20px/32px var(--font-family);
+    color: var(--gray-500);
+    text-align: center;
+}
+
+@media (width <= 765px) {
+    .heroContainer p {
+        max-width: 256px;
+        font-size: 18px;
+    }
+}
+
+.logoImage {
+    width: 128px;
+    height: 128px;
+}
+
+.notificationImage {
+    margin: 32px 0 0 0;
+    border-radius: 24px;
+    object-fit: cover;
+    box-shadow: 0 32px 56px rgba(0, 0, 0, 1);
+}
+
+.heroActions {
+    margin: 72px 0 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+@media (width <= 475px) {
+    .heroActions {
+        flex-direction: column;
+        gap: 32px;
+    }
+}
+
+.downloadButton {
+    padding: 20px 32px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 100px;
+    background-color: var(--branding);
+
+    transition: opacity .2s, transform .2s;
+}
+
+.downloadButton:hover {
+    opacity: .9;
+    transform: translateY(2px);
+    cursor: pointer;
+}
+
+.downloadButton p {
+    padding: 2px 0 0 0;
+    font: 600 16px/24px var(--font-family);
+    color: var(--white);
+}
+
+.releasesButton {
+    padding: 20px 32px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    font: 500 16px/24px var(--font-family);
+    color: var(--white);
+
+    border-radius: 100px;
+    border: 1px solid hsla(213, 4%, 49%, .41);
+    background-color: var(--black);
+
+    transition: opacity .2s, transform .2s;
+}
+
+.releasesButton:hover {
+    opacity: .9;
+    transform: translateY(2px);
+    cursor: pointer;
+}
+
+.reqOS p {
+    margin: -16px 0 0 0;
+    font: 400 16px/20px var(--font-family);
+    color: var(--gray-500);
+}
+
+footer {
+    padding: 64px 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+footer a {
+    font: 400 16px/24px var(--font-family);
+    color: #A3A3A3;
+    text-align: center;
+}
+
+footer a:hover {
+    color: var(--branding);
+    text-decoration: underline;
+}
+
+.featuresSection {
+    padding: 112px 24px;
+
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 72px;
+}
+
+.feature {
+    width: 212px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 26px;
+    flex: 1 0;
+}
+
+.featureIcon {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 3px solid hsla(0, 0%, 100%, .1);
+    border-radius: 16px;
+}
+
+.featureLabel {
+    font: 600 26px/32px var(--font-family);
+    color: var(--white);
+}
+
+.featureDescription {
+    max-width: 212px;
+    font: 400 16px/20px var(--font-family);
+    color: var(--gray-400);
+    text-align: center;
+}
