@@ -10,7 +10,7 @@
 </div>
 
 ## About 
-Micmute is native & lightweight menu bar application for toggling microphone mute.
+Micmute is native & lightweight menu bar application for toggling microphone mute in any app
 
 ## Requirements
 Micmute require macOS 14 or latest.
