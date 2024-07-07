@@ -3,15 +3,15 @@
     <channel>
         <title>Micmute</title>
         <item>
-            <title>2.1.1</title>
+            <title>2.1.2</title>
             <description>
-                <![CDATA[ <ul> <li> Fixed a bug that caused the app to crash when a notification appeared </li> </ul> ]]>
+                <![CDATA[ <ul> <li> Fixed certificate </li> </ul> ]]>
             </description>
-            <pubDate>Mon, 03 Jun 2024 13:16:44 +0200</pubDate>
-            <sparkle:version>2.1.1</sparkle:version>
-            <sparkle:shortVersionString>2.1.1</sparkle:shortVersionString>
+            <pubDate>Sun, 07 Jul 2024 10:39:51 +0200</pubDate>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>2.1.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.1/Micmute.zip" length="5965473" type="application/octet-stream" sparkle:edSignature="6ccslyhLYyUdFXwHiWX6rJEz4oCKI22sUNZMUbdheqlix4ZhaMhBp3tsnIP943BnaCi1iAs1u0lUFXKFsSa4CQ=="/>
+            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.2/Micmute.zip" length="5961957" type="application/octet-stream" sparkle:edSignature="bJfY2kGMpUxY+oK89irQhteLTN0lTaDTEkv3iNQbE/MOdDERHktnv+Dpy+iTTE3gfXue2o1NTgKPpQakeIM1DA=="/>
         </item>
     </channel>
 </rss>
