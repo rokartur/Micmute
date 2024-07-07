@@ -9,6 +9,12 @@
   <a href="https://www.producthunt.com/posts/micmute?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-micmute" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=464387&theme=light" alt="Micmute - Menu&#0032;bar&#0032;app&#0032;for&#0032;toggling&#0032;microphone&#0032;mute&#0032;in&#0032;any&#0032;app | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 </div>
 
+## "Micmute" will damage your computer. You should move it to the Bin.
+This because my free certificate was revoked due to the 1-year validity limit. Old apps are no longer able to run. Install the latest to fix it.
+
+If it still does not work after the update, please right-click the app in Finder > "Get Info" > check "Override Malware Protection", and run it again or try again after a few hours
+
+
 ## About 
 Micmute is native & lightweight menu bar application for toggling microphone mute in any app
 
