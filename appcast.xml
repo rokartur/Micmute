@@ -7,11 +7,11 @@
             <description>
                 <![CDATA[ <ul> <li> Fixed certificate </li> </ul> ]]>
             </description>
-            <pubDate>Sun, 07 Jul 2024 10:46:20 +0200</pubDate>
+            <pubDate>Sun, 07 Jul 2024 10:48:58 +0200</pubDate>
             <sparkle:version>4</sparkle:version>
             <sparkle:shortVersionString>2.1.2</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.2/Micmute.zip" length="5965716" type="application/octet-stream" sparkle:edSignature="eYsFG8tBEvn9kEYoHvKM8raXiuD7mk8dac8gXk8BVGLR0kHWvWyGESxKATtu8CDIFQex7X1iEgxrz2qwCbJdAQ=="/>
+            <enclosure url="https://github.com/rokartur/Micmute/releases/download/v2.1.2/Micmute.zip" length="5965716" type="application/octet-stream" sparkle:edSignature="YQdBksxkk+uWcrufDJRnND2XPui+o7aB9q/+TvFpLMYjD7CynxHy01o/gntNXjiXxVfdtxYb5NpkK7oB9W7nDg=="/>
         </item>
     </channel>
 </rss>
