@@ -12,9 +12,9 @@ enum Constants {
     enum AppInfo {
         static let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
         static let appBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-        static let repo = URL(string: "https://github.com/rokartur/Micmute")!
+        static let repo = URL(string: "https://github.com/rokartur/micmute")!
         static let author = URL(string: "https://github.com/rokartur")!
-        static let whatsNew = URL(string: "https://github.com/rokartur/Micmute/releases")!
+        static let whatsNew = URL(string: "https://github.com/rokartur/micmute/releases")!
     }
     
     enum Appearance {

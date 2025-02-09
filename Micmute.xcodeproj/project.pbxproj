@@ -23,9 +23,8 @@
 		427A86C12C0A52D1000AFAD4 /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C02C0A52D1000AFAD4 /* GeneralView.swift */; };
 		427A86C32C0A5358000AFAD4 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C22C0A5358000AFAD4 /* AboutView.swift */; };
 		427A86C52C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */; };
-		427A86C72C0A5B75000AFAD4 /* GetMicImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */; };
-		42A96F2E2C0AA4E8002F679E /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */; };
 		42E82CA62C0B682700768A23 /* NotificationWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E82CA52C0B682700768A23 /* NotificationWindow.swift */; };
+		75D0AB7D2D58EC2E00CAEE56 /* MacControlCenterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,8 +43,6 @@
 		427A86C02C0A52D1000AFAD4 /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
 		427A86C22C0A5358000AFAD4 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetDefaultInputVolumeDevice.swift; sourceTree = "<group>"; };
-		427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetMicImage.swift; sourceTree = "<group>"; };
-		427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; usesTabs = 0; wrapsLines = 1; };
 		42E82CA52C0B682700768A23 /* NotificationWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationWindow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,6 +52,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				421A4C002C0DCF2B00F7F234 /* SettingsAccess in Frameworks */,
+				75D0AB7D2D58EC2E00CAEE56 /* MacControlCenterUI in Frameworks */,
 				421A4C032C0DCF5300F7F234 /* Sparkle in Frameworks */,
 				421A4BFD2C0DCF1A00F7F234 /* LaunchAtLogin in Frameworks */,
 				421A4BFA2C0DCF0D00F7F234 /* KeyboardShortcuts in Frameworks */,
@@ -127,7 +125,6 @@
 			isa = PBXGroup;
 			children = (
 				42016B212C0C3015002135AB /* SettingsTabs */,
-				427A86C82C0A6F94000AFAD4 /* MenuBarView.swift */,
 				42016B342C0C3A69002135AB /* SettingsView.swift */,
 			);
 			path = Views;
@@ -146,7 +143,6 @@
 			children = (
 				427A86A82C0A0B1A000AFAD4 /* Constants.swift */,
 				427A86C42C0A5879000AFAD4 /* SetDefaultInputVolumeDevice.swift */,
-				427A86C62C0A5B75000AFAD4 /* GetMicImage.swift */,
 				42698EBF2C0BFF5900648D4C /* CheckForUpdate.swift */,
 			);
 			path = Utilities;
@@ -173,6 +169,7 @@
 				421A4BFC2C0DCF1A00F7F234 /* LaunchAtLogin */,
 				421A4BFF2C0DCF2B00F7F234 /* SettingsAccess */,
 				421A4C022C0DCF5300F7F234 /* Sparkle */,
+				75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */,
 			);
 			productName = Micmute;
 			productReference = 42698EBB2C0BD99D00648D4C /* Micmute.app */;
@@ -207,6 +204,7 @@
 				421A4BFB2C0DCF1A00F7F234 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Legacy" */,
 				421A4BFE2C0DCF2B00F7F234 /* XCRemoteSwiftPackageReference "SettingsAccess" */,
 				421A4C012C0DCF5300F7F234 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */,
 			);
 			productRefGroup = 421B6AF02B37504000946AF4;
 			projectDirPath = "";
@@ -235,11 +233,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				42016B352C0C3A69002135AB /* SettingsView.swift in Sources */,
-				42A96F2E2C0AA4E8002F679E /* MenuBarView.swift in Sources */,
 				427A86C12C0A52D1000AFAD4 /* GeneralView.swift in Sources */,
 				427A86C32C0A5358000AFAD4 /* AboutView.swift in Sources */,
 				42016B162C0C1E6A002135AB /* AppearanceView.swift in Sources */,
-				427A86C72C0A5B75000AFAD4 /* GetMicImage.swift in Sources */,
 				42E82CA62C0B682700768A23 /* NotificationWindow.swift in Sources */,
 				421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */,
 				42698EC02C0BFF5900648D4C /* CheckForUpdate.swift in Sources */,
@@ -505,6 +501,14 @@
 				minimumVersion = 2.6.3;
 			};
 		};
+		75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/orchetect/MacControlCenterUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -527,6 +531,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 421A4C012C0DCF5300F7F234 /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
+		};
+		75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */;
+			productName = MacControlCenterUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
