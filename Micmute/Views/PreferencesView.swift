@@ -7,12 +7,17 @@
 
 import SwiftUI
 
-struct SettingsView: View {
+struct PreferencesView: View {
+    private weak var parentWindow: PreferencesWindow!
     var minWidth: CGFloat = 512
     var minHeight: CGFloat = 64
 
-    @AppStorage("selectedTab") var selectedTab: String = "General"
+    @State private var selectedTab: String = "General"
 
+    init(parentWindow: PreferencesWindow) {
+        self.parentWindow = parentWindow
+    }
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             GeneralView()
