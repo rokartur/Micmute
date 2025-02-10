@@ -10,17 +10,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
+        
       - name: Setup Swift
         uses: swift-actions/setup-swift@v2
         with:
-          swift-version: '5.11'
+          swift-version: '6'
       
       - name: Build with Xcode
         run: |
           xcodebuild clean build \
             -project Micmute.xcodeproj \
             -scheme Micmute \
-            -configuration Release \
+            -configuration Debug \
             -destination "platform=macOS" \
             -derivedDataPath build_output
 
