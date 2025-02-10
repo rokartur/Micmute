@@ -27,7 +27,7 @@ struct AboutView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Micmute")
                             .font(.title)
-                        Text("Version \(Constants.AppInfo.appVersion)")
+                        Text("Version \(AppInfo.appVersion)")
                             .font(.system(size: 16))
                             .fontWeight(.light)
                             .foregroundColor(.secondary)
@@ -41,24 +41,28 @@ struct AboutView: View {
             Divider()
             
             HStack {
-                Text("Leave a ⭐ on GitHub")
+                Button {
+                    NSWorkspace.shared.open(AppInfo.repo)
+                } label: {
+                    Text("Leave a ⭐ on GitHub")
+                }.buttonStyle(.link)
                 
                 Spacer()
                 
                 Button {
-                    NSWorkspace.shared.open(Constants.AppInfo.whatsNew)
+                    NSWorkspace.shared.open(AppInfo.whatsNew)
                 } label: {
                     Text("What's New")
                 }
                 
                 Button {
-                    NSWorkspace.shared.open(Constants.AppInfo.repo)
+                    NSWorkspace.shared.open(AppInfo.repo)
                 } label: {
                     Text("Repository")
                 }
                 
                 Button {
-                    NSWorkspace.shared.open(Constants.AppInfo.author)
+                    NSWorkspace.shared.open(AppInfo.author)
                 } label: {
                     Text("Author")
                 }

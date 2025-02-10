@@ -14,15 +14,14 @@ class NotificationWindow: NSWindow {
     }
 }
 
-struct NotificationView: View {
+struct NotificationViewModel: View {
     var isMuted: Bool
     @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
 
-    let largeIcon = Constants.Appearance.largeIcon
-    let smallIcon = Constants.Appearance.smallIcon
-    
-    let smallPreview = Constants.Appearance.smallPreview
-    let largePreview = Constants.Appearance.largePreview
+    let largeIcon = Appearance.largeIcon
+    let smallIcon = Appearance.smallIcon
+    let smallPreview = Appearance.smallPreview
+    let largePreview = Appearance.largePreview
     
     var body: some View {
         VStack(spacing: 8) {
@@ -79,19 +78,20 @@ struct NotificationView: View {
 }
 
 class NotificationWindowController: NSWindowController {
-    @AppStorage("animationType") var animationType: AnimationType = .scale
-    @AppStorage("animationDuration") var animationDuration: Double = 1.3
+    @ObservedObject var contentViewModel = ContentViewModel()
 
     var isMuted: Bool
     let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    var animationType: AnimationType
+    var animationDuration: Double
     var displayOption: DisplayOption
     var placement: Placement
     var padding: Double
 
-    let smallPreview = Constants.Appearance.smallPreview
-    let smallCornerRadius = Constants.Appearance.smallCornerRadius
-    let largePreview = Constants.Appearance.largePreview
-    let largeCornerRadius = Constants.Appearance.largeCornerRadius
+    let smallPreview = Appearance.smallPreview
+    let smallCornerRadius = Appearance.smallCornerRadius
+    let largePreview = Appearance.largePreview
+    let largeCornerRadius = Appearance.largeCornerRadius
     
     init(isMuted: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double) {
         self.isMuted = isMuted
@@ -127,7 +127,7 @@ class NotificationWindowController: NSWindowController {
         visualEffectView.layer?.cornerRadius = self.displayOption == .smallIcon ? smallCornerRadius : largeCornerRadius
         visualEffectView.layer?.masksToBounds = true
         notificationWindow.contentView = visualEffectView
-        let hostingView = NSHostingView(rootView: NotificationView(isMuted: isMuted))
+        let hostingView = NSHostingView(rootView: NotificationViewModel(isMuted: isMuted))
         hostingView.frame = visualEffectView.bounds
         hostingView.autoresizingMask = [.width, .height]
         visualEffectView.addSubview(hostingView)

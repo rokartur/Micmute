@@ -32,14 +32,18 @@ class ContentViewModel: ObservableObject {
 
     @Published public var availableDevices: [AudioDeviceID: String] = [:]
 
-    @AppStorage("isMuted") var isMuted: Bool = false
     @AppStorage("animationType") var animationType: AnimationType = .scale
     @AppStorage("animationDuration") var animationDuration: Double = 1.3
     @AppStorage("isNotificationEnabled") var isNotificationEnabled: Bool = true
+    @AppStorage("isMuted") var isMuted: Bool = false
     @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
     @AppStorage("placement") var placement: Placement = .centerBottom
     @AppStorage("padding") var padding: Double = 70.0
-    
+    @AppStorage("iconSize") var iconSize: Int = 70
+    @AppStorage("pushToTalk") var pushToTalk: Bool = false
+    @AppStorage("menuGrayscaleIcon") var menuGrayscaleIcon: Bool = false
+    @AppStorage("menuBehaviorOnClick") var menuBehaviorOnClick: MenuBarBehavior = .menu
+
     private let refreshInterval: TimeInterval = 1.0
     @State private var refreshTimer: Timer?
     var notificationWindowController: NotificationWindowController?
@@ -47,6 +51,9 @@ class ContentViewModel: ObservableObject {
     init() {
         KeyboardShortcuts.onKeyUp(for: .toggleMuteShortcut) { [self] in
             self.toggleMute(deviceID: self.selectedDeviceID)
+        }
+        KeyboardShortcuts.onKeyUp(for: .checkMuteShortcut) { [self] in
+            self.checkMuteStatus()
         }
         loadAudioDevices()
         setDefaultSystemInputDevice()
@@ -74,6 +81,12 @@ class ContentViewModel: ObservableObject {
             notificationWindowController = NotificationWindowController(isMuted: isMuted, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
             notificationWindowController?.showWindow(nil)
         }
+    }
+    
+    func checkMuteStatus() {
+        notificationWindowController?.close()
+        notificationWindowController = NotificationWindowController(isMuted: isMuted, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
+        notificationWindowController?.showWindow(nil)
     }
 
     func loadAudioDevices() {

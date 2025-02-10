@@ -3,54 +3,58 @@ import CoreAudio
 import CoreAudioKit
 import MacControlCenterUI
 
-extension AppDelegate: NSMenuDelegate {
-    func menuWillOpen(_ menu: NSMenu) {
-        menuView()
-    }
+
+
+func getMicMuteImage() -> NSImage {
+    let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    let imageName = isDarkMode ? "mic.mute.dark" : "mic.mute.light"
+    let image = NSImage(named: imageName)!
+    let ratio = image.size.height / image.size.width
+    image.size.height = 16
+    image.size.width = 16 / ratio
+    return image
+}
+
+func getMicUnmuteImage() -> NSImage {
+    let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    let imageName = isDarkMode ? "mic.unmute.dark" : "mic.unmute.light"
+    let image = NSImage(named: imageName)!
+    let ratio = image.size.height / image.size.width
+    image.size.height = 16
+    image.size.width = 16 / ratio
+    return image
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @ObservedObject var contentViewModel = ContentViewModel()
-    private var statusBarItem: NSStatusItem!
-    private var menuItem: NSMenuItem!
+    var statusBarItem: NSStatusItem!
+    var statusBarMenu: NSMenu!
+    var statusBarMenuItem: NSMenuItem!
+
     private var preferencesWindow: PreferencesWindow!
+    var micMute: NSImage = getMicMuteImage()
+    var micUnmute: NSImage = getMicUnmuteImage()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        setupStatusBar()
-    }
-
-    func updateSelectedDevice(to deviceID: AudioDeviceID) {
-        contentViewModel.selectedDeviceID = deviceID
-        contentViewModel.loadInputGain(for: deviceID)
-        contentViewModel.changeDefaultInputDevice(to: deviceID)
-        contentViewModel.loadAudioDevices()
-    }
-    
-    func openMenu() {
-        contentViewModel.loadAudioDevices()
-        contentViewModel.setDefaultSystemInputDevice()
-        contentViewModel.registerDeviceChangeListener()
-        contentViewModel.startAutoRefresh()
-    }
-    
-    func closeMenu() {
-        contentViewModel.unregisterDeviceChangeListener()
-        contentViewModel.stopAutoRefresh()
-    }
-    
-    private func setupStatusBar() {
-        statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        let statusBar = NSStatusBar.system
+        statusBarItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
+        
         statusBarItem.button?.title = "micmute"
-    
-        let menu = NSMenu()
-        menu.delegate = self
-
-        menuItem = NSMenuItem()
+        
+        statusBarItem.button?.action = #selector(self.statusBarButtonClicked(sender:))
+        statusBarItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        
+        statusBarMenu = NSMenu(title: "Status Bar Menu")
+        statusBarMenu.delegate = self
+        statusBarMenuItem = NSMenuItem()
         menuView()
-        menu.addItem(menuItem)
-
-        statusBarItem.menu = menu
+        statusBarMenu.addItem(statusBarMenuItem)
+//        statusBarItem.statusBarMenu = statusBarMenu
+        
+        for window in NSApplication.shared.windows {
+            window.orderOut(nil)
+        }
     }
 
     @objc func menuView() {
@@ -71,26 +75,68 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         volumeView.removeFromSuperview()
 
         volumeView.frame = NSRect(x: 0, y: 0, width: 300, height: fittingSize.height)
-        menuItem.view = volumeView
+        statusBarMenuItem.view = volumeView
+    }
+
+    @objc func statusBarButtonClicked(sender: NSStatusBarButton) {
+        let event = NSApp.currentEvent!
+        
+        switch event.type {
+            case .rightMouseUp:
+                statusBarItem.menu = statusBarMenu
+                statusBarItem.button?.performClick(nil)
+            case .leftMouseUp:
+                if contentViewModel.menuBehaviorOnClick == .mute {
+                    contentViewModel.toggleMute(deviceID: contentViewModel.selectedDeviceID)
+                } else if contentViewModel.menuBehaviorOnClick == .menu {
+                    statusBarItem.menu = statusBarMenu
+                    statusBarItem.button?.performClick(nil)
+                }
+            default:
+                return
+        }
+    }
+    
+    @objc func menuDidClose(_ menu: NSMenu) {
+        statusBarItem.menu = nil
     }
 
     @objc func showPreferences(_ sender: AnyObject?) {
         if preferencesWindow == nil {
             preferencesWindow = PreferencesWindow()
-            let preferencesView = PreferencesView(parentWindow: preferencesWindow) // Create the SwiftUI view
+            let preferencesView = PreferencesView(parentWindow: preferencesWindow)
             let hostedPrefView = NSHostingView(rootView: preferencesView)
             preferencesWindow.contentView = hostedPrefView
-
-            // Calculate the fitting size for the content
             let fittingSize = hostedPrefView.intrinsicContentSize
-            
-            // Set the window's content size to fit the content
             preferencesWindow.setContentSize(fittingSize)
         }
         
         preferencesWindow.center()
         preferencesWindow.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
+    }
+    
+    func updateSelectedDevice(to deviceID: AudioDeviceID) {
+        contentViewModel.selectedDeviceID = deviceID
+        contentViewModel.loadInputGain(for: deviceID)
+        contentViewModel.changeDefaultInputDevice(to: deviceID)
+        contentViewModel.loadAudioDevices()
+    }
+    
+    func openMenu() {
+        contentViewModel.loadAudioDevices()
+        contentViewModel.setDefaultSystemInputDevice()
+        contentViewModel.registerDeviceChangeListener()
+        contentViewModel.startAutoRefresh()
+    }
+    
+    func closeMenu() {
+        contentViewModel.unregisterDeviceChangeListener()
+        contentViewModel.stopAutoRefresh()
+    }
+    
+    func menuWillOpen(_ menu: NSMenu) {
+        menuView()
     }
 
     deinit {

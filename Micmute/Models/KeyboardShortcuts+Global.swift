@@ -10,4 +10,5 @@ import KeyboardShortcuts
 
 extension KeyboardShortcuts.Name {
     static let toggleMuteShortcut = Self("toggleMuteShortcut", default: .init(.m, modifiers: [.control, .option, .shift, .command]))
+    static let checkMuteShortcut = Self("checkMuteShortcut", default: .init(.l, modifiers: [.control, .option, .command]))
 }

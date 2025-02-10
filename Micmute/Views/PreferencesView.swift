@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct PreferencesView: View {
-    private weak var parentWindow: PreferencesWindow!
-    var minWidth: CGFloat = 512
-    var minHeight: CGFloat = 64
-
     @State private var selectedTab: String = "General"
-
+    
+    private weak var parentWindow: PreferencesWindow!
+    var minWidth: CGFloat = 496
+    var minHeight: CGFloat = 64
+    
     init(parentWindow: PreferencesWindow) {
         self.parentWindow = parentWindow
     }
@@ -26,18 +26,12 @@ struct PreferencesView: View {
                     Label("General", systemImage: "gearshape")
                 }
                 .tag("General")
-            AppearanceView()
+            NotificationView()
                 .frame(minWidth: minWidth, maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
                 .tabItem {
-                    Label("Appearance", systemImage: "paintbrush.fill")
+                    Label("Notification", systemImage: "bell.badge")
                 }
-                .tag("Appearance")
-            AnimationView()
-                .frame(minWidth: minWidth, maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
-                .tabItem {
-                    Label("Animation", systemImage: "cursorarrow.motionlines.click")
-                }
-                .tag("Animation")
+                .tag("Notification")
             AboutView()
                 .frame(minWidth: minWidth, maxWidth: .infinity, minHeight: minHeight, maxHeight: .infinity)
                 .tabItem {

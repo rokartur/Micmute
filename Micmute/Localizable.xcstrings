@@ -25,6 +25,7 @@
       }
     },
     "Appearance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -53,6 +54,9 @@
           }
         }
       }
+    },
+    "Behavior on left click" : {
+
     },
     "Center Bottom" : {
       "localizations" : {
@@ -84,6 +88,9 @@
         }
       }
     },
+    "Check mute status" : {
+
+    },
     "Display" : {
       "localizations" : {
         "pl" : {
@@ -94,7 +101,11 @@
         }
       }
     },
+    "Duration" : {
+
+    },
     "Duration:" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -124,7 +135,11 @@
         }
       }
     },
+    "Grayscale icon" : {
+
+    },
     "Keyboard shortcut" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -244,6 +259,9 @@
         }
       }
     },
+    "Notification" : {
+
+    },
     "Only Large Icon" : {
       "localizations" : {
         "pl" : {
@@ -293,6 +311,9 @@
           }
         }
       }
+    },
+    "Push to talk" : {
+
     },
     "Repository" : {
       "localizations" : {
@@ -344,7 +365,11 @@
         }
       }
     },
+    "Show" : {
+
+    },
     "Show notification" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -353,6 +378,9 @@
           }
         }
       }
+    },
+    "Shows menu" : {
+
     },
     "Small" : {
       "localizations" : {
@@ -364,7 +392,11 @@
         }
       }
     },
+    "Toggle mute" : {
+
+    },
     "Type:" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {

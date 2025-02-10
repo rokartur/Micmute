@@ -9,10 +9,7 @@ import SwiftUI
 import CoreAudio
 import MacControlCenterUI
 
-private struct DeviceEntry: Identifiable, Equatable, Hashable {
-    let id: AudioDeviceID
-    let name: String
-}
+
 
 struct MainMenuView: View {
     @Binding var unmuteGain: CGFloat
@@ -66,7 +63,6 @@ struct MainMenuView: View {
             
             MenuCommand("Micmute settings...") {
                 NSApp.sendAction(#selector(AppDelegate.showPreferences(_:)), to: nil, from: nil)
-                NSApp.deactivate()
             }
         }
         .padding(.horizontal, 1)
