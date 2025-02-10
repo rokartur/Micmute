@@ -11,9 +11,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Swift
-        uses: swift-actions/setup-swift@v1
-        with:
-          swift-version: "5.11.0"
+        uses: swift-actions/setup-swift@v2
 
       - name: Build with Xcode
         run: |
