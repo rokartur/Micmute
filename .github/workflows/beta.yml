@@ -27,15 +27,13 @@ jobs:
             -scheme Micmute \
             -configuration Debug \
             -destination "platform=macOS" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             -derivedDataPath build_output
 
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
           name: Micmute
-          path: ./build_output/Build/Products/Release/Micmute.app
-
-      - name: Show Build Logs if Failed 
-        if: ${{ failure() }}
-        run: |
-          cat build_output/Logs/Build/*.log
+          path: ./build_output/Build/Products/Debug/Micmute.app
