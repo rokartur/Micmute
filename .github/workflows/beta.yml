@@ -1,0 +1,26 @@
+name: build and release beta version
+on:
+  push:
+    branches: [beta]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: "5.9"
+
+      - name: Build with Xcode
+        run: |
+          xcodebuild -workspace Micmute.xcodeproj -scheme Micmute -configuration Release -derivedDataPath build_output
+
+      - name: Archive artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Micmute
+          path: ./build_output/Build/Products/Release/Micmute.app
