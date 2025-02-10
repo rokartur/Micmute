@@ -17,7 +17,7 @@ jobs:
 
       - name: Build with Xcode
         run: |
-          xcodebuild -workspace Micmute.xcodeproj -scheme Micmute -configuration Release -derivedDataPath build_output
+          xcodebuild -project Micmute.xcodeproj -scheme Micmute -configuration Release -derivedDataPath build_output
 
       - name: Archive artifact
         uses: actions/upload-artifact@v4
