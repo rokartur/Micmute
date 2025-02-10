@@ -1,5 +1,5 @@
 {
-  "originHash" : "d4fe814f62c74a57cedf8eaa474ad5e9e098ddaf0585688d2dc4779345c5eade",
+  "originHash" : "a89d8c12e4d08983d4310f3d4aa04f73bcbc4a6b2c66e5679dbaec9c3757997c",
   "pins" : [
     {
       "identity" : "keyboardshortcuts",
@@ -35,15 +35,6 @@
       "state" : {
         "revision" : "e911e6454f8cbfe34a52136fc48e1ceb989a60e7",
         "version" : "1.2.1"
-      }
-    },
-    {
-      "identity" : "settingsaccess",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/orchetect/SettingsAccess",
-      "state" : {
-        "revision" : "0fd73c8b5892e88acb13adb7f36a4ba9293a0061",
-        "version" : "1.4.0"
       }
     },
     {

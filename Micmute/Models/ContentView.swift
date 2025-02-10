@@ -42,6 +42,7 @@ class ContentViewModel: ObservableObject {
     
     private let refreshInterval: TimeInterval = 1.0
     @State private var refreshTimer: Timer?
+    var notificationWindowController: NotificationWindowController?
     
     init() {
         KeyboardShortcuts.onKeyUp(for: .toggleMuteShortcut) { [self] in
@@ -66,6 +67,12 @@ class ContentViewModel: ObservableObject {
             muteMicrophone(selectedDevice: deviceID)
         } else {
             unmuteMicrophone(selectedDevice: deviceID)
+        }
+        
+        if isNotificationEnabled {
+            notificationWindowController?.close()
+            notificationWindowController = NotificationWindowController(isMuted: isMuted, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
+            notificationWindowController?.showWindow(nil)
         }
     }
 

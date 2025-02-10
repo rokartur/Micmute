@@ -34,7 +34,7 @@ enum Placement: String {
 }
 
 struct AppearanceView: View {
-    @AppStorage("isMute") var isMute: Bool = false
+    @AppStorage("isMuted") var isMuted: Bool = false
     @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
     @AppStorage("placement") var placement: Placement = .centerBottom
     @AppStorage("padding") var padding: Double = 70.0
@@ -74,7 +74,7 @@ struct AppearanceView: View {
             .pickerStyle(SegmentedPickerStyle())
             .padding([.leading], 14)
 
-            NotificationView(isMute: isMute)
+            NotificationView(isMuted: isMuted)
                 .frame(
                     width: (displayOption == .smallIcon) ? smallPreview : largePreview,
                     height: (displayOption == .rowSmallBoth || displayOption == .text || displayOption == .smallIcon) ? smallPreview : largePreview

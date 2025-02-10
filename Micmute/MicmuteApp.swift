@@ -17,17 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private var preferencesWindow: PreferencesWindow!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusBarItem.button?.title = "micmute"
-    
-        let menu = NSMenu()
-        menu.delegate = self
-
-        menuItem = NSMenuItem()
-        menuView()
-        menu.addItem(menuItem)
-
-        statusBarItem.menu = menu
+        setupStatusBar()
     }
 
     func updateSelectedDevice(to deviceID: AudioDeviceID) {
@@ -47,6 +37,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     func closeMenu() {
         contentViewModel.unregisterDeviceChangeListener()
         contentViewModel.stopAutoRefresh()
+    }
+    
+    private func setupStatusBar() {
+        statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        statusBarItem.button?.title = "micmute"
+    
+        let menu = NSMenu()
+        menu.delegate = self
+
+        menuItem = NSMenuItem()
+        menuView()
+        menu.addItem(menuItem)
+
+        statusBarItem.menu = menu
     }
 
     @objc func menuView() {
@@ -73,8 +77,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     @objc func showPreferences(_ sender: AnyObject?) {
         if preferencesWindow == nil {
             preferencesWindow = PreferencesWindow()
-            let hostedPrefView = NSHostingView(rootView: PreferencesView(parentWindow: preferencesWindow))
+            let preferencesView = PreferencesView(parentWindow: preferencesWindow) // Create the SwiftUI view
+            let hostedPrefView = NSHostingView(rootView: preferencesView)
             preferencesWindow.contentView = hostedPrefView
+
+            // Calculate the fitting size for the content
+            let fittingSize = hostedPrefView.intrinsicContentSize
+            
+            // Set the window's content size to fit the content
+            preferencesWindow.setContentSize(fittingSize)
         }
         
         preferencesWindow.center()
@@ -87,8 +98,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         print("AppDelegate deinitialized")
     }
 }
-
-
 
 let deviceChangeListener: AudioObjectPropertyListenerProc = { _, _, _, _ in
     DispatchQueue.main.async {
@@ -109,6 +118,13 @@ struct MicmuteApp: App {
     var body: some Scene {
         Settings {
             EmptyView()
+        }.commands {
+            CommandGroup(replacing: .appSettings) {
+                Button("Preferences...") {
+                    appDelegate.showPreferences(nil)
+                }
+                .keyboardShortcut(",", modifiers: .command)
+            }
         }
     }
 }

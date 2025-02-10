@@ -66,8 +66,8 @@ struct MainMenuView: View {
             
             MenuCommand("Micmute settings...") {
                 NSApp.sendAction(#selector(AppDelegate.showPreferences(_:)), to: nil, from: nil)
+                NSApp.deactivate()
             }
-            
         }
         .padding(.horizontal, 1)
         .onAppear {
@@ -75,8 +75,10 @@ struct MainMenuView: View {
             onAppear()
         }
         .onChange(of: selectedDevice) { _, newValue in
-            guard let newValue = newValue else { return }
-            selectedDeviceID = newValue
+            if let newValue = newValue {
+                selectedDeviceID = newValue
+                onDeviceSelected(newValue)
+            }
         }
         .onDisappear {
             onDisappear()

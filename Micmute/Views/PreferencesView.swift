@@ -44,7 +44,6 @@ struct PreferencesView: View {
                     Label("About", systemImage: "rectangle.topthird.inset.filled")
                 }
                 .tag("About")
-        }
-        .fixedSize()
+        }.fixedSize()
     }
 }

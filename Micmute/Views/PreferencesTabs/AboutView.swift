@@ -41,6 +41,8 @@ struct AboutView: View {
             Divider()
             
             HStack {
+                Text("Leave a ⭐ on GitHub")
+                
                 Spacer()
                 
                 Button {
@@ -61,9 +63,10 @@ struct AboutView: View {
                     Text("Author")
                 }
             }
-            .padding([.top], 16)
-            .padding([.bottom], 24)
-            .padding([.trailing])
+            .padding(.leading, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 24)
+            .padding(.trailing)
         }
     }
 }
