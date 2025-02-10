@@ -149,7 +149,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 }
 
 let deviceChangeListener: AudioObjectPropertyListenerProc = { _, _, _, _ in
-    DispatchQueue.main.async {
+    Task { @MainActor in
         if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
             appDelegate.contentViewModel.loadAudioDevices()
             // appDelegate.contentViewModel.setDefaultSystemInputDevice()

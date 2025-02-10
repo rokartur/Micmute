@@ -10,6 +10,7 @@ import CoreAudio
 import MacControlCenterUI
 
 
+@MainActor
 struct MainMenuView: View {
     @Binding var unmuteGain: CGFloat
     @Binding var selectedDeviceID: AudioDeviceID

@@ -24,8 +24,11 @@ jobs:
             -destination "platform=macOS" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            -derivedDataPath build_output
+            -derivedDataPath build_output \
+            | tee xcodebuild.log
+        
+          # Zapis logów jako artefakt
+          echo "XCODEBUILD_LOG=$(cat xcodebuild.log | base64)" >> $GITHUB_ENV
 
       - name: Archive artifact
         uses: actions/upload-artifact@v4
