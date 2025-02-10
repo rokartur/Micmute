@@ -134,6 +134,12 @@ class ContentViewModel: ObservableObject {
                     mElement: kAudioObjectPropertyElementMain
                 )
                 AudioObjectGetPropertyData(deviceID, &nameAddress, 0, nil, &nameSize, &deviceName)
+
+                let deviceNameString = deviceName as String
+                if deviceNameString.lowercased().contains("iphone") {
+                    continue
+                }
+
                 updatedDevices[deviceID] = deviceName as String
             }
         }
