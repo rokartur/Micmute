@@ -120,7 +120,7 @@ struct MicmuteApp: App {
             EmptyView()
         }.commands {
             CommandGroup(replacing: .appSettings) {
-                Button("Preferences...") {
+                Button("") {
                     appDelegate.showPreferences(nil)
                 }
                 .keyboardShortcut(",", modifiers: .command)

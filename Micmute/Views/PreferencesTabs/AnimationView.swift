@@ -24,7 +24,7 @@ struct AnimationView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Picker("Type:", selection: $animationType) {
+            Picker("Type", selection: $animationType) {
                 Text("No animation").tag(AnimationType.none)
                 Text("Fade").tag(AnimationType.fade)
                 Text("Scale").tag(AnimationType.scale)
@@ -33,7 +33,7 @@ struct AnimationView: View {
             .padding([.leading], 22)
             
             HStack {
-                Text("Duration:")
+                Text("Duration")
                 HStack {
                     TextField("", value: Binding(
                         get: { self.animationDuration },

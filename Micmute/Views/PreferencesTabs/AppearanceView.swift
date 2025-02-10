@@ -47,7 +47,7 @@ struct AppearanceView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
-            Picker("Display:", selection: $displayOption) {
+            Picker("Display", selection: $displayOption) {
                 Text("Only Large Icon").tag(DisplayOption.largeIcon)
                 Text("Only Small Icon").tag(DisplayOption.smallIcon)
                 Text("Only Text").tag(DisplayOption.text)
@@ -57,7 +57,7 @@ struct AppearanceView: View {
             .pickerStyle(RadioGroupPickerStyle())
             .padding([.leading], -94)
 
-            Picker("Placement:", selection: $placement) {
+            Picker("Placement", selection: $placement) {
                 Text("Center Bottom").tag(Placement.centerBottom)
                 Text("Center Top").tag(Placement.centerTop)
                 Text("Left Top").tag(Placement.leftTop)
@@ -66,7 +66,7 @@ struct AppearanceView: View {
                 Text("Right Bottom").tag(Placement.rightBottom)
             }
 
-            Picker("Padding:", selection: $padding) {
+            Picker("Padding", selection: $padding) {
                 Text("Small").tag(35.0)
                 Text("Medium").tag(70.0)
                 Text("Large").tag(140.0)
