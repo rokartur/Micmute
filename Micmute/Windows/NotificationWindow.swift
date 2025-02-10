@@ -15,7 +15,7 @@ class NotificationWindow: NSWindow {
 }
 
 struct NotificationView: View {
-    var isMute: Bool
+    var isMuted: Bool
     @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
 
     let largeIcon = Constants.Appearance.largeIcon
@@ -27,7 +27,7 @@ struct NotificationView: View {
     var body: some View {
         VStack(spacing: 8) {
             if displayOption == .largeBoth || displayOption == .largeIcon {
-                if isMute {
+                if isMuted {
                     Image(systemName: "mic.slash.fill")
                         .symbolRenderingMode(.palette)
                         .font(.system(size: largeIcon))
@@ -38,11 +38,11 @@ struct NotificationView: View {
                 }
             }
             if displayOption == .largeBoth || displayOption == .text {
-                Text(isMute ? "Muted" : "Unmuted")
+                Text(isMuted ? "Muted" : "Unmuted")
                     .font(.title3)
             }
             if displayOption == .smallIcon {
-                if isMute {
+                if isMuted {
                     Image(systemName: "mic.slash.fill")
                         .symbolRenderingMode(.palette)
                         .font(.system(size: smallIcon))
@@ -54,7 +54,7 @@ struct NotificationView: View {
             }
             if displayOption == .rowSmallBoth {
                 HStack(spacing: 12) {
-                    if isMute {
+                    if isMuted {
                         Image(systemName: "mic.slash.fill")
                             .symbolRenderingMode(.palette)
                             .font(.system(size: 32))
@@ -63,7 +63,7 @@ struct NotificationView: View {
                         Image(systemName: "mic.fill")
                             .font(.system(size: 32))
                     }
-                    Text(isMute ? "Muted" : "Unmuted")
+                    Text(isMuted ? "Muted" : "Unmuted")
                         .font(.title3)
                         .frame(minWidth: 68)
                 }
@@ -82,7 +82,7 @@ class NotificationWindowController: NSWindowController {
     @AppStorage("animationType") var animationType: AnimationType = .scale
     @AppStorage("animationDuration") var animationDuration: Double = 1.3
 
-    var isMute: Bool
+    var isMuted: Bool
     let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
     var displayOption: DisplayOption
     var placement: Placement
@@ -93,8 +93,8 @@ class NotificationWindowController: NSWindowController {
     let largePreview = Constants.Appearance.largePreview
     let largeCornerRadius = Constants.Appearance.largeCornerRadius
     
-    init(isMute: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double) {
-        self.isMute = isMute
+    init(isMuted: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double) {
+        self.isMuted = isMuted
         self.animationType = animationType
         self.animationDuration = animationDuration
         self.displayOption = displayOption
@@ -127,7 +127,7 @@ class NotificationWindowController: NSWindowController {
         visualEffectView.layer?.cornerRadius = self.displayOption == .smallIcon ? smallCornerRadius : largeCornerRadius
         visualEffectView.layer?.masksToBounds = true
         notificationWindow.contentView = visualEffectView
-        let hostingView = NSHostingView(rootView: NotificationView(isMute: isMute))
+        let hostingView = NSHostingView(rootView: NotificationView(isMuted: isMuted))
         hostingView.frame = visualEffectView.bounds
         hostingView.autoresizingMask = [.width, .height]
         visualEffectView.addSubview(hostingView)

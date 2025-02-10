@@ -9,17 +9,16 @@ import Foundation
 import AppKit
 
 class PreferencesWindow: NSWindow {
-    
     init() {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 260),
-            styleMask: [.titled, .fullSizeContentView, .miniaturizable, .closable],
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 200),
+            styleMask: [.titled, .fullSizeContentView, .closable],
             backing: .buffered,
-            defer: false)
+            defer: false
+        )
         
         self.titlebarAppearsTransparent = true
         self.isMovableByWindowBackground = true
         self.isReleasedWhenClosed = false
     }
-    
 }
