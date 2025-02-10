@@ -2,28 +2,8 @@ import SwiftUI
 import CoreAudio
 import CoreAudioKit
 import MacControlCenterUI
+import Combine
 
-
-
-func getMicMuteImage() -> NSImage {
-    let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-    let imageName = isDarkMode ? "mic.mute.dark" : "mic.mute.light"
-    let image = NSImage(named: imageName)!
-    let ratio = image.size.height / image.size.width
-    image.size.height = 16
-    image.size.width = 16 / ratio
-    return image
-}
-
-func getMicUnmuteImage() -> NSImage {
-    let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-    let imageName = isDarkMode ? "mic.unmute.dark" : "mic.unmute.light"
-    let image = NSImage(named: imageName)!
-    let ratio = image.size.height / image.size.width
-    image.size.height = 16
-    image.size.width = 16 / ratio
-    return image
-}
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
@@ -38,17 +18,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private let refreshInterval: TimeInterval = 1.0
     @State private var refreshTimer: Timer?
+    private var cancellables = Set<AnyCancellable>()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         let statusBar = NSStatusBar.system
         statusBarItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
-        
-        statusBarItem.button?.title = "micmute"
-        
+        let isMuted = contentViewModel.isMuted
+     
+        statusBarItem.button?.image = isMuted ? micMute : micUnmute
         statusBarItem.button?.action = #selector(self.statusBarButtonClicked(sender:))
         statusBarItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
-        
-        statusBarMenu = NSMenu(title: "Status Bar Menu")
+
+        statusBarMenu = NSMenu()
         statusBarMenu.delegate = self
         statusBarMenuItem = NSMenuItem()
         menuView()
@@ -58,6 +39,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         for window in NSApplication.shared.windows {
             window.orderOut(nil)
         }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(updateStatusBarImage),
+           name: NSNotification.Name("MuteStateChanged"),
+           object: nil)
     }
 
     @objc func menuView() {
@@ -84,20 +69,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc func statusBarButtonClicked(sender: NSStatusBarButton) {
         let event = NSApp.currentEvent!
         
-        switch event.type {
-            case .rightMouseUp:
+        if event.type == .rightMouseUp {
+            statusBarItem.menu = statusBarMenu
+            statusBarItem.button?.performClick(nil)
+        } else if event.type == .leftMouseUp {
+            if contentViewModel.menuBehaviorOnClick == .mute {
+                statusBarItem.menu = nil
+                contentViewModel.toggleMute(deviceID: contentViewModel.selectedDeviceID)
+                updateStatusBarImage()
+            } else if contentViewModel.menuBehaviorOnClick == .menu {
                 statusBarItem.menu = statusBarMenu
                 statusBarItem.button?.performClick(nil)
-            case .leftMouseUp:
-                if contentViewModel.menuBehaviorOnClick == .mute {
-                    contentViewModel.toggleMute(deviceID: contentViewModel.selectedDeviceID)
-                } else if contentViewModel.menuBehaviorOnClick == .menu {
-                    statusBarItem.menu = statusBarMenu
-                    statusBarItem.button?.performClick(nil)
-                }
-            default:
-                return
+            }
         }
+    }
+
+    @objc func updateStatusBarImage() {
+        let isMuted = contentViewModel.isMuted
+        statusBarItem.button?.image = isMuted ? micMute : micUnmute
     }
     
     @objc func menuDidClose(_ menu: NSMenu) {
@@ -118,7 +107,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         preferencesWindow.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
     }
-    
+
     func updateSelectedDevice(to deviceID: AudioDeviceID) {
         contentViewModel.selectedDeviceID = deviceID
         contentViewModel.loadInputGain(for: deviceID)

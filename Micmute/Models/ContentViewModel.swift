@@ -78,6 +78,8 @@ class ContentViewModel: ObservableObject {
             notificationWindowController = NotificationWindowController(isMuted: isMuted, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
             notificationWindowController?.showWindow(nil)
         }
+
+        NotificationCenter.default.post(name: NSNotification.Name("MuteStateChanged"), object: nil)
     }
     
     func checkMuteStatus() {
