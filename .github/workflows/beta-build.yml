@@ -1,0 +1,28 @@
+name: macOS CI
+
+on:
+  push:
+    branches: [ beta ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macOS-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode version
+      uses: actions/setup-xcode@v3
+      with:
+        xcode-version: '15.0'
+    
+    - name: Build Release
+      run: |
+        xcodebuild build \
+        -project "Micmute.xcodeproj" \
+        -scheme "Micmute" \
+        -configuration Release \
+        CODE_SIGN_IDENTITY="" \
+        CODE_SIGNING_REQUIRED=NO
