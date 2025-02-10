@@ -78,8 +78,6 @@ struct NotificationViewModel: View {
 }
 
 class NotificationWindowController: NSWindowController {
-    @ObservedObject var contentViewModel = ContentViewModel()
-
     var isMuted: Bool
     let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
     var animationType: AnimationType
@@ -103,7 +101,7 @@ class NotificationWindowController: NSWindowController {
 
         let windowWidthSize = self.displayOption == .smallIcon ? smallPreview : largePreview
         let windowHeightSize = self.displayOption == .rowSmallBoth || self.displayOption == .text || self.displayOption == .smallIcon ? smallPreview : largePreview
-        
+
         let notificationWindow = NotificationWindow(
             contentRect: NSRect(
                 x: 0,
@@ -119,6 +117,7 @@ class NotificationWindowController: NSWindowController {
         notificationWindow.backgroundColor = NSColor.clear
         notificationWindow.level = .floating
         notificationWindow.isMovableByWindowBackground = false
+        
         let visualEffectView = NSVisualEffectView()
         visualEffectView.material = .underWindowBackground
         visualEffectView.blendingMode = .withinWindow
@@ -127,6 +126,7 @@ class NotificationWindowController: NSWindowController {
         visualEffectView.layer?.cornerRadius = self.displayOption == .smallIcon ? smallCornerRadius : largeCornerRadius
         visualEffectView.layer?.masksToBounds = true
         notificationWindow.contentView = visualEffectView
+        
         let hostingView = NSHostingView(rootView: NotificationViewModel(isMuted: isMuted))
         hostingView.frame = visualEffectView.bounds
         hostingView.autoresizingMask = [.width, .height]

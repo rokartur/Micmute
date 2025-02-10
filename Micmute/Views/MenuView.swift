@@ -10,7 +10,6 @@ import CoreAudio
 import MacControlCenterUI
 
 
-
 struct MainMenuView: View {
     @Binding var unmuteGain: CGFloat
     @Binding var selectedDeviceID: AudioDeviceID
@@ -70,8 +69,8 @@ struct MainMenuView: View {
             selectedDevice = selectedDeviceID
             onAppear()
         }
-        .onChange(of: selectedDevice) { _, newValue in
-            if let newValue = newValue {
+        .onChange(of: selectedDevice) { oldValue, newValue in
+            if let newValue = newValue, newValue != selectedDeviceID {
                 selectedDeviceID = newValue
                 onDeviceSelected(newValue)
             }

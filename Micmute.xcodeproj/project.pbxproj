@@ -75,16 +75,6 @@
 			path = Windows;
 			sourceTree = "<group>";
 		};
-		42016B212C0C3015002135AB /* PreferencesSections */ = {
-			isa = PBXGroup;
-			children = (
-				754C61892D5A3A9E00A418EA /* GeneralView.swift */,
-				42698EBC2C0BE7CB00648D4C /* NotificationView.swift */,
-				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
-			);
-			path = PreferencesSections;
-			sourceTree = "<group>";
-		};
 		421B6AF02B37504000946AF4 = {
 			isa = PBXGroup;
 			children = (
@@ -131,7 +121,9 @@
 			children = (
 				752628CA2D596C2400B54A0B /* MenuView.swift */,
 				427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */,
-				42016B212C0C3015002135AB /* PreferencesSections */,
+				754C61892D5A3A9E00A418EA /* GeneralView.swift */,
+				42698EBC2C0BE7CB00648D4C /* NotificationView.swift */,
+				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
 				42016B342C0C3A69002135AB /* PreferencesView.swift */,
 			);
 			path = Views;

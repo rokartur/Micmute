@@ -44,8 +44,6 @@ class ContentViewModel: ObservableObject {
     @AppStorage("menuGrayscaleIcon") var menuGrayscaleIcon: Bool = false
     @AppStorage("menuBehaviorOnClick") var menuBehaviorOnClick: MenuBarBehavior = .menu
 
-    private let refreshInterval: TimeInterval = 1.0
-    @State private var refreshTimer: Timer?
     var notificationWindowController: NotificationWindowController?
     
     init() {
@@ -58,13 +56,12 @@ class ContentViewModel: ObservableObject {
         loadAudioDevices()
         setDefaultSystemInputDevice()
         registerDeviceChangeListener()
-        startAutoRefresh()
+
         print("ContentViewModel initialized")
     }
 
     deinit {
         unregisterDeviceChangeListener()
-        stopAutoRefresh()
         print("ContentViewModel deinitialized")
     }
     
@@ -254,16 +251,5 @@ class ContentViewModel: ObservableObject {
         )
         
         AudioObjectRemovePropertyListener(AudioObjectID(kAudioObjectSystemObject), &address, deviceChangeListener, nil)
-    }
-    
-    func startAutoRefresh() {
-        refreshTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval, repeats: true) { _ in
-            self.loadAudioDevices()
-        }
-    }
-    
-    func stopAutoRefresh() {
-        refreshTimer?.invalidate()
-        refreshTimer = nil
     }
 }

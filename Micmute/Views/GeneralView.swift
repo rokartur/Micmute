@@ -10,7 +10,8 @@ import KeyboardShortcuts
 import LaunchAtLogin
 
 struct GeneralView: View {
-    @ObservedObject var contentViewModel = ContentViewModel()
+    @AppStorage("pushToTalk") var pushToTalk: Bool = false
+    @AppStorage("menuBehaviorOnClick") var menuBehaviorOnClick: MenuBarBehavior = .menu
     @ObservedObject private var launchAtLogin = LaunchAtLogin.observable
     
     var body: some View {
@@ -47,7 +48,7 @@ struct GeneralView: View {
                     HStack {
                         Text("Push to talk")
                         Spacer()
-                        Toggle("", isOn: contentViewModel.$pushToTalk).controlSize(.mini)
+                        Toggle("", isOn: $pushToTalk).controlSize(.mini)
                     }
                 }
                 .toggleStyle(.switch)
@@ -66,7 +67,7 @@ struct GeneralView: View {
                     HStack {
                         Text("Grayscale icon")
                         Spacer()
-                        Toggle("", isOn: contentViewModel.$pushToTalk).controlSize(.mini)
+                        Toggle("", isOn: $pushToTalk).controlSize(.mini)
                     }
                     
                     Divider()
@@ -74,7 +75,7 @@ struct GeneralView: View {
                     HStack {
                         Text("Behavior on left click")
                         Spacer()
-                        Picker("", selection: contentViewModel.$menuBehaviorOnClick) {
+                        Picker("", selection: $menuBehaviorOnClick) {
                             Text("Shows menu").tag(MenuBarBehavior.menu)
                             Text("Toggle mute").tag(MenuBarBehavior.mute)
                         }

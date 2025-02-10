@@ -26,7 +26,13 @@ extension View {
 }
 
 struct NotificationView: View {
-    @ObservedObject var contentViewModel = ContentViewModel()
+    @AppStorage("animationType") var animationType: AnimationType = .scale
+    @AppStorage("animationDuration") var animationDuration: Double = 1.3
+    @AppStorage("isNotificationEnabled") var isNotificationEnabled: Bool = true
+    @AppStorage("isMuted") var isMuted: Bool = false
+    @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
+    @AppStorage("placement") var placement: Placement = .centerBottom
+    @AppStorage("padding") var padding: Double = 70.0
 
     let smallPreview = Appearance.smallPreview
     let smallCornerRadius = Appearance.smallCornerRadius
@@ -47,13 +53,13 @@ struct NotificationView: View {
                     HStack(alignment: .center) {
                         Text("Show")
                         Spacer()
-                        Toggle("", isOn: contentViewModel.$isNotificationEnabled).controlSize(.mini)
+                        Toggle("", isOn: $isNotificationEnabled).controlSize(.mini)
                     }.toggleStyle(.switch)
                     
                     HStack(alignment: .center) {
                         Text("Animation")
                         Spacer()
-                        Picker("", selection: contentViewModel.$animationType) {
+                        Picker("", selection: $animationType) {
                             Text("No animation").tag(AnimationType.none)
                             Text("Fade").tag(AnimationType.fade)
                             Text("Scale").tag(AnimationType.scale)
@@ -66,10 +72,10 @@ struct NotificationView: View {
                         Spacer()
                         HStack {
                             TextField("", value: Binding(
-                                get: { self.contentViewModel.animationDuration },
+                                get: { self.animationDuration },
                                 set: { newValue in
                                     if newValue >= 1 && newValue <= 5 {
-                                        self.contentViewModel.animationDuration = newValue
+                                        self.animationDuration = newValue
                                     }
                                 }
                             ), formatter: formatter)
@@ -82,7 +88,7 @@ struct NotificationView: View {
                     HStack(alignment: .center) {
                         Text("Display")
                         Spacer()
-                        Picker("", selection: contentViewModel.$displayOption) {
+                        Picker("", selection: $displayOption) {
                             Text("Only Large Icon").tag(DisplayOption.largeIcon)
                             Text("Only Small Icon").tag(DisplayOption.smallIcon)
                             Text("Only Text").tag(DisplayOption.text)
@@ -95,7 +101,7 @@ struct NotificationView: View {
                     HStack(alignment: .center) {
                         Text("Placement")
                         Spacer()
-                        Picker("", selection: contentViewModel.$placement) {
+                        Picker("", selection: $placement) {
                             Text("Center Bottom").tag(Placement.centerBottom)
                             Text("Center Top").tag(Placement.centerTop)
                             Text("Left Top").tag(Placement.leftTop)
@@ -109,7 +115,7 @@ struct NotificationView: View {
                     HStack(alignment: .center) {
                         Text("Padding")
                         Spacer()
-                        Picker("", selection: contentViewModel.$padding) {
+                        Picker("", selection: $padding) {
                             Text("Small").tag(Padding.small)
                             Text("Medium").tag(Padding.medium)
                             Text("Large").tag(Padding.large)
@@ -121,12 +127,12 @@ struct NotificationView: View {
                 Spacer()
                 
                 VStack {
-                    NotificationViewModel(isMuted: contentViewModel.isMuted)
+                    NotificationViewModel(isMuted: isMuted)
                         .frame(
-                            width: (contentViewModel.displayOption == .smallIcon) ? smallPreview : largePreview,
-                            height: (contentViewModel.displayOption == .rowSmallBoth || contentViewModel.displayOption == .text || contentViewModel.displayOption == .smallIcon) ? smallPreview : largePreview
+                            width: (displayOption == .smallIcon) ? smallPreview : largePreview,
+                            height: (displayOption == .rowSmallBoth || displayOption == .text || displayOption == .smallIcon) ? smallPreview : largePreview
                         )
-                        .roundedBorder(color: .gray, width: 1, cornerRadius: contentViewModel.displayOption == .smallIcon ? smallCornerRadius : largeCornerRadius)
+                        .roundedBorder(color: .gray, width: 1, cornerRadius: displayOption == .smallIcon ? smallCornerRadius : largeCornerRadius)
                 }
                 .frame(width: largePreview, alignment: .center)
             }

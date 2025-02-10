@@ -35,6 +35,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var preferencesWindow: PreferencesWindow!
     var micMute: NSImage = getMicMuteImage()
     var micUnmute: NSImage = getMicUnmuteImage()
+
+    private let refreshInterval: TimeInterval = 1.0
+    @State private var refreshTimer: Timer?
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         let statusBar = NSStatusBar.system
@@ -50,7 +53,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusBarMenuItem = NSMenuItem()
         menuView()
         statusBarMenu.addItem(statusBarMenuItem)
-//        statusBarItem.statusBarMenu = statusBarMenu
+        statusBarItem.menu = statusBarMenu
         
         for window in NSApplication.shared.windows {
             window.orderOut(nil)
@@ -127,12 +130,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         contentViewModel.loadAudioDevices()
         contentViewModel.setDefaultSystemInputDevice()
         contentViewModel.registerDeviceChangeListener()
-        contentViewModel.startAutoRefresh()
+        startAutoRefresh()
     }
     
     func closeMenu() {
         contentViewModel.unregisterDeviceChangeListener()
-        contentViewModel.stopAutoRefresh()
+        stopAutoRefresh()
+    }
+    
+    func startAutoRefresh() {
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval, repeats: true) { _ in
+            self.contentViewModel.loadAudioDevices()
+        }
+    }
+    
+    func stopAutoRefresh() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
     }
     
     func menuWillOpen(_ menu: NSMenu) {
@@ -149,8 +163,8 @@ let deviceChangeListener: AudioObjectPropertyListenerProc = { _, _, _, _ in
     DispatchQueue.main.async {
         if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
             appDelegate.contentViewModel.loadAudioDevices()
-            appDelegate.contentViewModel.setDefaultSystemInputDevice()
-            appDelegate.menuView()
+            // appDelegate.contentViewModel.setDefaultSystemInputDevice()
+            // appDelegate.menuView()
             NotificationCenter.default.post(name: NSNotification.Name("AudioDeviceChanged"), object: nil)
         }
     }
