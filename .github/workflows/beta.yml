@@ -6,20 +6,13 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        os: [macos-latest]
-        swift: ["6.0.2"]
     steps:
-      - uses: actions/checkout@v4
-        name: Checkout code
-
-      - uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: '6'
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Setup Swift
-        run: swift --version
-
+        uses: k-arindam/setup-swift@v6.0.0
+      
       - name: Build with Xcode
         run: |
           xcodebuild -project Micmute.xcodeproj -scheme Micmute -configuration Release -derivedDataPath build_output
