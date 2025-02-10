@@ -6,14 +6,19 @@ on:
 jobs:
   build:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [macos-latest]
+        swift: ["6.0.2"]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        name: Checkout code
 
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
+      - uses: swift-actions/setup-swift@v2
         with:
           swift-version: '6'
+      - name: Setup Swift
+        run: swift --version
 
       - name: Build with Xcode
         run: |
