@@ -54,9 +54,9 @@ jobs:
         id: commit_list
         shell: bash
         run: |
-          commits=$(echo "${{ toJson(github.event) }}" | jq -r '.commits[] | "- [\(.id)](\(.url)) - \(.author.name)"')
+          commit_list_output=$(echo "${{ toJson(github.event) }}" | jq -r '.commits[] | "- [\(.id)](\(.url)) - \(.author.name)"')
           echo "commits<<EOF" >> $GITHUB_OUTPUT
-          echo "$commits" >> $GITHUB_OUTPUT
+          echo "$commit_list_output" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
           
       - name: Create GitHub Release (Beta)
