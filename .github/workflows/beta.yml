@@ -53,7 +53,6 @@ jobs:
       - name: Generate commit list
         id: commit_list
         run: |
-          git fetch origin
           commit_list=$(git log ${{ github.event.before }}..HEAD --pretty=format:"- [%h](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/%H) by %an: %s")
           echo "commit_list<<EOF" >> $GITHUB_OUTPUT
           echo "$commit_list" >> $GITHUB_OUTPUT
