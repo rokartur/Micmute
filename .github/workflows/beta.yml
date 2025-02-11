@@ -24,15 +24,13 @@ jobs:
             -destination "platform=macOS" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            -derivedDataPath build_output \
-            | tee xcodebuild.log
-        
-          # Zapis logów jako artefakt
-          echo "XCODEBUILD_LOG=$(cat xcodebuild.log | base64)" >> $GITHUB_ENV
-          ls build_output/Build/Products/Debug
+            -derivedDataPath build_output
+
+      - name: Zip application
+        run: |
           cd ./build_output/Build/Products/Debug
-          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
-          mv Micmute-Beta.zip $GITHUB_WORKSPACE/
+          ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "Micmute-Beta.zip"
+          mv Micmute--Beta.zip $GITHUB_WORKSPACE/
 
   release:
     needs: build
