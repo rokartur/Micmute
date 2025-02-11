@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "MicmuteBeta"
-          path: ./build_output/Build/Products/Debug/MicmuteBeta.app
+          path: ./build_output/Build/Products/Debug/Micmute.app
 
   release:
     needs: build
