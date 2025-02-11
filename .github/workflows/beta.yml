@@ -54,8 +54,7 @@ jobs:
         id: commit_list
         shell: bash
         run: |
-          # Ensure jq is available (macOS VMs include it by default)
-          commits=$(jq -r '.commits[] | "- [\(.id)](\(.url)) - \(.author.name)"' <<< "${{ toJson(github.event) }}")
+          commits=$(echo "${{ toJson(github.event) }}" | jq -r '.commits[] | "- [\(.id)](\(.url)) - \(.author.name)"')
           echo "commits<<EOF" >> $GITHUB_OUTPUT
           echo "$commits" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
