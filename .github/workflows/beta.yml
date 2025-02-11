@@ -59,24 +59,24 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
           mv Micmute-Beta.zip $GITHUB_WORKSPACE/Micmute-Beta.zip
 
-      - name: Generate Sparkle appcast and sign artifact
-        run: |
-          echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | base64 --decode > private_key.pem
+      # - name: Generate Sparkle appcast and sign artifact
+      #   run: |
+      #     echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | base64 --decode > private_key.pem
 
-          openssl dgst -sha256 -binary < $GITHUB_WORKSPACE/Micmute-Beta.zip | openssl dgst -sha256 -sign private_key.pem -out $GITHUB_WORKSPACE/Micmute-Beta.zip.sig
+      #     openssl dgst -sha256 -binary < $GITHUB_WORKSPACE/Micmute-Beta.zip | openssl dgst -sha256 -sign private_key.pem -out $GITHUB_WORKSPACE/Micmute-Beta.zip.sig
 
-          generate_appcast --private-key ./private_key.pem --download-url-prefix "https://github.com/rokartur/Micmute/releases/latest/download/" $GITHUB_WORKSPACE
+      #     generate_appcast --private-key ./private_key.pem --download-url-prefix "https://github.com/rokartur/Micmute/releases/latest/download/" $GITHUB_WORKSPACE
 
-          mv appcast.xml $GITHUB_WORKSPACE/appcast.xml
+      #     mv appcast.xml $GITHUB_WORKSPACE/appcast.xml
 
-      - name: Commit appcast.xml
-        run: |
-          cd $GITHUB_WORKSPACE
-          git config user.email "action@github.com"
-          git config user.name "GitHub Action"
-          git add appcast.xml
-          git commit -m "chore: update appcast.xml for beta release" || echo "No changes to commit"
-          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
+      # - name: Commit appcast.xml
+      #   run: |
+      #     cd $GITHUB_WORKSPACE
+      #     git config user.email "action@github.com"
+      #     git config user.name "GitHub Action"
+      #     git add appcast.xml
+      #     git commit -m "chore: update appcast.xml for beta release" || echo "No changes to commit"
+      #     git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
