@@ -51,13 +51,13 @@ jobs:
           path: .
 
       - name: Generate commit list
-        id: commit_list
+        id: commit-history
         shell: bash
         run: |
-          commit_list_output=$(echo "${{ toJson(github.event) }}" | jq -r '.commits[] | "- [\(.id)](\(.url)) - \(.author.name)"')
-          echo "commits<<EOF" >> $GITHUB_OUTPUT
-          echo "$commit_list_output" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          COMMIT_HISTORY=$(git log --pretty=format:"- [%h](https://github.com/your-repo/commit/%H) %s (by **%an**)" --no-merges)
+          echo "COMMIT_HISTORY<<EOF" >> $GITHUB_ENV
+          echo "$COMMIT_HISTORY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
           
       - name: Create GitHub Release (Beta)
         uses: softprops/action-gh-release@v2
@@ -67,8 +67,8 @@ jobs:
           tag_name: "v3.0.0-beta.${{ github.run_number }}"
           name: "Micmute 3.0.0 Beta (${{ github.run_number }})"
           body: |
-              **Commits**
-              ${{ steps.commit_list.outputs.commits }}
+              ### Commits
+              ${{ env.COMMIT_HISTORY }}
           prerelease: true
           draft: false
           files: Micmute-Beta.zip
