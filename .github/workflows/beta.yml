@@ -50,26 +50,13 @@ jobs:
           name: Micmute-Beta.zip
           path: .
 
-      - name: Generate commit list
-        id: commit_list
-        run: |
-          commit_list=$(git log ${{ github.event.before }}..HEAD --pretty=format:"- [%h](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/%H) by %an: %s")
-          echo "commit_list<<EOF" >> $GITHUB_OUTPUT
-          echo "$commit_list" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Create GitHub Release (Beta)
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create release
+        uses: marvinpinto/action-automatic-releases@master
         with:
-          tag_name: "v3.0.0-beta.${{ github.run_number }}"
-          name: "Micmute 3.0.0 Beta (${{ github.run_number }})"
-          body: |
-            Beta build from commit: ${{ github.sha }}
-
-            Commits in this push:
-            ${{ steps.commit_list.outputs.commit_list }}
-          prerelease: true
-          draft: false
           files: Micmute-Beta.zip
+          automatic_release_tag: 'v3.0.0-beta.${{ github.run_number }}'
+          title: 'Micmute 3.0.0 Beta (${{ github.run_number }})'
+          draft: false
+          prerelease: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
