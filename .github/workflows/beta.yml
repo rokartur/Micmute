@@ -28,7 +28,7 @@ jobs:
           security import certificate.p12 -k build.keychain -P "$SIGNING_PASSWORD" -T /usr/bin/codesign
 
           security set-key-partition-list -S apple-tool:,apple: -s -k temporary_password build.keychain
-          
+
           security find-identity -v -p codesigning build.keychain
 
       - name: Build with Xcode
@@ -38,7 +38,7 @@ jobs:
             -scheme Micmute \
             -configuration Release \
             -destination "platform=macOS" \
-            CODE_SIGN_IDENTITY="${{ secrets.SIGNING_PASSWORD }}" \
+            CODE_SIGN_IDENTITY="${{ secrets.CODE_SIGN_IDENTITY }}" \
             CODE_SIGNING_REQUIRED=YES \
             -derivedDataPath build_output
 
