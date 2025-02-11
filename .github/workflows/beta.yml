@@ -1,7 +1,7 @@
 name: build and release beta version
 on:
   push:
-    branches: [beta]
+    branches: [dev]
 
 jobs:
   build:
