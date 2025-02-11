@@ -27,10 +27,10 @@ jobs:
             -derivedDataPath build_output
 
       - name: Archive artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: MicmuteBeta
-          path: ./build_output/Build/Products/Debug/Micmute.app
+        run: |
+          cd ./build_output/Build/Products/Debug
+          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
+          mv Micmute-Beta.zip $GITHUB_WORKSPACE/Micmute-Beta.zip
 
   release:
     needs: build
@@ -38,15 +38,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: MicmuteBeta
-
-      - name: Zip application
-        run: |
-          ls
-          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
+      - name: ls
+        run: ls
     
       - name: Create GitHub Release (Beta)
         uses: actions/create-release@v1
