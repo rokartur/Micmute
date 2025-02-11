@@ -35,7 +35,7 @@ jobs:
         run: |
           cd ./build_output/Build/Products/Debug
           ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
-          mv Micmute-macOS-Beta.zip $GITHUB_WORKSPACE/
+          mv Micmute-Beta.zip $GITHUB_WORKSPACE/
 
   release:
     needs: build
