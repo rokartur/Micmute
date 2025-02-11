@@ -30,9 +30,6 @@ jobs:
           # Zapis logów jako artefakt
           echo "XCODEBUILD_LOG=$(cat xcodebuild.log | base64)" >> $GITHUB_ENV
           ls build_output/Build/Products/Debug
-
-      - name: Zip application
-        run: |
           cd ./build_output/Build/Products/Debug
           ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
           mv Micmute-Beta.zip $GITHUB_WORKSPACE/
