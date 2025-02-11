@@ -16,6 +16,10 @@ enum AppInfo {
     static let whatsNew = URL(string: "https://github.com/rokartur/micmute/releases")!
 }
 
+enum AppStorageEntry: String {
+    case selectedDeviceID, isMuted, inputGain, iconSize, menuGrayscaleIcon, unmuteGain, displayOption, placement, padding, isNotificationEnabled, animationType, animationDuration, menuBarBehavior, launchAtLogin, pushToTalk, menuBehaviorOnClick
+}
+
 enum Appearance {
     static let smallPreview: Double = 78
     static let smallCornerRadius: Double = 16

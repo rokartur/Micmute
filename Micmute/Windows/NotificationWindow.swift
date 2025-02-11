@@ -16,7 +16,7 @@ class NotificationWindow: NSWindow {
 
 struct NotificationViewModel: View {
     var isMuted: Bool
-    @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
+    @AppStorage(AppStorageEntry.displayOption.rawValue) var displayOption: DisplayOption = .largeBoth
 
     let largeIcon = Appearance.largeIcon
     let smallIcon = Appearance.smallIcon

@@ -12,19 +12,19 @@ import MacControlCenterUI
 import KeyboardShortcuts
 
 class ContentViewModel: ObservableObject {
-    @AppStorage("selectedDeviceID") private var storedSelectedDeviceID: Int = Int(kAudioObjectUnknown)
+    @AppStorage(AppStorageEntry.selectedDeviceID.rawValue) private var storedSelectedDeviceID: Int = Int(kAudioObjectUnknown)
     var selectedDeviceID: AudioDeviceID {
         get { AudioDeviceID(storedSelectedDeviceID) }
         set { storedSelectedDeviceID = Int(newValue) }
     }
     
-    @AppStorage("inputGain") private var storedInputGain: Double = 0.0
+    @AppStorage(AppStorageEntry.inputGain.rawValue) private var storedInputGain: Double = 0.0
     var inputGain: Float {
         get { Float(storedInputGain) }
         set { storedInputGain = Double(newValue) }
     }
     
-    @AppStorage("unmuteGain") private var storedUnmuteGain: Double = 1.0
+    @AppStorage(AppStorageEntry.unmuteGain.rawValue) private var storedUnmuteGain: Double = 1.0
     var unmuteGain: CGFloat {
         get { CGFloat(storedUnmuteGain) }
         set { storedUnmuteGain = Double(newValue) }
@@ -32,17 +32,17 @@ class ContentViewModel: ObservableObject {
 
     @Published public var availableDevices: [AudioDeviceID: String] = [:]
 
-    @AppStorage("animationType") var animationType: AnimationType = .scale
-    @AppStorage("animationDuration") var animationDuration: Double = 1.3
-    @AppStorage("isNotificationEnabled") var isNotificationEnabled: Bool = true
-    @AppStorage("isMuted") var isMuted: Bool = false
-    @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
-    @AppStorage("placement") var placement: Placement = .centerBottom
-    @AppStorage("padding") var padding: Double = 70.0
-    @AppStorage("iconSize") var iconSize: Int = 70
-    @AppStorage("pushToTalk") var pushToTalk: Bool = false
-    @AppStorage("menuGrayscaleIcon") var menuGrayscaleIcon: Bool = false
-    @AppStorage("menuBehaviorOnClick") var menuBehaviorOnClick: MenuBarBehavior = .menu
+    @AppStorage(AppStorageEntry.animationType.rawValue) var animationType: AnimationType = .scale
+    @AppStorage(AppStorageEntry.animationDuration.rawValue) var animationDuration: Double = 1.3
+    @AppStorage(AppStorageEntry.isNotificationEnabled.rawValue) var isNotificationEnabled: Bool = true
+    @AppStorage(AppStorageEntry.isMuted.rawValue) var isMuted: Bool = false
+    @AppStorage(AppStorageEntry.displayOption.rawValue) var displayOption: DisplayOption = .largeBoth
+    @AppStorage(AppStorageEntry.placement.rawValue) var placement: Placement = .centerBottom
+    @AppStorage(AppStorageEntry.padding.rawValue) var padding: Double = 70.0
+    @AppStorage(AppStorageEntry.iconSize.rawValue) var iconSize: Int = 70
+    @AppStorage(AppStorageEntry.pushToTalk.rawValue) var pushToTalk: Bool = false
+    @AppStorage(AppStorageEntry.menuGrayscaleIcon.rawValue) var menuGrayscaleIcon: Bool = false
+    @AppStorage(AppStorageEntry.menuBehaviorOnClick.rawValue) var menuBehaviorOnClick: MenuBarBehavior = .menu
 
     var notificationWindowController: NotificationWindowController?
     

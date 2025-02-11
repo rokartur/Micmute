@@ -9,9 +9,9 @@ import SwiftUI
 import KeyboardShortcuts
 
 struct GeneralView: View {
-    @AppStorage("pushToTalk") var pushToTalk: Bool = false
-    @AppStorage("menuBehaviorOnClick") var menuBehaviorOnClick: MenuBarBehavior = .menu
-    @AppStorage("launchAtLogin") var launchAtLogin: Bool = false
+    @AppStorage(AppStorageEntry.pushToTalk.rawValue) var pushToTalk: Bool = false
+    @AppStorage(AppStorageEntry.menuBehaviorOnClick.rawValue) var menuBehaviorOnClick: MenuBarBehavior = .menu
+    @AppStorage(AppStorageEntry.launchAtLogin.rawValue) var launchAtLogin: Bool = false
 
     var body: some View {
         VStack(spacing: 16) {
@@ -41,7 +41,7 @@ struct GeneralView: View {
                         Spacer()
                         Toggle("", isOn: $launchAtLogin)
                             .controlSize(.mini)
-                            .onChange(of: launchAtLogin) { newValue in
+                            .onChange(of: launchAtLogin) { newValue, _ in
                                 LaunchAtLoginManager.update(newValue)
                             }
                     }

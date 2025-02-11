@@ -26,13 +26,13 @@ extension View {
 }
 
 struct NotificationView: View {
-    @AppStorage("animationType") var animationType: AnimationType = .scale
-    @AppStorage("animationDuration") var animationDuration: Double = 1.3
-    @AppStorage("isNotificationEnabled") var isNotificationEnabled: Bool = true
-    @AppStorage("isMuted") var isMuted: Bool = false
-    @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
-    @AppStorage("placement") var placement: Placement = .centerBottom
-    @AppStorage("padding") var padding: Double = 70.0
+    @AppStorage(AppStorageEntry.animationType.rawValue) var animationType: AnimationType = .scale
+    @AppStorage(AppStorageEntry.animationDuration.rawValue) var animationDuration: Double = 1.3
+    @AppStorage(AppStorageEntry.isNotificationEnabled.rawValue) var isNotificationEnabled: Bool = true
+    @AppStorage(AppStorageEntry.isMuted.rawValue) var isMuted: Bool = false
+    @AppStorage(AppStorageEntry.displayOption.rawValue) var displayOption: DisplayOption = .largeBoth
+    @AppStorage(AppStorageEntry.placement.rawValue) var placement: Placement = .centerBottom
+    @AppStorage(AppStorageEntry.padding.rawValue) var padding: Double = 70.0
 
     let smallPreview = Appearance.smallPreview
     let smallCornerRadius = Appearance.smallCornerRadius
