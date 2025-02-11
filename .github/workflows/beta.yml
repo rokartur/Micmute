@@ -29,12 +29,6 @@ jobs:
         
           # Zapis logów jako artefakt
           echo "XCODEBUILD_LOG=$(cat xcodebuild.log | base64)" >> $GITHUB_ENV
-          pwd
-          pwd
-          ls
-          ls build_output
-          ls build_output/Build
-          ls build_output/Build/Products
           ls build_output/Build/Products/Debug
 
       - name: Archive artifact
