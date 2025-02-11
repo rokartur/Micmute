@@ -7,13 +7,12 @@
 
 import SwiftUI
 import KeyboardShortcuts
-import LaunchAtLogin
 
 struct GeneralView: View {
     @AppStorage("pushToTalk") var pushToTalk: Bool = false
     @AppStorage("menuBehaviorOnClick") var menuBehaviorOnClick: MenuBarBehavior = .menu
-    @ObservedObject private var launchAtLogin = LaunchAtLogin.observable
-    
+    @AppStorage("launchAtLogin") var launchAtLogin: Bool = false
+
     var body: some View {
         VStack(spacing: 16) {
             CustomSectionView(title: "Keyboard shortcuts") {
@@ -40,7 +39,11 @@ struct GeneralView: View {
                     HStack {
                         Text("Launch Micmute at login")
                         Spacer()
-                        Toggle("", isOn: $launchAtLogin.isEnabled).controlSize(.mini)
+                        Toggle("", isOn: $launchAtLogin)
+                            .controlSize(.mini)
+                            .onChange(of: launchAtLogin) { newValue in
+                                LaunchAtLoginManager.update(newValue)
+                            }
                     }
                 }
                 .toggleStyle(.switch)

@@ -1,5 +1,5 @@
 {
-  "originHash" : "a89d8c12e4d08983d4310f3d4aa04f73bcbc4a6b2c66e5679dbaec9c3757997c",
+  "originHash" : "c2b6d23c10b630877d39fef451d6b76c7b1e483fc3d0f1164c492103657f4c96",
   "pins" : [
     {
       "identity" : "keyboardshortcuts",
@@ -8,15 +8,6 @@
       "state" : {
         "revision" : "7ecc38bb6edf7d087d30e737057b8d8a9b7f51eb",
         "version" : "2.2.4"
-      }
-    },
-    {
-      "identity" : "launchatlogin-legacy",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sindresorhus/LaunchAtLogin-Legacy",
-      "state" : {
-        "branch" : "main",
-        "revision" : "9a894d799269cb591037f9f9cb0961510d4dca81"
       }
     },
     {
