@@ -45,7 +45,8 @@ jobs:
 
       - name: Zip application
         run: |
-          ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "Micmute-Beta.zip"
+          ls
+          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
     
       - name: Create GitHub Release (Beta)
         uses: actions/create-release@v1
