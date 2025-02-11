@@ -34,8 +34,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusBarMenuItem = NSMenuItem()
         menuView()
         statusBarMenu.addItem(statusBarMenuItem)
-        statusBarItem.menu = statusBarMenu
         
+        if contentViewModel.menuBehaviorOnClick == .menu {
+            statusBarItem.menu = statusBarMenu
+        } else {
+            statusBarItem.menu = nil
+        }
+    
         for window in NSApplication.shared.windows {
             window.orderOut(nil)
         }
@@ -152,8 +157,8 @@ let deviceChangeListener: AudioObjectPropertyListenerProc = { _, _, _, _ in
     Task { @MainActor in
         if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
             appDelegate.contentViewModel.loadAudioDevices()
-            // appDelegate.contentViewModel.setDefaultSystemInputDevice()
-            // appDelegate.menuView()
+//             appDelegate.contentViewModel.setDefaultSystemInputDevice()
+//             appDelegate.menuView()
             NotificationCenter.default.post(name: NSNotification.Name("AudioDeviceChanged"), object: nil)
         }
     }
