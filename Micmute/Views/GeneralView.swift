@@ -42,36 +42,12 @@ struct GeneralView: View {
                         Spacer()
                         Toggle("", isOn: $launchAtLogin.isEnabled).controlSize(.mini)
                     }
-                    
-                    Divider()
-                    
-                    HStack {
-                        Text("Push to talk")
-                        Spacer()
-                        Toggle("", isOn: $pushToTalk).controlSize(.mini)
-                    }
                 }
                 .toggleStyle(.switch)
             }
             
             CustomSectionView(title: "Menubar icon") {
                 VStack(spacing: 12) {
-                    HStack {
-                        Text("Launch Micmute at login")
-                        Spacer()
-                        Toggle("", isOn: $launchAtLogin.isEnabled).controlSize(.mini)
-                    }
-                    
-                    Divider()
-                    
-                    HStack {
-                        Text("Grayscale icon")
-                        Spacer()
-                        Toggle("", isOn: $pushToTalk).controlSize(.mini)
-                    }
-                    
-                    Divider()
-                    
                     HStack {
                         Text("Behavior on left click")
                         Spacer()

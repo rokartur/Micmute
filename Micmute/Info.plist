@@ -11,7 +11,7 @@
 	<key>SUFeedURL</key>
 	<string>https://rokartur.github.io/Micmute/appcast.xml</string>
 	<key>SUPublicEDKey</key>
-	<string>+wdoSXdVfUtgIGgJa9kBlmJZ7O1DNYDEuQTD7rhRamA=</string>
+	<string>y8b1H8DtpR8MDFzAE0Xr/72ovZpsGiHXjno5F5rpYRs=</string>
 	<key>SUScheduledCheckInterval</key>
 	<integer>86400</integer>
 	<key>SUEnableInstallerLauncherService</key>

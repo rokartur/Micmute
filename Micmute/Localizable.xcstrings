@@ -24,17 +24,6 @@
         }
       }
     },
-    "Appearance" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wygląd"
-          }
-        }
-      }
-    },
     "Author" : {
       "localizations" : {
         "pl" : {
@@ -104,17 +93,6 @@
     "Duration" : {
 
     },
-    "Duration:" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Czas trwania"
-          }
-        }
-      }
-    },
     "Fade" : {
       "localizations" : {
         "pl" : {
@@ -131,20 +109,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ogólne"
-          }
-        }
-      }
-    },
-    "Grayscale icon" : {
-
-    },
-    "Keyboard shortcut" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skrót klawiszowy"
           }
         }
       }
@@ -312,9 +276,6 @@
         }
       }
     },
-    "Push to talk" : {
-
-    },
     "Repository" : {
       "localizations" : {
         "pl" : {
@@ -368,17 +329,6 @@
     "Show" : {
 
     },
-    "Show notification" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pokaż powiadomienie"
-          }
-        }
-      }
-    },
     "Shows menu" : {
 
     },
@@ -394,17 +344,6 @@
     },
     "Toggle mute" : {
 
-    },
-    "Type:" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Typ"
-          }
-        }
-      }
     },
     "Unmuted" : {
       "localizations" : {
