@@ -62,9 +62,12 @@ jobs:
       - name: Generate Sparkle appcast and sign artifact
         run: |
           echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | base64 --decode > private_key.pem
-          ls
 
-          
+          openssl dgst -sha256 -binary < $GITHUB_WORKSPACE/Micmute-Beta.zip | openssl dgst -sha256 -sign private_key.pem -out $GITHUB_WORKSPACE/Micmute-Beta.zip.sig
+
+          generate_appcast --private-key ./private_key.pem --download-url-prefix "https://github.com/rokartur/Micmute/releases/latest/download/" $GITHUB_WORKSPACE
+
+          mv appcast.xml $GITHUB_WORKSPACE/appcast.xml
 
       - name: Commit appcast.xml
         run: |
