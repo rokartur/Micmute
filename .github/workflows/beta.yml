@@ -36,16 +36,15 @@ jobs:
           xcodebuild clean build \
             -project Micmute.xcodeproj \
             -scheme Micmute \
-            -configuration Release \
+            -configuration Debug \
             -destination "platform=macOS" \
-            CODE_SIGN_IDENTITY="Apple Development" \
-            CODE_SIGNING_REQUIRED=YES \
-            DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
             -derivedDataPath build_output
 
       - name: Verify code signing
         run: |
-          cd ./build_output/Build/Products/Release
+          cd ./build_output/Build/Products/Debug
           codesign --deep -vvv --verify Micmute.app
           if [ $? -eq 0 ]; then
             echo "Code signing verification succeeded."
@@ -57,7 +56,7 @@ jobs:
 
       - name: Archive artifact
         run: |
-          cd ./build_output/Build/Products/Release
+          cd ./build_output/Build/Products/Debug
           ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
           mv Micmute-Beta.zip $GITHUB_WORKSPACE/Micmute-Beta.zip
 
