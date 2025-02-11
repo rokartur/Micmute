@@ -33,17 +33,19 @@ jobs:
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Micmute Beta
+          name: "MicmuteBeta"
           path: ./build_output/Build/Products/Debug/MicmuteBeta.app
 
   release:
     needs: build
     runs-on: macos-15
+    permissions:
+      contents: write
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: "Micmute Beta"
+          name: "MicmuteBeta"
 
       - name: Zip application
         run: |
