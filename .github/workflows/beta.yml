@@ -38,7 +38,6 @@ jobs:
             -scheme Micmute \
             -configuration Release \
             -destination "platform=macOS" \
-            CODE_SIGN_IDENTITY="${{ secrets.CODE_SIGN_IDENTITY }}" \
             CODE_SIGNING_REQUIRED=YES \
             DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}" \
             -derivedDataPath build_output
