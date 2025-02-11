@@ -50,6 +50,16 @@ jobs:
           name: Micmute-Beta.zip
           path: .
 
+      - name: Generate commit list
+        id: commit_list
+        shell: bash
+        run: |
+          # Ensure jq is available (macOS VMs include it by default)
+          commits=$(jq -r '.commits[] | "- [\(.id)](\(.url)) - \(.author.name)"' <<< "${{ toJson(github.event) }}")
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$commits" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
       - name: Create GitHub Release (Beta)
         uses: softprops/action-gh-release@v2
         env:
@@ -57,7 +67,9 @@ jobs:
         with:
           tag_name: "v3.0.0-beta.${{ github.run_number }}"
           name: "Micmute 3.0.0 Beta (${{ github.run_number }})"
-          body: "Beta build from commit: ${{ github.sha }}"
+          body: |
+              **Commits**
+              ${{ steps.commit_list.outputs.commits }}
           prerelease: true
           draft: false
           files: Micmute-Beta.zip
