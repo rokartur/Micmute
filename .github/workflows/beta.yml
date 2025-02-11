@@ -55,7 +55,7 @@ jobs:
         uses: marvinpinto/action-automatic-releases@master
         with:
           files: Micmute-Beta.zip
-          automatic_release_tag: 'v3.0.0-beta.${{ github.run_number }}'
+          automatic_release_tag: 'beta'
           title: 'Micmute 3.0.0 Beta (${{ github.run_number }})'
           draft: false
           prerelease: true
