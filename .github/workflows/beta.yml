@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -49,7 +49,6 @@ jobs:
         with:
           name: Micmute-Beta.zip
           path: .
-
 
       - name: Create release
         uses: marvinpinto/action-automatic-releases@master
