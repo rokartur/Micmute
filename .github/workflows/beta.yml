@@ -15,6 +15,20 @@ jobs:
         with:
           xcode-version: '16.0'
 
+      - name: Import signing certificate
+        env:
+          SIGNING_CERTIFICATE: ${{ secrets.SIGNING_CERTIFICATE }}
+          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          security create-keychain -p temporary_password build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p temporary_password build.keychain
+
+          echo "$SIGNING_CERTIFICATE" | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P "$SIGNING_PASSWORD" -T /usr/bin/codesign
+
+          security set-key-partition-list -S apple-tool:,apple: -s -k temporary_password build.keychain
+
       - name: Build with Xcode
         run: |
           xcodebuild clean build \
@@ -28,7 +42,7 @@ jobs:
 
       - name: Verify code signing
         run: |
-          cd ./build_output/Build/Products/Debug
+          cd ./build_output/Build/Products/Release
           codesign --deep -vvv --verify Micmute.app
           if [ $? -eq 0 ]; then
             echo "Code signing verification succeeded."
@@ -40,7 +54,7 @@ jobs:
 
       - name: Archive artifact
         run: |
-          cd ./build_output/Build/Products/Debug
+          cd ./build_output/Build/Products/Release
           ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
           mv Micmute-Beta.zip $GITHUB_WORKSPACE/Micmute-Beta.zip
 
