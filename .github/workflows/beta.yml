@@ -29,12 +29,14 @@ jobs:
         
           # Zapis logów jako artefakt
           echo "XCODEBUILD_LOG=$(cat xcodebuild.log | base64)" >> $GITHUB_ENV
+          pwd
+          pwd
 
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
           name: "MicmuteBeta"
-          path: ./build_output/Build/Products/Debug/Micmute.app
+          path: /Users/runner/work/micmute/micmute/build_output/Build/Products/Debug/Micmute.app
 
   release:
     needs: build
