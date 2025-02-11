@@ -62,7 +62,6 @@ struct MainMenuView: View {
             Divider().padding(.vertical, 4)
             
             MenuCommand("Micmute settings...") {
-                NSApp.deactivate()
                 NSApp.sendAction(#selector(AppDelegate.showPreferences(_:)), to: nil, from: nil)
             }
         }

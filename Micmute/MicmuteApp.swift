@@ -99,6 +99,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc func showPreferences(_ sender: AnyObject?) {
+        statusBarMenu.cancelTracking()
+        statusBarItem.menu = nil
+
         if preferencesWindow == nil {
             preferencesWindow = PreferencesWindow()
             let preferencesView = PreferencesView(parentWindow: preferencesWindow)
@@ -107,10 +110,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let fittingSize = hostedPrefView.intrinsicContentSize
             preferencesWindow.setContentSize(fittingSize)
         }
-        
-        preferencesWindow.center()
-        preferencesWindow.makeKeyAndOrderFront(nil)
-        NSApplication.shared.activate(ignoringOtherApps: true)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            self.preferencesWindow.center()
+            self.preferencesWindow.makeKeyAndOrderFront(nil)
+            self.preferencesWindow.makeKey()
+        }
     }
 
     func updateSelectedDevice(to deviceID: AudioDeviceID) {
