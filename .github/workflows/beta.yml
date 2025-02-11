@@ -62,6 +62,9 @@ jobs:
       - name: Generate Sparkle appcast and sign artifact
         run: |
           echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | base64 --decode > private_key.pem
+          ls
+
+          
 
       - name: Commit appcast.xml
         run: |
