@@ -24,6 +24,9 @@
         }
       }
     },
+    "Audio" : {
+
+    },
     "Author" : {
       "localizations" : {
         "pl" : {
@@ -76,6 +79,9 @@
           }
         }
       }
+    },
+    "Check Mute" : {
+
     },
     "Check mute status" : {
 
@@ -343,6 +349,9 @@
       }
     },
     "Toggle mute" : {
+
+    },
+    "Toggle Mute" : {
 
     },
     "Unmuted" : {
