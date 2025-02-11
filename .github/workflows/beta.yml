@@ -28,7 +28,7 @@ jobs:
 
       - name: Verify code signing
         run: |
-          cd ./build_output/Build/Products/Release
+          cd ./build_output/Build/Products/Debug
           codesign --deep -vvv --verify Micmute.app
           if [ $? -eq 0 ]; then
             echo "Code signing verification succeeded."
@@ -40,7 +40,7 @@ jobs:
 
       - name: Archive artifact
         run: |
-          cd ./build_output/Build/Products/Release
+          cd ./build_output/Build/Products/Debug
           ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-Beta.zip
           mv Micmute-Beta.zip $GITHUB_WORKSPACE/Micmute-Beta.zip
 
@@ -57,7 +57,7 @@ jobs:
             ./generate_appcast --private-key ./private_key.pem --download-url-prefix "https://github.com/rokartur/Micmute/releases/latest/download/" $GITHUB_WORKSPACE
   
             mv appcast.xml $GITHUB_WORKSPACE/appcast.xml
-  
+
       - name: Commit appcast.xml
         run: |
           cd $GITHUB_WORKSPACE
