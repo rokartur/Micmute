@@ -10,16 +10,14 @@ import ServiceManagement
 
 struct LaunchAtLoginManager {
     static func update(_ enable: Bool) {
-        if #available(macOS 14.0, *) {
-            do {
-                if enable {
-                    try SMAppService.mainApp.register()
-                } else {
-                    try SMAppService.mainApp.unregister()
-                }
-            } catch {
-                print("Error updating launch at login: \(error)")
+        do {
+            if enable {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
             }
+        } catch {
+            print("Error updating launch at login: \(error)")
         }
     }
 }
