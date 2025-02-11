@@ -63,8 +63,6 @@ jobs:
         run: |
           echo "${{ secrets.SPARKLE_PRIVATE_KEY }}" | base64 --decode > private_key.pem
 
-          openssl dgst -sha256 -binary < $GITHUB_WORKSPACE/Micmute-Beta.zip | openssl dgst -sha256 -sign ./private_key.pem -out $GITHUB_WORKSPACE/Micmute-Beta.zip.sig
-
       - name: Commit appcast.xml
         run: |
           cd $GITHUB_WORKSPACE
