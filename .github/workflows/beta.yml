@@ -31,18 +31,11 @@ jobs:
           echo "XCODEBUILD_LOG=$(cat xcodebuild.log | base64)" >> $GITHUB_ENV
           pwd
           pwd
-
-      - name: Verify artifact path
-        run: |
-          ls -la build_output/Build/Products/Debug/
-
-      - name: Check artifact size
-        run: |
-          du -sh build_output/Build/Products/Debug/Micmute.app
-
-      - name: Check permissions
-        run: |
-          ls -la build_output/Build/Products/Debug/Micmute.app
+          ls
+          ls build_output
+          ls build_output/Build
+          ls build_output/Build/Products
+          ls build_output/Build/Products/Debug
 
       - name: Archive artifact
         timeout-minutes: 5
