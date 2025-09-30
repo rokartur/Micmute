@@ -4,8 +4,6 @@
 	<p>
 		<b>Toggling microphone mute in any app</b>
 	</p>
-	<br>
-	<br>
 </div>
 
 ## Download
@@ -44,6 +42,7 @@ xattr -rd com.apple.quarantine /Applications/Micmute.app
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin-Legacy)
 - [MacControlCenterUI](https://github.com/orchetect/MacControlCenterUI)
+
 
 
 
