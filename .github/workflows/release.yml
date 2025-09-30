@@ -1,4 +1,5 @@
-name: Build and release
+name: Build and Release macOS App
+
 on:
   push:
     branches: [dev]
@@ -18,7 +19,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '26.0'
+          xcode-version: '16.2'
 
       - name: Determine app version
         id: get_version
@@ -33,15 +34,20 @@ jobs:
           SIGNING_CERTIFICATE: ${{ secrets.SIGNING_CERTIFICATE }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: |
+          # Create temporary keychain
           security create-keychain -p temporary_password build.keychain
           security default-keychain -s build.keychain
           security unlock-keychain -p temporary_password build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
 
+          # Import certificate
           echo "$SIGNING_CERTIFICATE" | base64 --decode > certificate.p12
           security import certificate.p12 -k build.keychain -P "$SIGNING_PASSWORD" -T /usr/bin/codesign
 
-          security set-key-partition-list -S apple-tool:,apple: -s -k temporary_password build.keychain
+          # Set key partition list
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k temporary_password build.keychain
 
+          # Verify certificate
           security find-identity -v -p codesigning build.keychain
 
       - name: Build with Xcode
@@ -76,14 +82,14 @@ jobs:
       - name: Archive artifact
         run: |
           cd ./build_output/Build/Products/Release
-          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute.zip
-          mv Micmute.zip $GITHUB_WORKSPACE/Micmute.zip
+          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-${{ steps.get_version.outputs.version }}.zip
+          mv Micmute-${{ steps.get_version.outputs.version }}.zip $GITHUB_WORKSPACE/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Micmute.zip
-          path: ${{ github.workspace }}/Micmute.zip
+          name: Micmute-${{ steps.get_version.outputs.version }}
+          path: ${{ github.workspace }}/Micmute-${{ steps.get_version.outputs.version }}.zip
 
   release:
     needs: build
@@ -91,18 +97,22 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: Micmute.zip
+          name: Micmute-${{ needs.build.outputs.app_version }}
           path: .
 
-      - name: Create release
-        uses: marvinpinto/action-automatic-releases@master
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          files: Micmute.zip
-          automatic_release_tag: ${{ needs.build.outputs.app_version }}
-          title: "v${{ needs.build.outputs.app_version }}"
-          draft: false
+          tag_name: v${{ needs.build.outputs.app_version }}
+          name: v${{ needs.build.outputs.app_version }}
+          files: Micmute-${{ needs.build.outputs.app_version }}.zip
           prerelease: true
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
