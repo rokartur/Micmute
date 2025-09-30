@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: macos-15
+    env:
+      DEVELOPMENT_TEAM_ID: N529W98U62
+      SIGNING_ENABLED: ${{ secrets.SIGNING_CERTIFICATE != '' && secrets.SIGNING_PASSWORD != '' }}
     outputs:
       app_version: ${{ steps.get_version.outputs.version }}
     steps:
@@ -25,6 +28,7 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Import signing certificate
+        if: ${{ env.SIGNING_ENABLED == 'true' }}
         env:
           SIGNING_CERTIFICATE: ${{ secrets.SIGNING_CERTIFICATE }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
@@ -41,14 +45,33 @@ jobs:
           security find-identity -v -p codesigning build.keychain
 
       - name: Build with Xcode
+        env:
+          SIGNING_ENABLED: ${{ env.SIGNING_ENABLED }}
+          DEVELOPMENT_TEAM_ID: ${{ env.DEVELOPMENT_TEAM_ID }}
         run: |
-          xcodebuild clean build \
-            -project Micmute.xcodeproj \
-            -scheme Micmute \
-            -configuration Release \
-            -destination "platform=macOS" \
-            CODE_SIGNING_REQUIRED=NO \
-            -derivedDataPath build_output
+          if [ "$SIGNING_ENABLED" = "true" ]; then
+            xcodebuild clean build \
+              -project Micmute.xcodeproj \
+              -scheme Micmute \
+              -configuration Release \
+              -destination "platform=macOS" \
+              DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM_ID \
+              CODE_SIGN_STYLE=Automatic \
+              CODE_SIGN_IDENTITY="Apple Development" \
+              -derivedDataPath build_output
+          else
+            xcodebuild clean build \
+              -project Micmute.xcodeproj \
+              -scheme Micmute \
+              -configuration Release \
+              -destination "platform=macOS" \
+              CODE_SIGN_STYLE=Manual \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              DEVELOPMENT_TEAM="" \
+              -derivedDataPath build_output
+          fi
 
       - name: Archive artifact
         run: |
