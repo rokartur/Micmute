@@ -157,6 +157,9 @@
         }
       }
     },
+    "Hold the shortcut to temporarily unmute" : {
+
+    },
     "Large" : {
       "localizations" : {
         "pl" : {
@@ -230,6 +233,9 @@
           }
         }
       }
+    },
+    "Mic unmutes while the shortcut is held" : {
+
     },
     "Micmute" : {
       "localizations" : {
@@ -341,6 +347,12 @@
           }
         }
       }
+    },
+    "Push to talk" : {
+
+    },
+    "Push to talk mode" : {
+
     },
     "Release notes are still loading" : {
       "localizations" : {

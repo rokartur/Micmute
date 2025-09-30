@@ -22,13 +22,28 @@ struct GeneralView: View {
                         Spacer()
                         KeyboardShortcuts.Recorder("", name: .toggleMuteShortcut)
                     }
-                    
+
                     Divider()
-                    
+
                     HStack {
                         Text("Check mute status")
                         Spacer()
                         KeyboardShortcuts.Recorder("", name: .checkMuteShortcut)
+                    }
+
+                    Divider()
+
+                    HStack(alignment: .center, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Push to talk")
+                            Text("Hold the shortcut to temporarily unmute")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        KeyboardShortcuts.Recorder("", name: .pushToTalkShortcut)
+                            .disabled(!pushToTalk)
+                            .opacity(pushToTalk ? 1 : 0.5)
                     }
                 }
                 .toggleStyle(.switch)
@@ -36,6 +51,20 @@ struct GeneralView: View {
             
             CustomSectionView(title: "Behavior") {
                 VStack(spacing: 12) {
+                    HStack(alignment: .center, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Push to talk mode")
+                            Text("Mic unmutes while the shortcut is held")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Toggle("", isOn: $pushToTalk)
+                            .controlSize(.mini)
+                    }
+
+                    Divider()
+
                     HStack {
                         Text("Launch Micmute at login")
                         Spacer()

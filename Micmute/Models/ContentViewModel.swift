@@ -46,6 +46,8 @@ class ContentViewModel: ObservableObject {
     @AppStorage(AppStorageEntry.menuBehaviorOnClick.rawValue) var menuBehaviorOnClick: MenuBarBehavior = .menu
 
     var notificationWindowController: NotificationWindowController?
+    private var isPushToTalkActive = false
+    private var wasMutedBeforePushToTalk = true
     
     init() {
         KeyboardShortcuts.onKeyUp(for: .toggleMuteShortcut) { [self] in
@@ -53,6 +55,26 @@ class ContentViewModel: ObservableObject {
         }
         KeyboardShortcuts.onKeyUp(for: .checkMuteShortcut) { [self] in
             self.checkMuteStatus()
+        }
+        KeyboardShortcuts.onKeyDown(for: .pushToTalkShortcut) { [self] in
+            guard self.pushToTalk else { return }
+            guard !self.isPushToTalkActive else { return }
+
+            self.isPushToTalkActive = true
+            self.wasMutedBeforePushToTalk = self.isMuted
+
+            if self.isMuted {
+                self.toggleMute(deviceID: self.selectedDeviceID)
+            }
+        }
+        KeyboardShortcuts.onKeyUp(for: .pushToTalkShortcut) { [self] in
+            guard self.isPushToTalkActive else { return }
+
+            self.isPushToTalkActive = false
+
+            if self.wasMutedBeforePushToTalk && !self.isMuted {
+                self.toggleMute(deviceID: self.selectedDeviceID)
+            }
         }
         loadAudioDevices()
         setDefaultSystemInputDevice()
