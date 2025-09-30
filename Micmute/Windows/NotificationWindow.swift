@@ -14,20 +14,19 @@ class NotificationWindow: NSWindow {
     }
 }
 
-struct NotificationView: View {
-    var isMute: Bool
-    @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
+struct NotificationViewModel: View {
+    var isMuted: Bool
+    @AppStorage(AppStorageEntry.displayOption.rawValue) var displayOption: DisplayOption = .largeBoth
 
-    let largeIcon = Constants.Appearance.largeIcon
-    let smallIcon = Constants.Appearance.smallIcon
-    
-    let smallPreview = Constants.Appearance.smallPreview
-    let largePreview = Constants.Appearance.largePreview
+    let largeIcon = Appearance.largeIcon
+    let smallIcon = Appearance.smallIcon
+    let smallPreview = Appearance.smallPreview
+    let largePreview = Appearance.largePreview
     
     var body: some View {
         VStack(spacing: 8) {
             if displayOption == .largeBoth || displayOption == .largeIcon {
-                if isMute {
+                if isMuted {
                     Image(systemName: "mic.slash.fill")
                         .symbolRenderingMode(.palette)
                         .font(.system(size: largeIcon))
@@ -38,11 +37,11 @@ struct NotificationView: View {
                 }
             }
             if displayOption == .largeBoth || displayOption == .text {
-                Text(isMute ? "Muted" : "Unmuted")
+                Text(isMuted ? "Muted" : "Unmuted")
                     .font(.title3)
             }
             if displayOption == .smallIcon {
-                if isMute {
+                if isMuted {
                     Image(systemName: "mic.slash.fill")
                         .symbolRenderingMode(.palette)
                         .font(.system(size: smallIcon))
@@ -54,7 +53,7 @@ struct NotificationView: View {
             }
             if displayOption == .rowSmallBoth {
                 HStack(spacing: 12) {
-                    if isMute {
+                    if isMuted {
                         Image(systemName: "mic.slash.fill")
                             .symbolRenderingMode(.palette)
                             .font(.system(size: 32))
@@ -63,7 +62,7 @@ struct NotificationView: View {
                         Image(systemName: "mic.fill")
                             .font(.system(size: 32))
                     }
-                    Text(isMute ? "Muted" : "Unmuted")
+                    Text(isMuted ? "Muted" : "Unmuted")
                         .font(.title3)
                         .frame(minWidth: 68)
                 }
@@ -79,31 +78,32 @@ struct NotificationView: View {
 }
 
 class NotificationWindowController: NSWindowController {
-    @AppStorage("animationType") var animationType: AnimationType = .scale
-    @AppStorage("animationDuration") var animationDuration: Double = 1.3
-
-    var isMute: Bool
+    var isMuted: Bool
     let isDarkMode = NSApplication.shared.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+    var animationType: AnimationType
+    var animationDuration: Double
     var displayOption: DisplayOption
     var placement: Placement
     var padding: Double
+    var pinBehavior: NotificationPinBehavior
 
-    let smallPreview = Constants.Appearance.smallPreview
-    let smallCornerRadius = Constants.Appearance.smallCornerRadius
-    let largePreview = Constants.Appearance.largePreview
-    let largeCornerRadius = Constants.Appearance.largeCornerRadius
+    let smallPreview = Appearance.smallPreview
+    let smallCornerRadius = Appearance.smallCornerRadius
+    let largePreview = Appearance.largePreview
+    let largeCornerRadius = Appearance.largeCornerRadius
     
-    init(isMute: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double) {
-        self.isMute = isMute
+    init(isMuted: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double, pinBehavior: NotificationPinBehavior) {
+        self.isMuted = isMuted
         self.animationType = animationType
         self.animationDuration = animationDuration
         self.displayOption = displayOption
         self.placement = placement
         self.padding = padding
+        self.pinBehavior = pinBehavior
 
         let windowWidthSize = self.displayOption == .smallIcon ? smallPreview : largePreview
         let windowHeightSize = self.displayOption == .rowSmallBoth || self.displayOption == .text || self.displayOption == .smallIcon ? smallPreview : largePreview
-        
+
         let notificationWindow = NotificationWindow(
             contentRect: NSRect(
                 x: 0,
@@ -119,6 +119,7 @@ class NotificationWindowController: NSWindowController {
         notificationWindow.backgroundColor = NSColor.clear
         notificationWindow.level = .floating
         notificationWindow.isMovableByWindowBackground = false
+        
         let visualEffectView = NSVisualEffectView()
         visualEffectView.material = .underWindowBackground
         visualEffectView.blendingMode = .withinWindow
@@ -127,7 +128,8 @@ class NotificationWindowController: NSWindowController {
         visualEffectView.layer?.cornerRadius = self.displayOption == .smallIcon ? smallCornerRadius : largeCornerRadius
         visualEffectView.layer?.masksToBounds = true
         notificationWindow.contentView = visualEffectView
-        let hostingView = NSHostingView(rootView: NotificationView(isMute: isMute))
+        
+        let hostingView = NSHostingView(rootView: NotificationViewModel(isMuted: isMuted))
         hostingView.frame = visualEffectView.bounds
         hostingView.autoresizingMask = [.width, .height]
         visualEffectView.addSubview(hostingView)
@@ -181,6 +183,12 @@ class NotificationWindowController: NSWindowController {
                 notificationWindow.animator().setFrame(originalFrame, display: true)
                 notificationWindow.animator().alphaValue = 1
             }
+        }
+
+        let shouldAutoHide = pinBehavior.shouldAutoHide(isMuted: isMuted)
+
+        guard shouldAutoHide else {
+            return
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {

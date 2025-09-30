@@ -1,0 +1,99 @@
+//
+//  GeneralView.swift
+//  Micmute
+//
+//  Created by artur on 10/02/2025.
+//
+
+import SwiftUI
+import KeyboardShortcuts
+
+struct GeneralView: View {
+    @AppStorage(AppStorageEntry.pushToTalk.rawValue) var pushToTalk: Bool = false
+    @AppStorage(AppStorageEntry.menuBehaviorOnClick.rawValue) var menuBehaviorOnClick: MenuBarBehavior = .menu
+    @AppStorage(AppStorageEntry.launchAtLogin.rawValue) var launchAtLogin: Bool = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            CustomSectionView(title: "Keyboard shortcuts") {
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("Toggle mute")
+                        Spacer()
+                        KeyboardShortcuts.Recorder("", name: .toggleMuteShortcut)
+                    }
+
+                    Divider()
+
+                    HStack {
+                        Text("Check mute status")
+                        Spacer()
+                        KeyboardShortcuts.Recorder("", name: .checkMuteShortcut)
+                    }
+
+                    Divider()
+
+                    HStack(alignment: .center, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Push to talk")
+                            Text("Hold the shortcut to temporarily unmute")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        KeyboardShortcuts.Recorder("", name: .pushToTalkShortcut)
+                            .disabled(!pushToTalk)
+                            .opacity(pushToTalk ? 1 : 0.5)
+                    }
+                }
+                .toggleStyle(.switch)
+            }
+            
+            CustomSectionView(title: "Behavior") {
+                VStack(spacing: 12) {
+                    HStack(alignment: .center, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Push to talk mode")
+                            Text("Mic unmutes while the shortcut is held")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Toggle("", isOn: $pushToTalk)
+                            .controlSize(.mini)
+                    }
+
+                    Divider()
+
+                    HStack {
+                        Text("Launch Micmute at login")
+                        Spacer()
+                        Toggle("", isOn: $launchAtLogin)
+                            .controlSize(.mini)
+                            .onChange(of: launchAtLogin) { newValue, _ in
+                                LaunchAtLoginManager.update(newValue)
+                            }
+                    }
+                }
+                .toggleStyle(.switch)
+            }
+            
+            CustomSectionView(title: "Menubar icon") {
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("Behavior on left click")
+                        Spacer()
+                        Picker("", selection: $menuBehaviorOnClick) {
+                            Text("Shows menu").tag(MenuBarBehavior.menu)
+                            Text("Toggle mute").tag(MenuBarBehavior.mute)
+                        }
+                        .fixedSize(horizontal: true, vertical: false)
+                    }
+                }
+                .toggleStyle(.switch)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .padding()
+    }
+}

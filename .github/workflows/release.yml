@@ -1,0 +1,93 @@
+name: Build and release
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: fwal/setup-swift@v2
+        with:
+          swift-version: '6.1'
+
+      - name: Install CocoaPods
+        run: |
+          brew install cocoapods || true
+
+      - name: Build with Xcode
+        run: |
+          xcodebuild clean build \
+            -project Micmute.xcodeproj \
+            -scheme Micmute \
+            -configuration Release \
+            -destination "platform=macOS,arch=arm64" \
+            -derivedDataPath build_output \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_ENTITLEMENTS=""
+
+      - name: Archive artifact
+        run: |
+          cd ./build_output/Build/Products/Release
+          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute.zip
+          mv Micmute.zip $GITHUB_WORKSPACE/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Micmute
+          path: ${{ github.workspace }}/Micmute.zip
+
+  release:
+    needs: build
+    runs-on: macos-15
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Micmute
+          path: .
+
+      - name: Read app version from Xcode settings
+        id: appver
+        run: |
+          VERSION=$(xcodebuild -project Micmute.xcodeproj -scheme Micmute -showBuildSettings | awk -F= '/MARKETING_VERSION/ {gsub(/ /,"",$2); print $2; exit}')
+          if [ -z "$VERSION" ]; then
+            echo "MARKETING_VERSION not found. Ensure it's set in target Build Settings." >&2
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag if missing
+        run: |
+          TAG="v${{ steps.appver.outputs.version }}"
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists"
+          else
+            git config user.name "github-actions"
+            git config user.email "github-actions@users.noreply.github.com"
+            git tag "$TAG"
+            git push origin "$TAG"
+          fi
+
+      - name: Rename artifact
+        run: |
+          mv Micmute.zip Micmute-${{ steps.appver.outputs.version }}.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.appver.outputs.version }}
+          name: ${{ steps.appver.outputs.version }}
+          files: Micmute-${{ steps.appver.outputs.version }}.zip
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

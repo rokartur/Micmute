@@ -1,102 +1,274 @@
-//
-//  MicmuteApp.swift
-//  Micmute
-//
-//  Created by rokartur on 23/12/23.
-//
-
 import SwiftUI
-import KeyboardShortcuts
-import SettingsAccess
-import Sparkle
+import CoreAudio
+import CoreAudioKit
+import MacControlCenterUI
+import Combine
+import AlinFoundation
+import AppKit
+
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
-    @AppStorage("isMute") var isMute: Bool = false
-    @AppStorage("animationType") var animationType: AnimationType = .scale
-    @AppStorage("animationDuration") var animationDuration: Double = 1.3
-    @AppStorage("isNotificationEnabled") var isNotificationEnabled: Bool = true
-    @AppStorage("displayOption") var displayOption: DisplayOption = .largeBoth
-    @AppStorage("placement") var placement: Placement = .centerBottom
-    @AppStorage("padding") var padding: Double = 70.0
+final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+    @ObservedObject var contentViewModel = ContentViewModel()
+    let updater = Updater(owner: "rokartur", repo: "Micmute")
+    var statusBarItem: NSStatusItem!
+    var statusBarMenu: NSMenu!
+    var statusBarMenuItem: NSMenuItem!
 
-    var notificationWindowController: NotificationWindowController?
-    var appearanceObservation: NSObjectProtocol?
-    var showNotification = false
-    var menuBarSetup: MenuBarSetup!
-    static private(set) var instance: AppDelegate!
-    lazy var statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    private var preferencesWindow: PreferencesWindow!
+    private var updaterWindow: NSWindow?
     var micMute: NSImage = getMicMuteImage()
     var micUnmute: NSImage = getMicUnmuteImage()
-    lazy var updaterController: SPUStandardUpdaterController = {
-        return SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-    }()
 
-    override init() {
-        super.init()
-        KeyboardShortcuts.onKeyUp(for: .toggleMuteShortcut) { [self] in
-            self.toggleMute()
-        }
-        menuBarSetup = MenuBarSetup(statusBarMenu: NSMenu(), statusBarItem: statusBarItem, isMute: isMute, micMute: micMute, micUnmute: micUnmute, updater: updaterController.updater)
-        DistributedNotificationCenter.default().addObserver(self, selector: #selector(handleWallpaperChange), name: NSNotification.Name(rawValue: "AppleInterfaceThemeChangedNotification"), object: nil)
-    }
-
-    deinit {
-        if let appearanceObservation = appearanceObservation {
-            DistributedNotificationCenter.default().removeObserver(appearanceObservation)
-        }
-    }
+    private let refreshInterval: TimeInterval = 1.0
+    @State private var refreshTimer: Timer?
+    private var cancellables = Set<AnyCancellable>()
     
-    func applicationDidFinishLaunching(_ notification: Notification) {
-        menuBarSetup.setupMenuBar()
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
+        // Observe updater sheet state and trigger windows when needed
+        updater.$sheet
+            .receive(on: RunLoop.main)
+            .sink { [weak self] showSheet in
+                guard let self else { return }
+                if showSheet {
+                    self.presentUpdaterWindow()
+                } else {
+                    self.closeUpdaterWindow()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Initialize updater and check for updates
+        updater.checkAndUpdateIfNeeded()
+        
+        let statusBar = NSStatusBar.system
+        statusBarItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
+        let isMuted = contentViewModel.isMuted
+     
+        statusBarItem.button?.image = isMuted ? micMute : micUnmute
+        statusBarItem.button?.action = #selector(self.statusBarButtonClicked(sender:))
+        statusBarItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+
+        statusBarMenu = NSMenu()
+        statusBarMenu.delegate = self
+        statusBarMenuItem = NSMenuItem()
+        menuView()
+        statusBarMenu.addItem(statusBarMenuItem)
+        
+        if contentViewModel.menuBehaviorOnClick == .menu {
+            statusBarItem.menu = statusBarMenu
+        } else {
+            statusBarItem.menu = nil
+        }
+    
         for window in NSApplication.shared.windows {
             window.orderOut(nil)
         }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(updateStatusBarImage),
+           name: NSNotification.Name("MuteStateChanged"),
+           object: nil)
     }
 
-    func toggleMute() {
-        isMute.toggle()
-        statusBarItem.button?.image = isMute ? micMute : micUnmute
-        setDefaultInputVolumeDevice(isMute: isMute)
+    @objc func menuView() {
+        let volumeView = NSHostingView(rootView: MainMenuView(
+            unmuteGain: $contentViewModel.unmuteGain,
+            selectedDeviceID: $contentViewModel.selectedDeviceID,
+            availableDevices: $contentViewModel.availableDevices,
+            onDeviceSelected: { [weak self] deviceID in self?.updateSelectedDevice(to: deviceID) },
+            onAppear: { [weak self ] in self?.openMenu() },
+            onDisappear: { [weak self ] in self?.closeMenu() }
+        ).environmentObject(updater))
+        volumeView.translatesAutoresizingMaskIntoConstraints = false
 
-        if isNotificationEnabled {
-            notificationWindowController?.close()
-            notificationWindowController = NotificationWindowController(isMute: isMute, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
-            notificationWindowController?.showWindow(nil)
-        }
+        let tempView = NSView()
+        tempView.addSubview(volumeView)
+        volumeView.layout()
+        let fittingSize = volumeView.intrinsicContentSize
+        volumeView.removeFromSuperview()
+
+        volumeView.frame = NSRect(x: 0, y: 0, width: 300, height: fittingSize.height)
+        statusBarMenuItem.view = volumeView
     }
-    
-    @objc func handleWallpaperChange() {
-        micMute = getMicMuteImage()
-        micUnmute = getMicUnmuteImage()
-        statusBarItem.button?.image = isMute ? micMute : micUnmute
-    }
-    
-    @objc public func openMenuBar(_ sender: AnyObject?) {
-        guard let event = NSApp.currentEvent else { return }
+
+    @objc func statusBarButtonClicked(sender: NSStatusBarButton) {
+        let event = NSApp.currentEvent!
         
-        switch event.type {
-            case .rightMouseUp:
-                statusBarItem.menu = menuBarSetup.statusBarMenu
+        if event.type == .rightMouseUp {
+            statusBarItem.menu = statusBarMenu
+            statusBarItem.button?.performClick(nil)
+        } else if event.type == .leftMouseUp {
+            if contentViewModel.menuBehaviorOnClick == .mute {
+                statusBarItem.menu = nil
+                contentViewModel.toggleMute(deviceID: contentViewModel.selectedDeviceID)
+                updateStatusBarImage()
+            } else if contentViewModel.menuBehaviorOnClick == .menu {
+                statusBarItem.menu = statusBarMenu
                 statusBarItem.button?.performClick(nil)
-            case .leftMouseUp:
-                toggleMute()
-            default:
-                return
+            }
         }
+    }
 
+    @objc func updateStatusBarImage() {
+        let isMuted = contentViewModel.isMuted
+        statusBarItem.button?.image = isMuted ? micMute : micUnmute
+    }
+    
+    @objc func menuDidClose(_ menu: NSMenu) {
         statusBarItem.menu = nil
     }
+
+    @objc func showPreferences(_ sender: AnyObject?) {
+        statusBarMenu.cancelTracking()
+        statusBarItem.menu = nil
+
+        if preferencesWindow == nil {
+            preferencesWindow = PreferencesWindow()
+            let preferencesRoot = PreferencesView(parentWindow: preferencesWindow)
+                .environmentObject(updater)
+            let hostedPrefView = NSHostingView(rootView: preferencesRoot)
+            preferencesWindow.contentView = hostedPrefView
+            let fittingSize = hostedPrefView.intrinsicContentSize
+            preferencesWindow.setContentSize(fittingSize)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NSApplication.shared.activate(ignoringOtherApps: true)
+            self.preferencesWindow.center()
+            self.preferencesWindow.makeKeyAndOrderFront(nil)
+            self.preferencesWindow.makeKey()
+        }
+    }
+
+    private func presentUpdaterWindow() {
+        if updaterWindow == nil {
+            let hostView = UpdateSheetHost(updater: updater) { [weak self] in
+                guard let self else { return }
+                updater.sheet = false
+                closeUpdaterWindow()
+            }
+
+            let hostingController = NSHostingController(rootView: hostView)
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 10, height: 10),
+                styleMask: [.borderless],
+                backing: .buffered,
+                defer: false
+            )
+            window.isOpaque = false
+            window.alphaValue = 0.01
+            window.backgroundColor = .clear
+            window.hasShadow = false
+            window.level = .floating
+            window.ignoresMouseEvents = true
+            window.isReleasedWhenClosed = false
+            window.contentViewController = hostingController
+            updaterWindow = window
+        }
+
+        guard let window = updaterWindow else { return }
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+    }
+
+    private func closeUpdaterWindow() {
+        updaterWindow?.close()
+        updaterWindow = nil
+    }
+
+    func updateSelectedDevice(to deviceID: AudioDeviceID) {
+        contentViewModel.selectedDeviceID = deviceID
+        contentViewModel.loadInputGain(for: deviceID)
+        contentViewModel.changeDefaultInputDevice(to: deviceID)
+        contentViewModel.loadAudioDevices()
+    }
+    
+    func openMenu() {
+        contentViewModel.loadAudioDevices()
+        contentViewModel.setDefaultSystemInputDevice()
+        contentViewModel.registerDeviceChangeListener()
+        startAutoRefresh()
+    }
+    
+    func closeMenu() {
+        contentViewModel.unregisterDeviceChangeListener()
+        stopAutoRefresh()
+    }
+    
+    func startAutoRefresh() {
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval, repeats: true) { _ in
+            self.contentViewModel.loadAudioDevices()
+        }
+    }
+    
+    func stopAutoRefresh() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+    }
+    
+    func menuWillOpen(_ menu: NSMenu) {
+        menuView()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        print("AppDelegate deinitialized")
+    }
+}
+
+let deviceChangeListener: AudioObjectPropertyListenerProc = { _, _, _, _ in
+    Task { @MainActor in
+        if let appDelegate = NSApplication.shared.delegate as? AppDelegate {
+            appDelegate.contentViewModel.loadAudioDevices()
+//             appDelegate.contentViewModel.setDefaultSystemInputDevice()
+//             appDelegate.menuView()
+            NotificationCenter.default.post(name: NSNotification.Name("AudioDeviceChanged"), object: nil)
+        }
+    }
+    return noErr
 }
 
 @main
 struct MicmuteApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
+    
     var body: some Scene {
-        WindowGroup {}
         Settings {
-            SettingsView()
+            EmptyView()
+        }.commands {
+            CommandGroup(replacing: .appSettings) {
+                Button("") {
+                    appDelegate.showPreferences(nil)
+                }
+                .keyboardShortcut(",", modifiers: .command)
+            }
         }
+    }
+}
+
+@MainActor
+func activateApp() {
+    NSApp.activate(ignoringOtherApps: true)
+}
+
+private struct UpdateSheetHost: View {
+    @ObservedObject var updater: Updater
+    var onDismiss: () -> Void
+    @State private var showSheet = true
+
+    var body: some View {
+        Color.clear
+            .frame(width: 1, height: 1)
+            .sheet(isPresented: $showSheet, onDismiss: onDismiss) {
+                updater.getUpdateView()
+            }
+            .onAppear {
+                showSheet = true
+            }
+            .onChange(of: updater.sheet) { newValue in
+                if showSheet != newValue {
+                    showSheet = newValue
+                }
+            }
     }
 }

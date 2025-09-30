@@ -5,24 +5,77 @@
 //  Created by Artur Rok on 31/05/2024.
 //
 
-import Foundation
-import AppKit
+import SwiftUI
+import CoreAudio
 
-enum Constants {
-    enum AppInfo {
-        static let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
-        static let appBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-        static let repo = URL(string: "https://github.com/rokartur/Micmute")!
-        static let author = URL(string: "https://github.com/rokartur")!
-        static let whatsNew = URL(string: "https://github.com/rokartur/Micmute/releases")!
-    }
+enum AppInfo {
+    static let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
+    static let appBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
+    static let repo = URL(string: "https://github.com/rokartur/micmute")!
+    static let author = URL(string: "https://github.com/rokartur")!
+    static let whatsNew = URL(string: "https://github.com/rokartur/micmute/releases")!
+}
+
+enum AppStorageEntry: String {
+    case selectedDeviceID, isMuted, inputGain, iconSize, menuGrayscaleIcon, unmuteGain, displayOption, placement, padding, isNotificationEnabled, animationType, animationDuration, notificationPinBehavior, menuBarBehavior, launchAtLogin, pushToTalk, menuBehaviorOnClick
+}
+
+enum Appearance {
+    static let smallPreview: Double = 78
+    static let smallCornerRadius: Double = 16
+    static let largePreview: Double = 212
+    static let largeCornerRadius: Double = 20
+    static let largeIcon: Double = 108
+    static let smallIcon: Double = 48
+}
+
+enum Padding {
+    static let small: Double = 35
+    static let medium: Double = 70
+    static let large: Double = 140
     
-    enum Appearance {
-        static let smallPreview = 78 as CGFloat
-        static let smallCornerRadius = 16 as CGFloat
-        static let largePreview = 212 as CGFloat
-        static let largeCornerRadius = 20 as CGFloat
-        static let largeIcon = 108 as CGFloat
-        static let smallIcon = 48 as CGFloat
+}
+
+enum DisplayOption: String {
+    case largeIcon, smallIcon, text, largeBoth, rowSmallBoth
+}
+
+enum Placement: String {
+    case centerBottom, centerTop, leftTop, rightTop, leftBottom, rightBottom
+}
+
+enum AnimationType: String {
+    case none, fade, scale
+}
+
+enum NotificationPinBehavior: String, CaseIterable {
+    case disabled
+    case untilUnmute
+    case always
+}
+
+extension NotificationPinBehavior {
+    func shouldAutoHide(isMuted: Bool) -> Bool {
+        switch self {
+        case .disabled:
+            return true
+        case .untilUnmute:
+            return !isMuted
+        case .always:
+            return false
+        }
     }
+}
+
+enum MenuBarBehavior: String {
+    case mute, menu
+}
+
+struct DeviceEntry: Identifiable, Equatable, Hashable {
+    let id: AudioDeviceID
+    let name: String
+}
+
+extension Notification.Name {
+    static let notificationConfigurationDidChange = Notification.Name("NotificationConfigurationDidChange")
 }
