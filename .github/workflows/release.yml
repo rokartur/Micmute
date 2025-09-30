@@ -13,17 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Swift 6.1
+      - name: Setup Swift
         uses: fwal/setup-swift@v2
         with:
           swift-version: '6.1'
 
-      - name: Swift version
-        run: swift --version
+      - name: Resolve Swift packages
+        run: swift package resolve
 
-      - name: Install CocoaPods
+      - name: Install CocoaPods if Podfile exists
+        if: exists('Podfile')
         run: |
-          brew install cocoapods || true
+          brew install cocoapods
           pod install --repo-update
 
       - name: Build with xcodebuild
