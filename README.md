@@ -28,10 +28,11 @@
 <div align="center">
   <img src="Assets/settings-general.png" align="left" width="400">
   <img src="Assets/settings-notification.png" align="center" width="400">
-<br>
+</div>
 
 ## Package dependencies
 - [AlinFoundation](https://github.com/alienator88/AlinFoundation)
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin-Legacy)
 - [MacControlCenterUI](https://github.com/orchetect/MacControlCenterUI)
+
