@@ -25,7 +25,7 @@ jobs:
       - name: Build with xcodebuild
         run: |
           xcodebuild \
-            -workspace Micmute.xcworkspace \
+            -workspace project.xcworkspace \
             -scheme Micmute \
             -configuration Release \
             -destination 'platform=macOS,arch=arm64' \
