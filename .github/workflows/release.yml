@@ -6,9 +6,7 @@ on:
 
 jobs:
   build:
-    name: Build on macOS
     runs-on: macos-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,14 +36,14 @@ jobs:
       - name: Archive artifact
         run: |
           cd ./build_output/Build/Products/Release
-          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute-${{ steps.get_version.outputs.version }}.zip
-          mv Micmute-${{ steps.get_version.outputs.version }}.zip $GITHUB_WORKSPACE/
+          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute.zip
+          mv Micmute.zip $GITHUB_WORKSPACE/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Micmute-${{ steps.get_version.outputs.version }}
-          path: ${{ github.workspace }}/Micmute-${{ steps.get_version.outputs.version }}.zip
+          name: Micmute
+          path: ${{ github.workspace }}/Micmute.zip
 
   release:
     needs: build
@@ -59,15 +57,34 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: Micmute-${{ needs.build.outputs.app_version }}
+          name: Micmute
           path: .
+
+      - name: Read app version from Info.plist
+        id: appver
+        run: |
+          PLIST="Micmute/Info.plist"
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag if missing
+        run: |
+          TAG="v${{ steps.appver.outputs.version }}"
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists"
+          else
+            git config user.name "github-actions"
+            git config user.email "github-actions@users.noreply.github.com"
+            git tag "$TAG"
+            git push origin "$TAG"
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.build.outputs.app_version }}
-          name: ${{ needs.build.outputs.app_version }}
-          files: Micmute-${{ needs.build.outputs.app_version }}.zip
+          tag_name: ${{ steps.appver.outputs.version }}
+          name: ${{ steps.appver.outputs.version }}
+          files: Micmute-${{ steps.appver.outputs.version }}.zip
           prerelease: true
           generate_release_notes: true
         env:
