@@ -82,6 +82,10 @@ jobs:
             git push origin "$TAG"
           fi
 
+      - name: Rename artifact
+        run: |
+          mv Micmute.zip Micmute-${{ steps.appver.outputs.version }}.zip
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
