@@ -107,6 +107,16 @@
         }
       }
     },
+    "Downloads" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pobrania"
+          }
+        }
+      }
+    },
     "Duration" : {
       "localizations" : {
         "pl" : {
@@ -252,6 +262,16 @@
         }
       }
     },
+    "No release notes available" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brak notatek wydania"
+          }
+        }
+      }
+    },
     "Notification" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -313,6 +333,16 @@
         }
       }
     },
+    "Release notes are still loading" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notatki wydania są wczytywane"
+          }
+        }
+      }
+    },
     "Repository" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -365,11 +395,25 @@
       }
     },
     "Show" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pokaż"
+          }
+        }
+      }
+    },
+    "Show notification" : {
+
+    },
+    "Showing last %lld releases" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyświetlanie ostatnich %lld wydań"
           }
         }
       }
@@ -390,6 +434,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Małe"
+          }
+        }
+      }
+    },
+    "They will appear here right after Micmute fetches them from GitHub." : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pojawią się tutaj, gdy Micmute pobierze je z GitHuba."
           }
         }
       }
@@ -437,6 +491,26 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Version %1$@  Build (%2$@)"
+          }
+        }
+      }
+    },
+    "View all assets on GitHub" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobacz wszystkie pliki na GitHubie"
+          }
+        }
+      }
+    },
+    "View on GitHub" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zobacz na GitHubie"
           }
         }
       }

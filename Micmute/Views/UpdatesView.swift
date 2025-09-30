@@ -32,8 +32,8 @@ struct UpdatesView: View {
                 }
 
                 CustomSectionView(title: "Recent release notes", subtitle: "See what's new in the latest versions") {
-                    ReleasesView(updater: updater)
-                        .frame(minHeight: 200, maxHeight: 280)
+                    MarkdownReleasesView(updater: updater)
+                        .frame(minHeight: 200, maxHeight: 320)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

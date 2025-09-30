@@ -28,6 +28,8 @@
 		75A98F022D5B04DC00246E68 /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */; };
 		75D0AB7D2D58EC2E00CAEE56 /* MacControlCenterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */; };
 		75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */; };
+		75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */; };
+		75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +54,8 @@
 		754C61892D5A3A9E00A418EA /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
 		75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesView.swift; sourceTree = "<group>"; };
+		75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownReleasesView.swift; sourceTree = "<group>"; };
+		75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Release+Markdown.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +132,7 @@
 				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
 				42016B342C0C3A69002135AB /* PreferencesView.swift */,
 				75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */,
+				75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -147,6 +152,7 @@
 				75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */,
 				7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */,
 				427A86A82C0A0B1A000AFAD4 /* Constants.swift */,
+				75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -197,7 +203,6 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
-				Base,
 				pl,
 			);
 			mainGroup = 421B6AF02B37504000946AF4;
@@ -248,6 +253,8 @@
 				42698EBD2C0BE7CB00648D4C /* NotificationView.swift in Sources */,
 				427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */,
 				75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */,
+				75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */,
+				75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
