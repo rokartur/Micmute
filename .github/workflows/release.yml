@@ -1,83 +1,47 @@
-name: Build and Release macOS App
+name: Build and release
 
 on:
   push:
-    branches: [dev]
+    branches: [ dev ]
 
 jobs:
   build:
-    runs-on: macos-15
-    env:
-      DEVELOPMENT_TEAM_ID: N529W98U62
-      SIGNING_ENABLED: ${{ secrets.SIGNING_CERTIFICATE != '' && secrets.SIGNING_PASSWORD != '' }}
-    outputs:
-      app_version: ${{ steps.get_version.outputs.version }}
+    name: Build on macOS
+    runs-on: macos-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
+      - name: Setup Swift 6.1
+        uses: fwal/setup-swift@v1
         with:
-          xcode-version: '16.2'
+          swift-version: '6.1'
 
-      - name: Determine app version
-        id: get_version
+      - name: Swift version
+        run: swift --version
+
+      - name: Install CocoaPods
         run: |
-          set -eo pipefail
-          version=$(xcodebuild -project Micmute.xcodeproj -scheme Micmute -configuration Release -showBuildSettings | awk '/MARKETING_VERSION/ {print $3; exit}')
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+          brew install cocoapods || true
+          pod install --repo-update
 
-      - name: Import signing certificate
-        if: ${{ env.SIGNING_ENABLED == 'true' }}
-        env:
-          SIGNING_CERTIFICATE: ${{ secrets.SIGNING_CERTIFICATE }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+      - name: Build with xcodebuild
         run: |
-          # Create temporary keychain
-          security create-keychain -p temporary_password build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p temporary_password build.keychain
-          security set-keychain-settings -lut 21600 build.keychain
-
-          # Import certificate
-          echo "$SIGNING_CERTIFICATE" | base64 --decode > certificate.p12
-          security import certificate.p12 -k build.keychain -P "$SIGNING_PASSWORD" -T /usr/bin/codesign
-
-          # Set key partition list
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k temporary_password build.keychain
-
-          # Verify certificate
-          security find-identity -v -p codesigning build.keychain
-
-      - name: Build with Xcode
-        env:
-          SIGNING_ENABLED: ${{ env.SIGNING_ENABLED }}
-          DEVELOPMENT_TEAM_ID: ${{ env.DEVELOPMENT_TEAM_ID }}
-        run: |
-          if [ "$SIGNING_ENABLED" = "true" ]; then
-            xcodebuild clean build \
-              -project Micmute.xcodeproj \
-              -scheme Micmute \
-              -configuration Release \
-              -destination "platform=macOS" \
-              DEVELOPMENT_TEAM=$DEVELOPMENT_TEAM_ID \
-              CODE_SIGN_STYLE=Automatic \
-              CODE_SIGN_IDENTITY="Apple Development" \
-              -derivedDataPath build_output
-          else
-            xcodebuild clean build \
-              -project Micmute.xcodeproj \
-              -scheme Micmute \
-              -configuration Release \
-              -destination "platform=macOS" \
-              CODE_SIGN_STYLE=Manual \
-              CODE_SIGN_IDENTITY="" \
-              CODE_SIGNING_ALLOWED=NO \
-              CODE_SIGNING_REQUIRED=NO \
-              DEVELOPMENT_TEAM="" \
-              -derivedDataPath build_output
-          fi
+          xcodebuild \
+            -workspace Micmute.xcworkspace \
+            -scheme Micmute \
+            -configuration Release \
+            -destination 'platform=macOS,arch=arm64' \
+            build \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+  
+      # - name: Archive built app
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: Micmute-macOS
+      #     path: |
+      #       build/Release/Micmute.app
 
       - name: Archive artifact
         run: |
