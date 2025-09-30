@@ -8,10 +8,12 @@
 import SwiftUI
 import CoreAudio
 import MacControlCenterUI
+import AlinFoundation
 
 
 @MainActor
 struct MainMenuView: View {
+    @EnvironmentObject private var updater: Updater
     @Binding var unmuteGain: CGFloat
     @Binding var selectedDeviceID: AudioDeviceID
     @Binding var availableDevices: [AudioDeviceID: String]

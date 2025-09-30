@@ -64,6 +64,7 @@ struct GeneralView: View {
                 .toggleStyle(.switch)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .padding()
     }
 }

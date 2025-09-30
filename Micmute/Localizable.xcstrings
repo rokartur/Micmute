@@ -5,6 +5,7 @@
       "shouldTranslate" : false
     },
     "About" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -25,6 +26,7 @@
       }
     },
     "Author" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -75,6 +77,7 @@
       }
     },
     "Check for Updates" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -125,6 +128,7 @@
       }
     },
     "General" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -165,6 +169,7 @@
       }
     },
     "Leave a ⭐ on GitHub" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -193,6 +198,9 @@
           }
         }
       }
+    },
+    "Made with ❤️ by rokartur" : {
+
     },
     "Medium" : {
       "localizations" : {
@@ -245,6 +253,7 @@
       }
     },
     "Notification" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -305,6 +314,7 @@
       }
     },
     "Repository" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -404,12 +414,29 @@
         }
       }
     },
+    "Update available" : {
+
+    },
+    "v%@" : {
+
+    },
     "Version %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wersja %@"
+          }
+        }
+      }
+    },
+    "Version %@  Build (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Version %1$@  Build (%2$@)"
           }
         }
       }
@@ -425,6 +452,7 @@
       }
     },
     "What's New" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {

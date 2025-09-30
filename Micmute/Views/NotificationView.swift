@@ -48,7 +48,7 @@ struct NotificationView: View {
 
     var body: some View {
         CustomSectionView {
-            HStack(alignment: .top) {
+            VStack {
                 VStack {
                     HStack(alignment: .center) {
                         Text("Show")
@@ -137,6 +137,7 @@ struct NotificationView: View {
                 .frame(width: largePreview, alignment: .center)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .padding([.horizontal, .bottom])
     }
 }

@@ -17,7 +17,7 @@ class PreferencesWindow: NSWindow {
             defer: false
         )
         
-        self.title = "Micmute Preferences"
+        self.title = "Settings"
         self.titlebarAppearsTransparent = true
         self.isMovableByWindowBackground = true
         self.isReleasedWhenClosed = false

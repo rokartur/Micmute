@@ -1,13 +1,22 @@
 {
-  "originHash" : "c2b6d23c10b630877d39fef451d6b76c7b1e483fc3d0f1164c492103657f4c96",
+  "originHash" : "d35f0c4a65dc74de29c6d6bc25fca664872bf2bf7019c6f6883002d14f5b942d",
   "pins" : [
+    {
+      "identity" : "alinfoundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/alienator88/AlinFoundation.git",
+      "state" : {
+        "revision" : "0e20830f32083b5a2f5cb7e374582d3555694995",
+        "version" : "1.0.5"
+      }
+    },
     {
       "identity" : "keyboardshortcuts",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sindresorhus/KeyboardShortcuts",
       "state" : {
-        "revision" : "7ecc38bb6edf7d087d30e737057b8d8a9b7f51eb",
-        "version" : "2.2.4"
+        "revision" : "1aef85578fdd4f9eaeeb8d53b7b4fc31bf08fe27",
+        "version" : "2.4.0"
       }
     },
     {
@@ -15,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/orchetect/MacControlCenterUI",
       "state" : {
-        "revision" : "df9df7c098920f79904a620cd66e7d88c9cd6431",
-        "version" : "2.4.0"
+        "revision" : "a98dc47a61116b126092839cf1617274f5c603dc",
+        "version" : "2.4.2"
       }
     },
     {
@@ -24,17 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/orchetect/MenuBarExtraAccess",
       "state" : {
-        "revision" : "e911e6454f8cbfe34a52136fc48e1ceb989a60e7",
-        "version" : "1.2.1"
-      }
-    },
-    {
-      "identity" : "sparkle",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/sparkle-project/Sparkle",
-      "state" : {
-        "revision" : "0ef1ee0220239b3776f433314515fd849025673f",
-        "version" : "2.6.4"
+        "revision" : "707dff6f55217b3ef5b6be84ced3e83511d4df5c",
+        "version" : "1.2.2"
       }
     }
   ],

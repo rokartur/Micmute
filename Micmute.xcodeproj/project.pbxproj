@@ -9,12 +9,10 @@
 /* Begin PBXBuildFile section */
 		42016B352C0C3A69002135AB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42016B342C0C3A69002135AB /* PreferencesView.swift */; };
 		421A4BFA2C0DCF0D00F7F234 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 421A4BF92C0DCF0D00F7F234 /* KeyboardShortcuts */; };
-		421A4C032C0DCF5300F7F234 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 421A4C022C0DCF5300F7F234 /* Sparkle */; };
 		421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B6AFC2B37504000946AF4 /* MicmuteApp.swift */; };
 		421B6B012B37504100946AF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B002B37504100946AF4 /* Assets.xcassets */; };
 		421B6B042B37504100946AF4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B032B37504100946AF4 /* Preview Assets.xcassets */; };
 		42698EBD2C0BE7CB00648D4C /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42698EBC2C0BE7CB00648D4C /* NotificationView.swift */; };
-		42698EC02C0BFF5900648D4C /* CheckForUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42698EBF2C0BFF5900648D4C /* CheckForUpdate.swift */; };
 		427A86A42C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */; };
 		427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A82C0A0B1A000AFAD4 /* Constants.swift */; };
 		427A86C12C0A52D1000AFAD4 /* CustomSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */; };
@@ -24,10 +22,12 @@
 		752628CE2D596C8D00B54A0B /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752628CD2D596C8900B54A0B /* ContentViewModel.swift */; };
 		75294FD82D598D8F006A58AF /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 75294FD72D598D8F006A58AF /* Localizable.xcstrings */; };
 		7535635C2D5A9F55003391A1 /* MenuBarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */; };
+		7540E7D22E8C1DB600AC906F /* AlinFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7540E7D12E8C1DB600AC906F /* AlinFoundation */; };
 		754C61882D5A378500A418EA /* PreferencesWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61872D5A377F00A418EA /* PreferencesWindow.swift */; };
 		754C618A2D5A3AA000A418EA /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61892D5A3A9E00A418EA /* GeneralView.swift */; };
 		75A98F022D5B04DC00246E68 /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */; };
 		75D0AB7D2D58EC2E00CAEE56 /* MacControlCenterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */; };
+		75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +39,6 @@
 		421B6B0B2B3764BC00946AF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		42698EBB2C0BD99D00648D4C /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Micmute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42698EBC2C0BE7CB00648D4C /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
-		42698EBF2C0BFF5900648D4C /* CheckForUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckForUpdate.swift; sourceTree = "<group>"; };
 		427A86A32C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardShortcuts+Global.swift"; sourceTree = "<group>"; };
 		427A86A82C0A0B1A000AFAD4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSectionView.swift; sourceTree = "<group>"; };
@@ -52,6 +51,7 @@
 		754C61872D5A377F00A418EA /* PreferencesWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindow.swift; sourceTree = "<group>"; };
 		754C61892D5A3A9E00A418EA /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
 		75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
+		75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,7 +60,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				75D0AB7D2D58EC2E00CAEE56 /* MacControlCenterUI in Frameworks */,
-				421A4C032C0DCF5300F7F234 /* Sparkle in Frameworks */,
+				7540E7D22E8C1DB600AC906F /* AlinFoundation in Frameworks */,
 				421A4BFA2C0DCF0D00F7F234 /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -127,6 +127,7 @@
 				42698EBC2C0BE7CB00648D4C /* NotificationView.swift */,
 				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
 				42016B342C0C3A69002135AB /* PreferencesView.swift */,
+				75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -146,7 +147,6 @@
 				75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */,
 				7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */,
 				427A86A82C0A0B1A000AFAD4 /* Constants.swift */,
-				42698EBF2C0BFF5900648D4C /* CheckForUpdate.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -169,8 +169,8 @@
 			name = Micmute;
 			packageProductDependencies = (
 				421A4BF92C0DCF0D00F7F234 /* KeyboardShortcuts */,
-				421A4C022C0DCF5300F7F234 /* Sparkle */,
 				75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */,
+				7540E7D12E8C1DB600AC906F /* AlinFoundation */,
 			);
 			productName = Micmute;
 			productReference = 42698EBB2C0BD99D00648D4C /* Micmute.app */;
@@ -203,8 +203,8 @@
 			mainGroup = 421B6AF02B37504000946AF4;
 			packageReferences = (
 				421A4BF82C0DCF0D00F7F234 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
-				421A4C012C0DCF5300F7F234 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */,
+				7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */,
 			);
 			productRefGroup = 421B6AF02B37504000946AF4;
 			projectDirPath = "";
@@ -244,10 +244,10 @@
 				421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */,
 				752628CB2D596C2C00B54A0B /* MenuView.swift in Sources */,
 				75A98F022D5B04DC00246E68 /* LaunchAtLoginManager.swift in Sources */,
-				42698EC02C0BFF5900648D4C /* CheckForUpdate.swift in Sources */,
 				427A86A42C0A036F000AFAD4 /* KeyboardShortcuts+Global.swift in Sources */,
 				42698EBD2C0BE7CB00648D4C /* NotificationView.swift in Sources */,
 				427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */,
+				75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -487,12 +487,12 @@
 				minimumVersion = 2.0.1;
 			};
 		};
-		421A4C012C0DCF5300F7F234 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+		7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			repositoryURL = "https://github.com/alienator88/AlinFoundation.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.6.3;
+				minimumVersion = 1.0.5;
 			};
 		};
 		75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */ = {
@@ -511,10 +511,10 @@
 			package = 421A4BF82C0DCF0D00F7F234 /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
 			productName = KeyboardShortcuts;
 		};
-		421A4C022C0DCF5300F7F234 /* Sparkle */ = {
+		7540E7D12E8C1DB600AC906F /* AlinFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 421A4C012C0DCF5300F7F234 /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
+			package = 7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */;
+			productName = AlinFoundation;
 		};
 		75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */ = {
 			isa = XCSwiftPackageProductDependency;

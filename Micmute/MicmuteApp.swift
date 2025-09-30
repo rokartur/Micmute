@@ -3,16 +3,20 @@ import CoreAudio
 import CoreAudioKit
 import MacControlCenterUI
 import Combine
+import AlinFoundation
+import AppKit
 
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @ObservedObject var contentViewModel = ContentViewModel()
+    let updater = Updater(owner: "rokartur", repo: "Micmute")
     var statusBarItem: NSStatusItem!
     var statusBarMenu: NSMenu!
     var statusBarMenuItem: NSMenuItem!
 
     private var preferencesWindow: PreferencesWindow!
+    private var updaterWindow: NSWindow?
     var micMute: NSImage = getMicMuteImage()
     var micUnmute: NSImage = getMicUnmuteImage()
 
@@ -21,6 +25,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var cancellables = Set<AnyCancellable>()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        // Observe updater sheet state and trigger windows when needed
+        updater.$sheet
+            .receive(on: RunLoop.main)
+            .sink { [weak self] showSheet in
+                guard let self else { return }
+                if showSheet {
+                    self.presentUpdaterWindow()
+                } else {
+                    self.closeUpdaterWindow()
+                }
+            }
+            .store(in: &cancellables)
+
+        // Initialize updater and check for updates
+        updater.checkAndUpdateIfNeeded()
+        
         let statusBar = NSStatusBar.system
         statusBarItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
         let isMuted = contentViewModel.isMuted
@@ -58,7 +78,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             onDeviceSelected: { [weak self] deviceID in self?.updateSelectedDevice(to: deviceID) },
             onAppear: { [weak self ] in self?.openMenu() },
             onDisappear: { [weak self ] in self?.closeMenu() }
-        ))
+        ).environmentObject(updater))
         volumeView.translatesAutoresizingMaskIntoConstraints = false
 
         let tempView = NSView()
@@ -104,8 +124,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         if preferencesWindow == nil {
             preferencesWindow = PreferencesWindow()
-            let preferencesView = PreferencesView(parentWindow: preferencesWindow)
-            let hostedPrefView = NSHostingView(rootView: preferencesView)
+            let preferencesRoot = PreferencesView(parentWindow: preferencesWindow)
+                .environmentObject(updater)
+            let hostedPrefView = NSHostingView(rootView: preferencesRoot)
             preferencesWindow.contentView = hostedPrefView
             let fittingSize = hostedPrefView.intrinsicContentSize
             preferencesWindow.setContentSize(fittingSize)
@@ -117,6 +138,42 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             self.preferencesWindow.makeKeyAndOrderFront(nil)
             self.preferencesWindow.makeKey()
         }
+    }
+
+    private func presentUpdaterWindow() {
+        if updaterWindow == nil {
+            let hostView = UpdateSheetHost(updater: updater) { [weak self] in
+                guard let self else { return }
+                updater.sheet = false
+                closeUpdaterWindow()
+            }
+
+            let hostingController = NSHostingController(rootView: hostView)
+            let window = NSWindow(
+                contentRect: NSRect(x: 0, y: 0, width: 10, height: 10),
+                styleMask: [.borderless],
+                backing: .buffered,
+                defer: false
+            )
+            window.isOpaque = false
+            window.alphaValue = 0.01
+            window.backgroundColor = .clear
+            window.hasShadow = false
+            window.level = .floating
+            window.ignoresMouseEvents = true
+            window.isReleasedWhenClosed = false
+            window.contentViewController = hostingController
+            updaterWindow = window
+        }
+
+        guard let window = updaterWindow else { return }
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+    }
+
+    private func closeUpdaterWindow() {
+        updaterWindow?.close()
+        updaterWindow = nil
     }
 
     func updateSelectedDevice(to deviceID: AudioDeviceID) {
@@ -192,4 +249,26 @@ struct MicmuteApp: App {
 @MainActor
 func activateApp() {
     NSApp.activate(ignoringOtherApps: true)
+}
+
+private struct UpdateSheetHost: View {
+    @ObservedObject var updater: Updater
+    var onDismiss: () -> Void
+    @State private var showSheet = true
+
+    var body: some View {
+        Color.clear
+            .frame(width: 1, height: 1)
+            .sheet(isPresented: $showSheet, onDismiss: onDismiss) {
+                updater.getUpdateView()
+            }
+            .onAppear {
+                showSheet = true
+            }
+            .onChange(of: updater.sheet) { newValue in
+                if showSheet != newValue {
+                    showSheet = newValue
+                }
+            }
+    }
 }
