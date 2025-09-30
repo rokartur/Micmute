@@ -26,7 +26,7 @@ Micmute require macOS 14 or latest.
 </div>
 
 ## Package dependencies
+- [AlinFoundation](https://github.com/alienator88/AlinFoundation)
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin-Legacy)
-- [SettingsAccess](https://github.com/orchetect/SettingsAccess)
-- [Sparkle](https://sparkle-project.org/)
+- [MacControlCenterUI](https://github.com/orchetect/MacControlCenterUI)
