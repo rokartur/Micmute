@@ -18,9 +18,6 @@ jobs:
         with:
           swift-version: '6.1'
 
-      - name: Resolve Swift packages
-        run: swift package resolve
-
       - name: Install CocoaPods
         run: |
           brew install cocoapods || true
