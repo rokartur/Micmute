@@ -60,11 +60,14 @@ jobs:
           name: Micmute
           path: .
 
-      - name: Read app version from Info.plist
+      - name: Read app version from Xcode settings
         id: appver
         run: |
-          PLIST="Micmute/Info.plist"
-          VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$PLIST")
+          VERSION=$(xcodebuild -project Micmute.xcodeproj -scheme Micmute -showBuildSettings | awk -F= '/MARKETING_VERSION/ {gsub(/ /,"",$2); print $2; exit}')
+          if [ -z "$VERSION" ]; then
+            echo "MARKETING_VERSION not found. Ensure it's set in target Build Settings." >&2
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create tag if missing
