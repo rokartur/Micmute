@@ -28,16 +28,12 @@ jobs:
             -project Micmute.xcodeproj \
             -scheme Micmute \
             -configuration Release \
-            -destination "platform=macOS" \
+            -destination "platform=macOS,arch=arm64" \
+            -derivedDataPath build_output \
+            CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            -derivedDataPath build_output
-  
-      # - name: Archive built app
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: Micmute-macOS
-      #     path: |
-      #       build/Release/Micmute.app
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_ENTITLEMENTS=""
 
       - name: Archive artifact
         run: |
@@ -67,10 +63,10 @@ jobs:
           path: .
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.build.outputs.app_version }}
-          name: v${{ needs.build.outputs.app_version }}
+          tag_name: ${{ needs.build.outputs.app_version }}
+          name: ${{ needs.build.outputs.app_version }}
           files: Micmute-${{ needs.build.outputs.app_version }}.zip
           prerelease: true
           generate_release_notes: true
