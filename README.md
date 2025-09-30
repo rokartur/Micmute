@@ -14,6 +14,15 @@
 
 <sup>Requires macOS 14 or later.</sup>
 
+## Disclaimer
+<img width="248" height="238" alt="Capture screen Tuesday 30 September 2025 at 10  15 28 kad4wkmg" src="https://github.com/user-attachments/assets/36b8a3b1-ae43-47bc-8fc1-84660c0e2578" />
+<br>
+The application is secure. This message appears because I do not have an Apple Developer license. To run the application, enter the following command in the terminal.
+
+```
+xattr -rd com.apple.quarantine /Applications/Micmute.app
+```
+
 ## Features
 - Select input device to mute/unmute
 - Toggle mute with click in menu bar
@@ -35,4 +44,5 @@
 - [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin-Legacy)
 - [MacControlCenterUI](https://github.com/orchetect/MacControlCenterUI)
+
 
