@@ -15,6 +15,12 @@
         }
       }
     },
+    "Always show" : {
+
+    },
+    "Always top" : {
+
+    },
     "Animation" : {
       "localizations" : {
         "pl" : {
@@ -96,6 +102,9 @@
           }
         }
       }
+    },
+    "Disabled" : {
+
     },
     "Display" : {
       "localizations" : {
@@ -467,6 +476,9 @@
           }
         }
       }
+    },
+    "Until unmute" : {
+
     },
     "Update available" : {
 

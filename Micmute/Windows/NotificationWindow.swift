@@ -85,19 +85,21 @@ class NotificationWindowController: NSWindowController {
     var displayOption: DisplayOption
     var placement: Placement
     var padding: Double
+    var pinBehavior: NotificationPinBehavior
 
     let smallPreview = Appearance.smallPreview
     let smallCornerRadius = Appearance.smallCornerRadius
     let largePreview = Appearance.largePreview
     let largeCornerRadius = Appearance.largeCornerRadius
     
-    init(isMuted: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double) {
+    init(isMuted: Bool, animationType: AnimationType, animationDuration: Double, displayOption: DisplayOption, placement: Placement, padding: Double, pinBehavior: NotificationPinBehavior) {
         self.isMuted = isMuted
         self.animationType = animationType
         self.animationDuration = animationDuration
         self.displayOption = displayOption
         self.placement = placement
         self.padding = padding
+        self.pinBehavior = pinBehavior
 
         let windowWidthSize = self.displayOption == .smallIcon ? smallPreview : largePreview
         let windowHeightSize = self.displayOption == .rowSmallBoth || self.displayOption == .text || self.displayOption == .smallIcon ? smallPreview : largePreview
@@ -181,6 +183,12 @@ class NotificationWindowController: NSWindowController {
                 notificationWindow.animator().setFrame(originalFrame, display: true)
                 notificationWindow.animator().alphaValue = 1
             }
+        }
+
+        let shouldAutoHide = pinBehavior.shouldAutoHide(isMuted: isMuted)
+
+        guard shouldAutoHide else {
+            return
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {

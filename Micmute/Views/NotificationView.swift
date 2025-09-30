@@ -33,6 +33,7 @@ struct NotificationView: View {
     @AppStorage(AppStorageEntry.displayOption.rawValue) var displayOption: DisplayOption = .largeBoth
     @AppStorage(AppStorageEntry.placement.rawValue) var placement: Placement = .centerBottom
     @AppStorage(AppStorageEntry.padding.rawValue) var padding: Double = 70.0
+    @AppStorage(AppStorageEntry.notificationPinBehavior.rawValue) var notificationPinBehavior: NotificationPinBehavior = .disabled
 
     let smallPreview = Appearance.smallPreview
     let smallCornerRadius = Appearance.smallCornerRadius
@@ -67,6 +68,10 @@ struct NotificationView: View {
         .gridCellUnsizedAxes(.vertical)
     }
 
+    private func notifyConfigurationChanged() {
+        NotificationCenter.default.post(name: .notificationConfigurationDidChange, object: nil)
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             CustomSectionView(title: "Behavior") {
@@ -79,6 +84,26 @@ struct NotificationView: View {
                                 .labelsHidden()
                                 .controlSize(.mini)
                                 .toggleStyle(.switch)
+                                .onChange(of: isNotificationEnabled) { _, _ in
+                                    notifyConfigurationChanged()
+                                }
+                        }
+                        .gridColumnAlignment(.trailing)
+                    }
+
+                    GridRow {
+                        Text("Always top")
+                            .gridColumnAlignment(.leading)
+                        halfWidthControl {
+                            Picker("", selection: $notificationPinBehavior) {
+                                Text("Disabled").tag(NotificationPinBehavior.disabled)
+                                Text("Until unmute").tag(NotificationPinBehavior.untilUnmute)
+                                Text("Always show").tag(NotificationPinBehavior.always)
+                            }
+                            .labelsHidden()
+                            .onChange(of: notificationPinBehavior) { _, _ in
+                                notifyConfigurationChanged()
+                            }
                         }
                         .gridColumnAlignment(.trailing)
                     }
@@ -93,6 +118,9 @@ struct NotificationView: View {
                                 Text("Scale").tag(AnimationType.scale)
                             }
                             .labelsHidden()
+                            .onChange(of: animationType) { _, _ in
+                                notifyConfigurationChanged()
+                            }
                         }
                         .gridColumnAlignment(.trailing)
                     }
@@ -106,6 +134,7 @@ struct NotificationView: View {
                                 set: { newValue in
                                     if newValue >= 1 && newValue <= 5 {
                                         self.animationDuration = newValue
+                                        notifyConfigurationChanged()
                                     }
                                 }
                             ), formatter: formatter)
@@ -132,6 +161,9 @@ struct NotificationView: View {
                                 Text("Row Small Both").tag(DisplayOption.rowSmallBoth)
                             }
                             .labelsHidden()
+                            .onChange(of: displayOption) { _, _ in
+                                notifyConfigurationChanged()
+                            }
                         }
                         .gridColumnAlignment(.trailing)
                     }
@@ -149,6 +181,9 @@ struct NotificationView: View {
                                 Text("Right Bottom").tag(Placement.rightBottom)
                             }
                             .labelsHidden()
+                            .onChange(of: placement) { _, _ in
+                                notifyConfigurationChanged()
+                            }
                         }
                         .gridColumnAlignment(.trailing)
                     }
@@ -163,6 +198,9 @@ struct NotificationView: View {
                                 Text("Large").tag(Padding.large)
                             }
                             .labelsHidden()
+                            .onChange(of: padding) { _, _ in
+                                notifyConfigurationChanged()
+                            }
                         }
                         .gridColumnAlignment(.trailing)
                     }

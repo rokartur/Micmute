@@ -17,7 +17,7 @@ enum AppInfo {
 }
 
 enum AppStorageEntry: String {
-    case selectedDeviceID, isMuted, inputGain, iconSize, menuGrayscaleIcon, unmuteGain, displayOption, placement, padding, isNotificationEnabled, animationType, animationDuration, menuBarBehavior, launchAtLogin, pushToTalk, menuBehaviorOnClick
+    case selectedDeviceID, isMuted, inputGain, iconSize, menuGrayscaleIcon, unmuteGain, displayOption, placement, padding, isNotificationEnabled, animationType, animationDuration, notificationPinBehavior, menuBarBehavior, launchAtLogin, pushToTalk, menuBehaviorOnClick
 }
 
 enum Appearance {
@@ -48,6 +48,25 @@ enum AnimationType: String {
     case none, fade, scale
 }
 
+enum NotificationPinBehavior: String, CaseIterable {
+    case disabled
+    case untilUnmute
+    case always
+}
+
+extension NotificationPinBehavior {
+    func shouldAutoHide(isMuted: Bool) -> Bool {
+        switch self {
+        case .disabled:
+            return true
+        case .untilUnmute:
+            return !isMuted
+        case .always:
+            return false
+        }
+    }
+}
+
 enum MenuBarBehavior: String {
     case mute, menu
 }
@@ -55,4 +74,8 @@ enum MenuBarBehavior: String {
 struct DeviceEntry: Identifiable, Equatable, Hashable {
     let id: AudioDeviceID
     let name: String
+}
+
+extension Notification.Name {
+    static let notificationConfigurationDidChange = Notification.Name("NotificationConfigurationDidChange")
 }

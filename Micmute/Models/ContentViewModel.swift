@@ -39,6 +39,7 @@ class ContentViewModel: ObservableObject {
     @AppStorage(AppStorageEntry.displayOption.rawValue) var displayOption: DisplayOption = .largeBoth
     @AppStorage(AppStorageEntry.placement.rawValue) var placement: Placement = .centerBottom
     @AppStorage(AppStorageEntry.padding.rawValue) var padding: Double = 70.0
+    @AppStorage(AppStorageEntry.notificationPinBehavior.rawValue) var notificationPinBehavior: NotificationPinBehavior = .disabled
     @AppStorage(AppStorageEntry.iconSize.rawValue) var iconSize: Int = 70
     @AppStorage(AppStorageEntry.pushToTalk.rawValue) var pushToTalk: Bool = false
     @AppStorage(AppStorageEntry.menuGrayscaleIcon.rawValue) var menuGrayscaleIcon: Bool = false
@@ -56,12 +57,14 @@ class ContentViewModel: ObservableObject {
         loadAudioDevices()
         setDefaultSystemInputDevice()
         registerDeviceChangeListener()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNotificationConfigurationChange(_:)), name: .notificationConfigurationDidChange, object: nil)
 
         print("ContentViewModel initialized")
     }
 
     deinit {
         unregisterDeviceChangeListener()
+        NotificationCenter.default.removeObserver(self, name: .notificationConfigurationDidChange, object: nil)
         print("ContentViewModel deinitialized")
     }
     
@@ -75,7 +78,15 @@ class ContentViewModel: ObservableObject {
         
         if isNotificationEnabled {
             notificationWindowController?.close()
-            notificationWindowController = NotificationWindowController(isMuted: isMuted, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
+            notificationWindowController = NotificationWindowController(
+                isMuted: isMuted,
+                animationType: animationType,
+                animationDuration: animationDuration,
+                displayOption: displayOption,
+                placement: placement,
+                padding: padding,
+                pinBehavior: notificationPinBehavior
+            )
             notificationWindowController?.showWindow(nil)
         }
 
@@ -84,8 +95,47 @@ class ContentViewModel: ObservableObject {
     
     func checkMuteStatus() {
         notificationWindowController?.close()
-        notificationWindowController = NotificationWindowController(isMuted: isMuted, animationType: animationType, animationDuration: animationDuration, displayOption: displayOption, placement: placement, padding: padding)
+        notificationWindowController = NotificationWindowController(
+            isMuted: isMuted,
+            animationType: animationType,
+            animationDuration: animationDuration,
+            displayOption: displayOption,
+            placement: placement,
+            padding: padding,
+            pinBehavior: notificationPinBehavior
+        )
         notificationWindowController?.showWindow(nil)
+    }
+
+    @objc private func handleNotificationConfigurationChange(_ notification: Notification) {
+        DispatchQueue.main.async {
+            self.refreshPinnedNotification()
+        }
+    }
+
+    private func refreshPinnedNotification() {
+        guard let controller = notificationWindowController,
+              let window = controller.window,
+              window.isVisible else { return }
+
+        if !isNotificationEnabled || notificationPinBehavior.shouldAutoHide(isMuted: isMuted) {
+            controller.close()
+            notificationWindowController = nil
+            return
+        }
+
+        controller.close()
+        let newController = NotificationWindowController(
+            isMuted: isMuted,
+            animationType: animationType,
+            animationDuration: animationDuration,
+            displayOption: displayOption,
+            placement: placement,
+            padding: padding,
+            pinBehavior: notificationPinBehavior
+        )
+        notificationWindowController = newController
+        newController.showWindow(nil)
     }
 
     func loadAudioDevices() {
