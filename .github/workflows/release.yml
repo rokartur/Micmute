@@ -1,9 +1,5 @@
 name: Build and release
 
-on:
-  push:
-    branches: [ dev ]
-
 jobs:
   build:
     runs-on: macos-latest
@@ -92,7 +88,6 @@ jobs:
           tag_name: ${{ steps.appver.outputs.version }}
           name: ${{ steps.appver.outputs.version }}
           files: Micmute-${{ steps.appver.outputs.version }}.zip
-          prerelease: true
-          generate_release_notes: true
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
