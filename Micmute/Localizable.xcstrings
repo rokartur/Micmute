@@ -16,10 +16,24 @@
       }
     },
     "Always show" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zawsze pokazuj"
+          }
+        }
+      }
     },
     "Always top" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zawsze u góry"
+          }
+        }
+      }
     },
     "Animation" : {
       "localizations" : {
@@ -104,7 +118,14 @@
       }
     },
     "Disabled" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyłączone"
+          }
+        }
+      }
     },
     "Display" : {
       "localizations" : {
@@ -158,7 +179,14 @@
       }
     },
     "Hold the shortcut to temporarily unmute" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przytrzymaj, aby tymczasowo wyłączyć wyciszenie"
+          }
+        }
+      }
     },
     "Large" : {
       "localizations" : {
@@ -222,7 +250,14 @@
       }
     },
     "Made with ❤️ by rokartur" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wykonane z ❤️ przez rokartur"
+          }
+        }
+      }
     },
     "Medium" : {
       "localizations" : {
@@ -235,7 +270,14 @@
       }
     },
     "Mic unmutes while the shortcut is held" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mikrofon włącza się po przytrzymaniu"
+          }
+        }
+      }
     },
     "Micmute" : {
       "localizations" : {
@@ -349,10 +391,24 @@
       }
     },
     "Push to talk" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naciśnij, aby mówić"
+          }
+        }
+      }
     },
     "Push to talk mode" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryb „naciśnij, aby mówić”"
+          }
+        }
+      }
     },
     "Release notes are still loading" : {
       "localizations" : {
@@ -427,7 +483,14 @@
       }
     },
     "Show notification" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokaż powiadomienie"
+          }
+        }
+      }
     },
     "Showing last %lld releases" : {
       "localizations" : {
@@ -490,13 +553,34 @@
       }
     },
     "Until unmute" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do momentu wyłączenia wyciszenia"
+          }
+        }
+      }
     },
     "Update available" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dostępna aktualizacja"
+          }
+        }
+      }
     },
     "v%@" : {
-
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "v%@"
+          }
+        }
+      }
     },
     "Version %@" : {
       "extractionState" : "stale",
@@ -515,6 +599,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Version %1$@  Build (%2$@)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wersja %1$@  Build (%2$@)"
           }
         }
       }
