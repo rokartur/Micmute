@@ -22,15 +22,15 @@ jobs:
         run: |
           brew install cocoapods || true
 
-      - name: Build with xcodebuild
+      - name: Build with Xcode
         run: |
-          xcodebuild \
-            -workspace project.xcworkspace \
+          xcodebuild clean build \
+            -project Micmute.xcodeproj \
             -scheme Micmute \
             -configuration Release \
-            -destination 'platform=macOS,arch=arm64' \
-            build \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+            -destination "platform=macOS" \
+            CODE_SIGNING_REQUIRED=NO \
+            -derivedDataPath build_output
   
       # - name: Archive built app
       #   uses: actions/upload-artifact@v3
