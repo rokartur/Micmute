@@ -25,6 +25,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var cancellables = Set<AnyCancellable>()
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
+        UpdaterSupport.ensureDownloadDirectoryExists()
+
         // Observe updater sheet state and trigger windows when needed
         updater.$sheet
             .receive(on: RunLoop.main)
@@ -261,6 +263,9 @@ private struct UpdateSheetHost: View {
             .frame(width: 1, height: 1)
             .sheet(isPresented: $showSheet, onDismiss: onDismiss) {
                 updater.getUpdateView()
+                    .onAppear {
+                        UpdaterSupport.ensureDownloadDirectoryExists()
+                    }
             }
             .onAppear {
                 showSheet = true

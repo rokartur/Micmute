@@ -30,6 +30,7 @@
 		75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */; };
 		75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */; };
 		75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */; };
+		76B7D5A12F0A8BF500AB1234 /* UpdaterSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesView.swift; sourceTree = "<group>"; };
 		75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownReleasesView.swift; sourceTree = "<group>"; };
 		75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Release+Markdown.swift"; sourceTree = "<group>"; };
+		76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterSupport.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +155,7 @@
 				7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */,
 				427A86A82C0A0B1A000AFAD4 /* Constants.swift */,
 				75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */,
+				76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -255,6 +258,7 @@
 				75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */,
 				75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */,
 				75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */,
+				76B7D5A12F0A8BF500AB1234 /* UpdaterSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,7 +417,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.0.1;
+				MARKETING_VERSION = 2.0;
 				"OTHER_CODE_SIGN_FLAGS[sdk=*]" = "--deep";
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -452,7 +456,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 3.0.1;
+				MARKETING_VERSION = 2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
