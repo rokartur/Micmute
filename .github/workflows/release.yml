@@ -21,11 +21,9 @@ jobs:
       - name: Resolve Swift packages
         run: swift package resolve
 
-      - name: Install CocoaPods if Podfile exists
-        if: exists('Podfile')
+      - name: Install CocoaPods
         run: |
-          brew install cocoapods
-          pod install --repo-update
+          brew install cocoapods || true
 
       - name: Build with xcodebuild
         run: |
