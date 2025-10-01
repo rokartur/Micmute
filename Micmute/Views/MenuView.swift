@@ -17,6 +17,7 @@ struct MainMenuView: View {
     @Binding var unmuteGain: CGFloat
     @Binding var selectedDeviceID: AudioDeviceID
     @Binding var availableDevices: [AudioDeviceID: String]
+    @State private var sliderGain: CGFloat = 1.0
     @State private var selectedDevice: DeviceEntry.ID? = nil
     var onDeviceSelected: (AudioDeviceID) -> Void
     var onAppear: () -> Void = { }
@@ -26,6 +27,29 @@ struct MainMenuView: View {
         availableDevices.sorted { $0.key < $1.key }.map { DeviceEntry(id: $0.key, name: $0.value) }
     }
     
+    init(
+        unmuteGain: Binding<CGFloat>,
+        selectedDeviceID: Binding<AudioDeviceID>,
+        availableDevices: Binding<[AudioDeviceID: String]>,
+        onDeviceSelected: @escaping (AudioDeviceID) -> Void,
+        onAppear: @escaping () -> Void = { },
+        onDisappear: @escaping () -> Void = { }
+    ) {
+        self._unmuteGain = unmuteGain
+        self._selectedDeviceID = selectedDeviceID
+        self._availableDevices = availableDevices
+        self.onDeviceSelected = onDeviceSelected
+        self.onAppear = onAppear
+        self.onDisappear = onDisappear
+        self._sliderGain = State(initialValue: unmuteGain.wrappedValue)
+    }
+
+    private var sliderGainPercentage: String {
+        let clampedGain = min(max(sliderGain, .zero), CGFloat(1))
+        let percentValue = Int((clampedGain * 100).rounded())
+        return "\(percentValue)%"
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 8) {
@@ -33,10 +57,21 @@ struct MainMenuView: View {
                     .padding(.top, 6)
                     .padding(.horizontal, 12)
                 
-                MenuVolumeSlider(value: $unmuteGain)
-                    .padding(.horizontal, 12)
+                HStack(alignment: .center, spacing: 8) {
+                    MenuVolumeSlider(value: $sliderGain)
+                        .layoutPriority(1)
+                        .onChange(of: sliderGain) { _, newValue in
+                            unmuteGain = newValue
+                        }
+                    Text(sliderGainPercentage)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .monospacedDigit()
+                        .frame(width: 44, alignment: .trailing)
+                }
+                .padding(.horizontal, 12)
             }
-        
+
             Divider()
                 .padding(.vertical, 8)
             
@@ -70,12 +105,18 @@ struct MainMenuView: View {
         .padding(.horizontal, 1)
         .onAppear {
             selectedDevice = selectedDeviceID
+            sliderGain = unmuteGain
             onAppear()
         }
         .onChange(of: selectedDevice) { oldValue, newValue in
             if let newValue = newValue, newValue != selectedDeviceID {
                 selectedDeviceID = newValue
                 onDeviceSelected(newValue)
+            }
+        }
+        .onChange(of: unmuteGain) { _, newValue in
+            if sliderGain != newValue {
+                sliderGain = newValue
             }
         }
         .onDisappear {
