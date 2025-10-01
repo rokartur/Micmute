@@ -12,10 +12,12 @@ public final class ApplicationAudioMonitor {
     private let queue = DispatchQueue(label: "com.rokartur.Micmute.audio-monitor", qos: .userInitiated)
     private var timer: DispatchSourceTimer?
     private let logger = Logger(subsystem: "com.rokartur.Micmute", category: "ApplicationAudioMonitor")
+    private let driver: VirtualDriverBridge
 
     private let refreshInterval: TimeInterval
 
-    public init(refreshInterval: TimeInterval = 1.0) {
+    public init(driver: VirtualDriverBridge = .shared, refreshInterval: TimeInterval = 1.0) {
+        self.driver = driver
         self.refreshInterval = refreshInterval
     }
 
@@ -42,27 +44,53 @@ public final class ApplicationAudioMonitor {
         timer = nil
     }
 
+    public func refresh() {
+        queue.async { [weak self] in
+            self?.pollRunningApplications()
+        }
+    }
+
     private func pollRunningApplications() {
         #if DEBUG
         // In debug builds, provide mock data to allow UI prototyping without a driver.
         subject.send(AudioApplication.mockItems)
         #else
+        // Get active audio bundle IDs from the driver
+        let activeBundleIDs = driver.refreshActiveApplications()
+        
+        guard !activeBundleIDs.isEmpty else {
+            subject.send([])
+            return
+        }
+        
+        logger.debug("Driver reported \(activeBundleIDs.count) active audio bundle IDs: \(activeBundleIDs.joined(separator: ", "), privacy: .public)")
+        
+        // Match bundle IDs with running applications to get names and icons
         let runningApps = NSWorkspace.shared.runningApplications
-        let applications = runningApps
-            .compactMap { app -> AudioApplication? in
-                guard let bundleID = app.bundleIdentifier, !bundleID.isEmpty else {
-                    return nil
-                }
-
-                return AudioApplication(
-                    name: app.localizedName ?? bundleID,
-                    bundleID: bundleID,
-                    processID: app.processIdentifier,
-                    icon: app.icon,
-                    volume: 1.0,
-                    isMuted: false
-                )
-            }
+        let bundleIDToApp = Dictionary(uniqueKeysWithValues: runningApps.compactMap { app -> (String, NSRunningApplication)? in
+            guard let bundleID = app.bundleIdentifier else { return nil }
+            return (bundleID, app)
+        })
+        
+        let applications: [AudioApplication] = activeBundleIDs.compactMap { bundleID in
+            let app = bundleIDToApp[bundleID]
+            let name = app?.localizedName ?? bundleID
+            let icon = app?.icon
+            
+            // Get volume and mute state from driver
+            let volume = driver.volume(bundleID: bundleID).map { Double($0) } ?? 1.0
+            let isMuted = driver.isMuted(bundleID: bundleID).map { $0 } ?? false
+            
+            return AudioApplication(
+                name: name,
+                bundleID: bundleID,
+                processID: app?.processIdentifier ?? 0,
+                icon: icon,
+                volume: volume,
+                isMuted: isMuted
+            )
+        }
+        
         subject.send(applications)
         #endif
     }

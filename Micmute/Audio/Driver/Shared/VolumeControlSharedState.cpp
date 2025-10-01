@@ -68,16 +68,16 @@ std::size_t SharedMemorySize() {
 }
 
 std::string SharedMemoryPathForUID(uid_t uid) {
-    char buffer[PATH_MAX];
-    std::snprintf(buffer, sizeof(buffer), "%s", kSharedMemoryDirectory);
-    std::string directory(buffer);
-
-    std::snprintf(buffer, sizeof(buffer), kSharedMemoryFilenameTemplate, static_cast<unsigned int>(uid));
-    if (!directory.empty() && directory.back() != '/') {
-        directory.push_back('/');
+    // Use a single global shared memory file instead of per-user files
+    // This allows coreaudiod (running as root) to share state with user applications
+    (void)uid; // unused parameter
+    
+    std::string path(kSharedMemoryDirectory);
+    if (!path.empty() && path.back() != '/') {
+        path.push_back('/');
     }
-    directory.append(buffer);
-    return directory;
+    path.append(kSharedMemoryFilenameTemplate);
+    return path;
 }
 
 std::uint64_t HashBundleIdentifier(const char* bundleID) {
