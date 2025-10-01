@@ -10,6 +10,7 @@ import AlinFoundation
 
 enum PreferenceTab: String, CaseIterable {
     case general = "General"
+    case perAppAudio = "Per-app Audio"
     case notification = "Notification"
     case updates = "Updates"
     case about = "About"
@@ -18,6 +19,8 @@ enum PreferenceTab: String, CaseIterable {
         switch self {
         case .general:
             return "gearshape"
+        case .perAppAudio:
+            return "slider.horizontal.3"
         case .notification:
             return "bell.badge"
         case .updates:
@@ -107,6 +110,8 @@ struct PreferencesView: View {
         switch selectedTab {
         case .general:
             GeneralView()
+        case .perAppAudio:
+            PerAppAudioView()
         case .notification:
             NotificationView()
         case .updates:
