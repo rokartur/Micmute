@@ -39,7 +39,6 @@ xattr -rd com.apple.quarantine /Applications/Micmute.app
 
 ## Package dependencies
 - [AlinFoundation](https://github.com/alienator88/AlinFoundation)
-- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts)
 - [LaunchAtLogin](https://github.com/sindresorhus/LaunchAtLogin-Legacy)
 - [MacControlCenterUI](https://github.com/orchetect/MacControlCenterUI)
 

@@ -9,9 +9,13 @@ import SwiftUI
 import CoreAudio
 import CoreAudioKit
 import MacControlCenterUI
-import KeyboardShortcuts
+import Combine
 
+@MainActor
 class ContentViewModel: ObservableObject {
+    private let shortcutPreferences: ShortcutPreferences
+    private var shortcutCancellables: Set<AnyCancellable> = []
+
     @AppStorage(AppStorageEntry.selectedDeviceID.rawValue) private var storedSelectedDeviceID: Int = Int(kAudioObjectUnknown)
     var selectedDeviceID: AudioDeviceID {
         get { AudioDeviceID(storedSelectedDeviceID) }
@@ -49,33 +53,9 @@ class ContentViewModel: ObservableObject {
     private var isPushToTalkActive = false
     private var wasMutedBeforePushToTalk = true
     
-    init() {
-        KeyboardShortcuts.onKeyUp(for: .toggleMuteShortcut) { [self] in
-            self.toggleMute(deviceID: self.selectedDeviceID)
-        }
-        KeyboardShortcuts.onKeyUp(for: .checkMuteShortcut) { [self] in
-            self.checkMuteStatus()
-        }
-        KeyboardShortcuts.onKeyDown(for: .pushToTalkShortcut) { [self] in
-            guard self.pushToTalk else { return }
-            guard !self.isPushToTalkActive else { return }
-
-            self.isPushToTalkActive = true
-            self.wasMutedBeforePushToTalk = self.isMuted
-
-            if self.isMuted {
-                self.toggleMute(deviceID: self.selectedDeviceID)
-            }
-        }
-        KeyboardShortcuts.onKeyUp(for: .pushToTalkShortcut) { [self] in
-            guard self.isPushToTalkActive else { return }
-
-            self.isPushToTalkActive = false
-
-            if self.wasMutedBeforePushToTalk && !self.isMuted {
-                self.toggleMute(deviceID: self.selectedDeviceID)
-            }
-        }
+    init(shortcutPreferences: ShortcutPreferences) {
+        self.shortcutPreferences = shortcutPreferences
+        configureShortcutBindings()
         loadAudioDevices()
         setDefaultSystemInputDevice()
         registerDeviceChangeListener()
@@ -85,6 +65,9 @@ class ContentViewModel: ObservableObject {
     }
 
     deinit {
+        GlobalShortcutManager.shared.unregister(.toggleMute)
+        GlobalShortcutManager.shared.unregister(.checkMute)
+        GlobalShortcutManager.shared.unregister(.pushToTalk)
         unregisterDeviceChangeListener()
         NotificationCenter.default.removeObserver(self, name: .notificationConfigurationDidChange, object: nil)
         print("ContentViewModel deinitialized")
@@ -158,6 +141,74 @@ class ContentViewModel: ObservableObject {
         )
         notificationWindowController = newController
         newController.showWindow(nil)
+    }
+
+    private func configureShortcutBindings() {
+        registerToggleMuteShortcut(shortcutPreferences.toggleMuteShortcut)
+        registerCheckMuteShortcut(shortcutPreferences.checkMuteShortcut)
+        registerPushToTalkShortcut(shortcutPreferences.pushToTalkShortcut)
+
+        shortcutPreferences.$toggleMuteShortcut
+            .sink { [weak self] shortcut in
+                self?.registerToggleMuteShortcut(shortcut)
+            }
+            .store(in: &shortcutCancellables)
+
+        shortcutPreferences.$checkMuteShortcut
+            .sink { [weak self] shortcut in
+                self?.registerCheckMuteShortcut(shortcut)
+            }
+            .store(in: &shortcutCancellables)
+
+        shortcutPreferences.$pushToTalkShortcut
+            .sink { [weak self] shortcut in
+                self?.registerPushToTalkShortcut(shortcut)
+            }
+            .store(in: &shortcutCancellables)
+    }
+
+    private func registerToggleMuteShortcut(_ shortcut: Shortcut?) {
+        GlobalShortcutManager.shared.register(.toggleMute, shortcut: shortcut, keyUp: { [weak self] in
+            guard let self else { return }
+            self.toggleMute(deviceID: self.selectedDeviceID)
+        })
+    }
+
+    private func registerCheckMuteShortcut(_ shortcut: Shortcut?) {
+        GlobalShortcutManager.shared.register(.checkMute, shortcut: shortcut, keyUp: { [weak self] in
+            self?.checkMuteStatus()
+        })
+    }
+
+    private func registerPushToTalkShortcut(_ shortcut: Shortcut?) {
+        GlobalShortcutManager.shared.register(
+            .pushToTalk,
+            shortcut: shortcut,
+            keyDown: { [weak self] in self?.handlePushToTalkDown() },
+            keyUp: { [weak self] in self?.handlePushToTalkUp() }
+        )
+    }
+
+    private func handlePushToTalkDown() {
+        guard pushToTalk else { return }
+        guard !isPushToTalkActive else { return }
+
+        isPushToTalkActive = true
+        wasMutedBeforePushToTalk = isMuted
+
+        if isMuted {
+            toggleMute(deviceID: selectedDeviceID)
+        }
+    }
+
+    private func handlePushToTalkUp() {
+        guard isPushToTalkActive else { return }
+
+        isPushToTalkActive = false
+
+        if wasMutedBeforePushToTalk && !isMuted {
+            toggleMute(deviceID: selectedDeviceID)
+        }
     }
 
     func loadAudioDevices() {
@@ -323,7 +374,7 @@ class ContentViewModel: ObservableObject {
         AudioObjectAddPropertyListener(AudioObjectID(kAudioObjectSystemObject), &address, deviceChangeListener, nil)
     }
     
-    func unregisterDeviceChangeListener() {
+    nonisolated(unsafe) func unregisterDeviceChangeListener() {
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDevices,
             mScope: kAudioObjectPropertyScopeGlobal,

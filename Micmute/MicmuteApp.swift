@@ -9,7 +9,8 @@ import AppKit
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
-    @ObservedObject var contentViewModel = ContentViewModel()
+    let shortcutPreferences: ShortcutPreferences
+    @ObservedObject var contentViewModel: ContentViewModel
     let perAppVolumeManager = PerAppAudioVolumeManager()
     let updater = Updater(owner: "rokartur", repo: "Micmute")
     var statusBarItem: NSStatusItem!
@@ -24,6 +25,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let refreshInterval: TimeInterval = 1.0
     @State private var refreshTimer: Timer?
     private var cancellables = Set<AnyCancellable>()
+    
+    override init() {
+        let shortcutPreferences = ShortcutPreferences()
+        self.shortcutPreferences = shortcutPreferences
+        self.contentViewModel = ContentViewModel(shortcutPreferences: shortcutPreferences)
+        super.init()
+    }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         UpdaterSupport.ensureDownloadDirectoryExists()
@@ -134,6 +142,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let preferencesRoot = PreferencesView(parentWindow: preferencesWindow)
                 .environmentObject(updater)
                 .environmentObject(perAppVolumeManager)
+                .environmentObject(shortcutPreferences)
             let hostedPrefView = NSHostingView(rootView: preferencesRoot)
             preferencesWindow.contentView = hostedPrefView
             let fittingSize = hostedPrefView.intrinsicContentSize
