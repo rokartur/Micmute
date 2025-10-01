@@ -16,7 +16,7 @@ constexpr std::size_t kMaxTrackedApplications = 128;
 constexpr std::size_t kMaxBundleIdentifierLength = 192;
 
 constexpr const char* kSharedMemoryDirectory = "/Library/Application Support/Micmute";
-constexpr const char* kSharedMemoryFilenameTemplate = "micmute-volume-%u.shm";
+constexpr const char* kSharedMemoryFilenameTemplate = "micmute-volume-global.shm";
 
 struct alignas(16) VolumeControlAppEntry {
     std::uint64_t bundleIDHash = 0;

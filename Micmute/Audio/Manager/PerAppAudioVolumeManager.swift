@@ -1,3 +1,4 @@
+import AppKit
 import Combine
 import Foundation
 import os.log
@@ -23,11 +24,11 @@ public final class PerAppAudioVolumeManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private let logger = Logger(subsystem: "com.rokartur.Micmute", category: "PerAppAudioVolumeManager")
 
-    public init(driver: VirtualDriverBridge? = nil, monitor: ApplicationAudioMonitor = ApplicationAudioMonitor()) {
+    public init(driver: VirtualDriverBridge? = nil, monitor: ApplicationAudioMonitor? = nil) {
         self.driver = driver ?? VirtualDriverBridge.shared
-        self.monitor = monitor
+        self.monitor = monitor ?? ApplicationAudioMonitor(driver: self.driver)
 
-        monitor.applicationPublisher
+        self.monitor.applicationPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] apps in
                 Task { @MainActor in
@@ -38,7 +39,7 @@ public final class PerAppAudioVolumeManager: ObservableObject {
 
         // Check driver installation status but don't auto-install
         Task { await checkDriverStatus() }
-        monitor.start()
+        self.monitor.start()
     }
 
     public func installDriver() {
@@ -54,8 +55,7 @@ public final class PerAppAudioVolumeManager: ObservableObject {
     }
 
     public func refresh() {
-        let bundleIDs = driver.refreshActiveApplications()
-        logger.debug("Driver reported \(bundleIDs.count, privacy: .public) active bundle IDs")
+        monitor.refresh()
     }
 
     public func setVolume(bundleID: String, volume: Double) {
@@ -139,6 +139,12 @@ public final class PerAppAudioVolumeManager: ObservableObject {
             // After successful installation, initialize the driver
             await checkDriverStatus()
             
+            // Show success notification
+            await showSuccessAlert(
+                title: "Driver Installed Successfully",
+                message: "The virtual audio driver has been installed and is now active.\n\nYou can now control the volume of individual applications playing audio on your Mac."
+            )
+            
         } catch let installerError as DriverInstallerError {
             logger.error("Driver installation failed: \(String(describing: installerError), privacy: .public)")
             
@@ -148,10 +154,22 @@ public final class PerAppAudioVolumeManager: ObservableObject {
                 driverState = .notInstalled
             } else {
                 driverState = .installFailure(installerError)
+                
+                // Show error alert
+                await showErrorAlert(
+                    title: "Installation Failed",
+                    message: installerError.localizedDescription
+                )
             }
         } catch {
             logger.error("Unexpected installation error: \(error.localizedDescription, privacy: .public)")
             driverState = .installFailure(.unknown(error.localizedDescription))
+            
+            // Show error alert
+            await showErrorAlert(
+                title: "Installation Failed",
+                message: error.localizedDescription
+            )
         }
     }
 
@@ -170,6 +188,12 @@ public final class PerAppAudioVolumeManager: ObservableObject {
                 
                 // Clear any cached state
                 await driver.bootstrapDriver()
+                
+                // Show success notification
+                await showSuccessAlert(
+                    title: "Driver Uninstalled Successfully",
+                    message: "The virtual audio driver has been removed from your system.\n\nCoreAudio has been restarted. You can reinstall the driver at any time from settings."
+                )
             } else {
                 logger.warning("Uninstall operation completed but driver was not present")
                 driverState = .notInstalled
@@ -178,9 +202,43 @@ public final class PerAppAudioVolumeManager: ObservableObject {
         } catch let installerError as DriverInstallerError {
             logger.error("Driver uninstallation failed: \(String(describing: installerError), privacy: .public)")
             driverState = .installFailure(installerError)
+            
+            // Show error alert
+            await showErrorAlert(
+                title: "Uninstallation Failed",
+                message: installerError.localizedDescription
+            )
         } catch {
             logger.error("Unexpected uninstallation error: \(error.localizedDescription, privacy: .public)")
             driverState = .installFailure(.unknown(error.localizedDescription))
+            
+            // Show error alert
+            await showErrorAlert(
+                title: "Uninstallation Failed",
+                message: error.localizedDescription
+            )
         }
+    }
+    
+    @MainActor
+    private func showSuccessAlert(title: String, message: String) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = .informational
+        alert.icon = NSImage(systemSymbolName: "checkmark.circle.fill", accessibilityDescription: "Success")
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
+    }
+    
+    @MainActor
+    private func showErrorAlert(title: String, message: String) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = .critical
+        alert.icon = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: "Error")
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
     }
 }
