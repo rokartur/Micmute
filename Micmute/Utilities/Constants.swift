@@ -17,7 +17,26 @@ enum AppInfo {
 }
 
 enum AppStorageEntry: String {
-    case selectedDeviceID, isMuted, inputGain, iconSize, menuGrayscaleIcon, unmuteGain, displayOption, placement, padding, isNotificationEnabled, animationType, animationDuration, notificationPinBehavior, menuBarBehavior, launchAtLogin, pushToTalk, menuBehaviorOnClick
+    case selectedDeviceID
+    case isMuted
+    case inputGain
+    case iconSize
+    case menuGrayscaleIcon
+    case unmuteGain
+    case displayOption
+    case placement
+    case padding
+    case isNotificationEnabled
+    case animationType
+    case animationDuration
+    case notificationPinBehavior
+    case menuBarBehavior
+    case launchAtLogin
+    case pushToTalk
+    case menuBehaviorOnClick
+    case menuInputSectionExpanded
+    case menuOutputSectionExpanded
+    case selectedOutputDeviceID
 }
 
 enum Appearance {

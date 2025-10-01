@@ -1,7 +1,6 @@
 import SwiftUI
 import CoreAudio
 import CoreAudioKit
-import MacControlCenterUI
 import Combine
 import AlinFoundation
 import AppKit
@@ -86,7 +85,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             unmuteGain: $contentViewModel.unmuteGain,
             selectedDeviceID: $contentViewModel.selectedDeviceID,
             availableDevices: $contentViewModel.availableDevices,
+            availableOutputDevices: $contentViewModel.availableOutputDevices,
+            selectedOutputDeviceID: $contentViewModel.selectedOutputDeviceID,
             onDeviceSelected: { [weak self] deviceID in self?.updateSelectedDevice(to: deviceID) },
+            onOutputDeviceSelected: { [weak self] deviceID in self?.updateSelectedOutputDevice(to: deviceID) },
             onAppear: { [weak self ] in self?.openMenu() },
             onDisappear: { [weak self ] in self?.closeMenu() }
         )
@@ -199,10 +201,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         contentViewModel.changeDefaultInputDevice(to: deviceID)
         contentViewModel.loadAudioDevices()
     }
+
+    func updateSelectedOutputDevice(to deviceID: AudioDeviceID) {
+        contentViewModel.selectedOutputDeviceID = deviceID
+        contentViewModel.changeDefaultOutputDevice(to: deviceID)
+        contentViewModel.loadAudioDevices()
+    }
     
     func openMenu() {
         contentViewModel.loadAudioDevices()
         contentViewModel.setDefaultSystemInputDevice()
+        contentViewModel.setDefaultSystemOutputDevice()
         contentViewModel.registerDeviceChangeListener()
         startAutoRefresh()
     }

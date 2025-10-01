@@ -10,11 +10,7 @@
 		1CDC683BE71A42D29D7A2E5C /* PerAppAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2413EF4829D74975B7782B3A /* PerAppAudioView.swift */; };
 		42016B352C0C3A69002135AB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42016B342C0C3A69002135AB /* PreferencesView.swift */; };
 		421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B6AFC2B37504000946AF4 /* MicmuteApp.swift */; };
-	421B6B012B37504100946AF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B002B37504100946AF4 /* Assets.xcassets */; };
-	76F5F0112F0D000000AB0001 /* Shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0012F0D000000AB0001 /* Shortcut.swift */; };
-	76F5F0122F0D000000AB0001 /* ShortcutPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0022F0D000000AB0001 /* ShortcutPreferences.swift */; };
-	76F5F0132F0D000000AB0001 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */; };
-	76F5F0142F0D000000AB0001 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0042F0D000000AB0001 /* GlobalShortcutManager.swift */; };
+		421B6B012B37504100946AF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B002B37504100946AF4 /* Assets.xcassets */; };
 		421B6B042B37504100946AF4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B032B37504100946AF4 /* Preview Assets.xcassets */; };
 		42698EBD2C0BE7CB00648D4C /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42698EBC2C0BE7CB00648D4C /* NotificationView.swift */; };
 		427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A82C0A0B1A000AFAD4 /* Constants.swift */; };
@@ -29,7 +25,6 @@
 		754C61882D5A378500A418EA /* PreferencesWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61872D5A377F00A418EA /* PreferencesWindow.swift */; };
 		754C618A2D5A3AA000A418EA /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61892D5A3A9E00A418EA /* GeneralView.swift */; };
 		75A98F022D5B04DC00246E68 /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */; };
-		75D0AB7D2D58EC2E00CAEE56 /* MacControlCenterUI in Frameworks */ = {isa = PBXBuildFile; productRef = 75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */; };
 		75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */; };
 		75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */; };
 		75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */; };
@@ -55,6 +50,10 @@
 		76F0A0382F0C020000AB5678 /* VolumeControlSharedState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76F0A0032F0C000000AB5678 /* VolumeControlSharedState.cpp */; };
 		76F0A0392F0C030000AB5678 /* VolumeControlDriver.driver in CopyFiles */ = {isa = PBXBuildFile; fileRef = 76F0A0102F0C010000AB5678 /* VolumeControlDriver.driver */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		76F0A03D2F0C12A000AB5678 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F0A03C2F0C12A000AB5678 /* Security.framework */; };
+		76F5F0112F0D000000AB0001 /* Shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0012F0D000000AB0001 /* Shortcut.swift */; };
+		76F5F0122F0D000000AB0001 /* ShortcutPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0022F0D000000AB0001 /* ShortcutPreferences.swift */; };
+		76F5F0132F0D000000AB0001 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */; };
+		76F5F0142F0D000000AB0001 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0042F0D000000AB0001 /* GlobalShortcutManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,21 +88,17 @@
 		421B6B052B37504100946AF4 /* Micmute.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Micmute.entitlements; sourceTree = "<group>"; };
 		421B6B0B2B3764BC00946AF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		42698EBB2C0BD99D00648D4C /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Micmute.app; sourceTree = BUILT_PRODUCTS_DIR; };
-	42698EBC2C0BE7CB00648D4C /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
-	427A86A82C0A0B1A000AFAD4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-	76F5F0042F0D000000AB0001 /* GlobalShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalShortcutManager.swift; sourceTree = "<group>"; };
+		42698EBC2C0BE7CB00648D4C /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
+		427A86A82C0A0B1A000AFAD4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSectionView.swift; sourceTree = "<group>"; };
 		427A86C22C0A5358000AFAD4 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		42E82CA52C0B682700768A23 /* NotificationWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationWindow.swift; sourceTree = "<group>"; };
-	752628CA2D596C2400B54A0B /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
-	752628CD2D596C8900B54A0B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
-	76F5F0012F0D000000AB0001 /* Shortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shortcut.swift; sourceTree = "<group>"; };
-	76F5F0022F0D000000AB0001 /* ShortcutPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPreferences.swift; sourceTree = "<group>"; };
+		752628CA2D596C2400B54A0B /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		752628CD2D596C8900B54A0B /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		75294FD72D598D8F006A58AF /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIcons.swift; sourceTree = "<group>"; };
-	754C61872D5A377F00A418EA /* PreferencesWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindow.swift; sourceTree = "<group>"; };
-	754C61892D5A3A9E00A418EA /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
-	76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderView.swift; sourceTree = "<group>"; };
+		754C61872D5A377F00A418EA /* PreferencesWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindow.swift; sourceTree = "<group>"; };
+		754C61892D5A3A9E00A418EA /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
 		75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesView.swift; sourceTree = "<group>"; };
 		75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownReleasesView.swift; sourceTree = "<group>"; };
@@ -135,6 +130,10 @@
 		76F0A0312F0C020000AB5678 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		76F0A0322F0C020000AB5678 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		76F0A03C2F0C12A000AB5678 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		76F5F0012F0D000000AB0001 /* Shortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shortcut.swift; sourceTree = "<group>"; };
+		76F5F0022F0D000000AB0001 /* ShortcutPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutPreferences.swift; sourceTree = "<group>"; };
+		76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderView.swift; sourceTree = "<group>"; };
+		76F5F0042F0D000000AB0001 /* GlobalShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalShortcutManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,7 +141,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75D0AB7D2D58EC2E00CAEE56 /* MacControlCenterUI in Frameworks */,
 				7540E7D22E8C1DB600AC906F /* AlinFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -347,15 +345,6 @@
 			path = PerAppAudio;
 			sourceTree = "<group>";
 		};
-		76F5F0052F0D000000AB0001 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				42698EBB2C0BD99D00648D4C /* Micmute.app */,
-				76F0A0102F0C010000AB5678 /* VolumeControlDriver.driver */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		76F0A0042F0C000000AB5678 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
@@ -371,6 +360,15 @@
 				76F0A0032F0C000000AB5678 /* VolumeControlSharedState.cpp */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		76F5F0052F0D000000AB0001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				42698EBB2C0BD99D00648D4C /* Micmute.app */,
+				76F0A0102F0C010000AB5678 /* VolumeControlDriver.driver */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -392,7 +390,6 @@
 			);
 			name = Micmute;
 			packageProductDependencies = (
-				75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */,
 				7540E7D12E8C1DB600AC906F /* AlinFoundation */,
 			);
 			productName = Micmute;
@@ -444,7 +441,6 @@
 			);
 			mainGroup = 421B6AF02B37504000946AF4;
 			packageReferences = (
-				75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */,
 				7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */,
 			);
 			productRefGroup = 76F5F0052F0D000000AB0001 /* Products */;
@@ -857,14 +853,6 @@
 				minimumVersion = 1.0.5;
 			};
 		};
-		75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/orchetect/MacControlCenterUI";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.4.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -872,11 +860,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */;
 			productName = AlinFoundation;
-		};
-		75D0AB7C2D58EC2E00CAEE56 /* MacControlCenterUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 75D0AB7B2D58EC2E00CAEE56 /* XCRemoteSwiftPackageReference "MacControlCenterUI" */;
-			productName = MacControlCenterUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

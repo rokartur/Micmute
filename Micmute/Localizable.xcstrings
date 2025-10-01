@@ -207,6 +207,9 @@
         }
       }
     },
+    "Input" : {
+
+    },
     "Install driver" : {
       "localizations" : {
         "pl" : {
@@ -377,6 +380,9 @@
         }
       }
     },
+    "Microphone volume after unmute" : {
+
+    },
     "Mute" : {
       "localizations" : {
         "pl" : {
@@ -467,6 +473,9 @@
           }
         }
       }
+    },
+    "Output" : {
+
     },
     "Padding" : {
       "localizations" : {
@@ -851,6 +860,9 @@
           }
         }
       }
+    },
+    "Wait 2.5 seconds between interactions." : {
+
     },
     "What's New" : {
       "extractionState" : "stale",
