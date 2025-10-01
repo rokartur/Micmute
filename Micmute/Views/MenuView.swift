@@ -14,6 +14,7 @@ import AlinFoundation
 @MainActor
 struct MainMenuView: View {
     @EnvironmentObject private var updater: Updater
+    @EnvironmentObject private var perAppVolumeManager: PerAppAudioVolumeManager
     @Binding var unmuteGain: CGFloat
     @Binding var selectedDeviceID: AudioDeviceID
     @Binding var availableDevices: [AudioDeviceID: String]
@@ -22,6 +23,10 @@ struct MainMenuView: View {
     var onDeviceSelected: (AudioDeviceID) -> Void
     var onAppear: () -> Void = { }
     var onDisappear: () -> Void = { }
+
+    static let preferredWidth: CGFloat = 320
+    private let contentPadding: CGFloat = 16
+    private let interSectionSpacing: CGFloat = 16
 
     private var deviceEntries: [DeviceEntry] {
         availableDevices.sorted { $0.key < $1.key }.map { DeviceEntry(id: $0.key, name: $0.value) }
@@ -51,58 +56,31 @@ struct MainMenuView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 8) {
-                MenuSection("Volume after unmute", divider: false)
-                    .padding(.top, 6)
-                    .padding(.horizontal, 12)
-                
-                HStack(alignment: .center, spacing: 8) {
-                    MenuVolumeSlider(value: $sliderGain)
-                        .layoutPriority(1)
-                        .onChange(of: sliderGain) { _, newValue in
-                            unmuteGain = newValue
-                        }
-                    Text(sliderGainPercentage)
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.secondary)
-                        .monospacedDigit()
-                        .frame(width: 44, alignment: .trailing)
-                }
-                .padding(.horizontal, 12)
-            }
+        ScrollView {
+            VStack(alignment: .leading, spacing: interSectionSpacing) {
+                ApplicationVolumeListView(manager: perAppVolumeManager)
 
-            Divider()
-                .padding(.vertical, 8)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                MenuSection("Available devices", divider: false)
-                    .padding(.horizontal, 14)
+                Divider()
 
-                VStack(alignment: .leading, spacing: 0) {
-                    MenuList(deviceEntries, selection: $selectedDevice) { item, isSelected, itemClicked in
-                        MenuToggle(
-                            isOn: .constant(isSelected),
-                            image: Image(systemName: item.name.lowercased().contains("macbook") ? "laptopcomputer" : "mic.fill")
-                        ) {
-                            Text(item.name)
-                        } onClick: { click in
-                            if !click {
-                                itemClicked()
-                            }
-                            onDeviceSelected(item.id)
-                        }
-                    }
+                volumeAfterUnmuteSection
+
+                Divider()
+
+                availableDevicesSection
+
+                Divider()
+
+                MenuCommand("Micmute settings...") {
+                    NSApp.sendAction(#selector(AppDelegate.showPreferences(_:)), to: nil, from: nil)
                 }
+                .padding(.top, 2)
             }
-            
-            Divider().padding(.vertical, 4)
-            
-            MenuCommand("Micmute settings...") {
-                NSApp.sendAction(#selector(AppDelegate.showPreferences(_:)), to: nil, from: nil)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, contentPadding)
+            .padding(.vertical, contentPadding)
         }
-        .padding(.horizontal, 1)
+        .hideScrollIndicators()
+        .frame(width: Self.preferredWidth)
         .onAppear {
             selectedDevice = selectedDeviceID
             sliderGain = unmuteGain
@@ -121,6 +99,57 @@ struct MainMenuView: View {
         }
         .onDisappear {
             onDisappear()
+        }
+    }
+
+    private var volumeAfterUnmuteSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            MenuSection("Volume after unmute", divider: false)
+
+            HStack(alignment: .center, spacing: 8) {
+                MenuVolumeSlider(value: $sliderGain)
+                    .layoutPriority(1)
+                    .onChange(of: sliderGain) { _, newValue in
+                        unmuteGain = newValue
+                    }
+
+                Text(sliderGainPercentage)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.secondary)
+                    .monospacedDigit()
+                    .frame(width: 44, alignment: .trailing)
+            }
+        }
+    }
+
+    private var availableDevicesSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            MenuSection("Available devices", divider: false)
+
+            MenuList(deviceEntries, selection: $selectedDevice) { item, isSelected, itemClicked in
+                MenuToggle(
+                    isOn: .constant(isSelected),
+                    image: Image(systemName: item.name.lowercased().contains("macbook") ? "laptopcomputer" : "mic.fill")
+                ) {
+                    Text(item.name)
+                } onClick: { click in
+                    if !click {
+                        itemClicked()
+                    }
+                    onDeviceSelected(item.id)
+                }
+            }
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func hideScrollIndicators() -> some View {
+        if #available(macOS 13.0, *) {
+            scrollIndicators(.hidden)
+        } else {
+            self
         }
     }
 }

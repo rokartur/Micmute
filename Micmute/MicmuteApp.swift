@@ -10,6 +10,7 @@ import AppKit
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @ObservedObject var contentViewModel = ContentViewModel()
+    let perAppVolumeManager = PerAppAudioVolumeManager()
     let updater = Updater(owner: "rokartur", repo: "Micmute")
     var statusBarItem: NSStatusItem!
     var statusBarMenu: NSMenu!
@@ -80,16 +81,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             onDeviceSelected: { [weak self] deviceID in self?.updateSelectedDevice(to: deviceID) },
             onAppear: { [weak self ] in self?.openMenu() },
             onDisappear: { [weak self ] in self?.closeMenu() }
-        ).environmentObject(updater))
+        )
+        .environmentObject(updater)
+        .environmentObject(perAppVolumeManager))
         volumeView.translatesAutoresizingMaskIntoConstraints = false
 
+        let targetWidth = MainMenuView.preferredWidth
         let tempView = NSView()
         tempView.addSubview(volumeView)
-        volumeView.layout()
-        let fittingSize = volumeView.intrinsicContentSize
+        volumeView.frame = NSRect(x: 0, y: 0, width: targetWidth, height: 10)
+        volumeView.layoutSubtreeIfNeeded()
+        let fittingSize = volumeView.fittingSize
         volumeView.removeFromSuperview()
 
-        volumeView.frame = NSRect(x: 0, y: 0, width: 300, height: fittingSize.height)
+        volumeView.frame = NSRect(x: 0, y: 0, width: targetWidth, height: fittingSize.height)
         statusBarMenuItem.view = volumeView
     }
 
@@ -128,6 +133,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             preferencesWindow = PreferencesWindow()
             let preferencesRoot = PreferencesView(parentWindow: preferencesWindow)
                 .environmentObject(updater)
+                .environmentObject(perAppVolumeManager)
             let hostedPrefView = NSHostingView(rootView: preferencesRoot)
             preferencesWindow.contentView = hostedPrefView
             let fittingSize = hostedPrefView.intrinsicContentSize
@@ -270,7 +276,7 @@ private struct UpdateSheetHost: View {
             .onAppear {
                 showSheet = true
             }
-            .onChange(of: updater.sheet) { newValue in
+            .onChange(of: updater.sheet, initial: false) { _, newValue in
                 if showSheet != newValue {
                     showSheet = newValue
                 }

@@ -15,6 +15,16 @@
         }
       }
     },
+    "Adjust %@'s volume" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dostosuj głośność %@"
+          }
+        }
+      }
+    },
     "Always show" : {
       "localizations" : {
         "pl" : {
@@ -117,6 +127,9 @@
         }
       }
     },
+    "Control the volume of individual apps playing audio on your Mac." : {
+
+    },
     "Disabled" : {
       "localizations" : {
         "pl" : {
@@ -146,6 +159,12 @@
           }
         }
       }
+    },
+    "Driver not installed" : {
+
+    },
+    "Driver unavailable" : {
+
     },
     "Duration" : {
       "localizations" : {
@@ -188,6 +207,35 @@
         }
       }
     },
+    "Install driver" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zainstaluj sterownik"
+          }
+        }
+      }
+    },
+    "Install the virtual audio driver to enable per-app volume control." : {
+
+    },
+    "Install the virtual audio driver to enable per-app volume control. You'll need to provide administrator permission." : {
+
+    },
+    "Installation issue" : {
+
+    },
+    "Installing virtual audio driver…" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalowanie wirtualnego sterownika audio…"
+          }
+        }
+      }
+    },
     "Large" : {
       "localizations" : {
         "pl" : {
@@ -204,6 +252,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Oba duże"
+          }
+        }
+      }
+    },
+    "Launch an app that plays audio to adjust its individual volume. We'll update automatically when new sessions appear." : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uruchom aplikację odtwarzającą dźwięk, aby dostosować jej indywidualną głośność. Zaktualizujemy listę automatycznie, gdy pojawią się nowe sesje."
           }
         }
       }
@@ -289,12 +347,42 @@
         }
       }
     },
+    "Micmute couldn't start its virtual audio driver. Try reinstalling or rebooting your Mac." : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Micmute nie mógł uruchomić swojego wirtualnego sterownika audio. Spróbuj ponownie zainstalować sterownik lub zrestartować Maca."
+          }
+        }
+      }
+    },
+    "Micmute needs administrator permission to install its virtual audio driver. We'll restart audio services automatically." : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Micmute potrzebuje uprawnień administratora, aby zainstalować swój wirtualny sterownik audio. Automatycznie ponownie uruchomimy usługi audio."
+          }
+        }
+      }
+    },
     "Micmute settings..." : {
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ustawienia Micmute..."
+          }
+        }
+      }
+    },
+    "Mute" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wycisz"
           }
         }
       }
@@ -315,6 +403,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bez animacji"
+          }
+        }
+      }
+    },
+    "No audio sources detected" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brak wykrytych źródeł audio"
           }
         }
       }
@@ -380,12 +478,42 @@
         }
       }
     },
+    "Peak" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szczyt"
+          }
+        }
+      }
+    },
+    "Per-app volume" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Głośność aplikacji"
+          }
+        }
+      }
+    },
     "Placement" : {
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Umieszczenie"
+          }
+        }
+      }
+    },
+    "Preparing virtual audio driver…" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przygotowywanie wirtualnego sterownika audio…"
           }
         }
       }
@@ -410,6 +538,19 @@
         }
       }
     },
+    "Refresh active applications list" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odśwież listę aktywnych aplikacji"
+          }
+        }
+      }
+    },
+    "Reinstall driver" : {
+
+    },
     "Release notes are still loading" : {
       "localizations" : {
         "pl" : {
@@ -420,6 +561,9 @@
         }
       }
     },
+    "Removing driver and restarting audio services." : {
+
+    },
     "Repository" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -427,6 +571,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Repozytorium"
+          }
+        }
+      }
+    },
+    "Retry installation" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spróbuj ponownie zainstalować"
           }
         }
       }
@@ -467,6 +621,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Skala"
+          }
+        }
+      }
+    },
+    "Search apps" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Szukaj aplikacji"
           }
         }
       }
@@ -532,12 +696,41 @@
         }
       }
     },
+    "This takes only a moment." : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To zajmie tylko chwilę."
+          }
+        }
+      }
+    },
     "Toggle mute" : {
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Przełącz wyciszenie"
+          }
+        }
+      }
+    },
+    "Uninstall driver" : {
+
+    },
+    "Uninstall virtual audio driver" : {
+
+    },
+    "Uninstalling virtual audio driver…" : {
+
+    },
+    "Unmute" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyłącz wyciszenie"
           }
         }
       }
@@ -629,6 +822,26 @@
         }
       }
     },
+    "Virtual audio driver required" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wymagany wirtualny sterownik audio"
+          }
+        }
+      }
+    },
+    "Virtual audio driver unavailable" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wirtualny sterownik audio jest niedostępny"
+          }
+        }
+      }
+    },
     "Volume after unmute" : {
       "localizations" : {
         "pl" : {
@@ -646,6 +859,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Co nowego?"
+          }
+        }
+      }
+    },
+    "You'll be asked for administrator permission so we can place the driver in the HAL folder." : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poprosimy o uprawnienia administratora, aby umieścić sterownik w folderze HAL."
           }
         }
       }
