@@ -6,9 +6,9 @@
 //
 
 import SwiftUI
-import KeyboardShortcuts
 
 struct GeneralView: View {
+    @EnvironmentObject private var shortcutPreferences: ShortcutPreferences
     @AppStorage(AppStorageEntry.pushToTalk.rawValue) var pushToTalk: Bool = false
     @AppStorage(AppStorageEntry.menuBehaviorOnClick.rawValue) var menuBehaviorOnClick: MenuBarBehavior = .menu
     @AppStorage(AppStorageEntry.launchAtLogin.rawValue) var launchAtLogin: Bool = false
@@ -20,7 +20,13 @@ struct GeneralView: View {
                     HStack {
                         Text("Toggle mute")
                         Spacer()
-                        KeyboardShortcuts.Recorder("", name: .toggleMuteShortcut)
+                        ShortcutRecorderView(
+                            shortcut: Binding(
+                                get: { shortcutPreferences.toggleMuteShortcut },
+                                set: { shortcutPreferences.toggleMuteShortcut = $0 }
+                            ),
+                            placeholder: "None"
+                        )
                     }
 
                     Divider()
@@ -28,7 +34,13 @@ struct GeneralView: View {
                     HStack {
                         Text("Check mute status")
                         Spacer()
-                        KeyboardShortcuts.Recorder("", name: .checkMuteShortcut)
+                        ShortcutRecorderView(
+                            shortcut: Binding(
+                                get: { shortcutPreferences.checkMuteShortcut },
+                                set: { shortcutPreferences.checkMuteShortcut = $0 }
+                            ),
+                            placeholder: "None"
+                        )
                     }
 
                     Divider()
@@ -41,9 +53,15 @@ struct GeneralView: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        KeyboardShortcuts.Recorder("", name: .pushToTalkShortcut)
-                            .disabled(!pushToTalk)
-                            .opacity(pushToTalk ? 1 : 0.5)
+                        ShortcutRecorderView(
+                            shortcut: Binding(
+                                get: { shortcutPreferences.pushToTalkShortcut },
+                                set: { shortcutPreferences.pushToTalkShortcut = $0 }
+                            ),
+                            isEnabled: pushToTalk,
+                            placeholder: "None"
+                        )
+                        .opacity(pushToTalk ? 1 : 0.5)
                     }
                 }
                 .toggleStyle(.switch)
