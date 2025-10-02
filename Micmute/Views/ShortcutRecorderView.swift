@@ -1,7 +1,6 @@
 import SwiftUI
 import AppKit
 import Carbon.HIToolbox
-import QuartzCore
 
 struct ShortcutRecorderView: NSViewRepresentable {
     @Binding var shortcut: Shortcut?
@@ -9,30 +8,35 @@ struct ShortcutRecorderView: NSViewRepresentable {
     var placeholder: String = "Record Shortcut"
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+        Coordinator(parent: self)
     }
 
-    func makeNSView(context: Context) -> ShortcutRecorderButton {
-        let button = ShortcutRecorderButton()
-        button.placeholder = placeholder
-        button.isEnabled = isEnabled
-        button.shortcut = shortcut
-        button.onShortcutChange = { [weak coordinator = context.coordinator] newShortcut in
+    func makeNSView(context: Context) -> ShortcutRecorderField {
+        let field = ShortcutRecorderField()
+        field.placeholderText = placeholder
+        field.shortcut = shortcut
+        field.isEnabled = isEnabled
+        field.onShortcutChange = { [weak coordinator = context.coordinator] newShortcut in
             coordinator?.updateShortcut(newShortcut)
         }
-        return button
+        context.coordinator.field = field
+        return field
     }
 
-    func updateNSView(_ nsView: ShortcutRecorderButton, context: Context) {
-        nsView.shortcut = shortcut
+    func updateNSView(_ nsView: ShortcutRecorderField, context: Context) {
+        context.coordinator.parent = self
+        if nsView.shortcut != shortcut {
+            nsView.shortcut = shortcut
+        }
         nsView.isEnabled = isEnabled
-        nsView.placeholder = placeholder
+        nsView.placeholderText = placeholder
     }
 
     final class Coordinator {
-        private var parent: ShortcutRecorderView
+        var parent: ShortcutRecorderView
+        weak var field: ShortcutRecorderField?
 
-        init(_ parent: ShortcutRecorderView) {
+        init(parent: ShortcutRecorderView) {
             self.parent = parent
         }
 
@@ -42,261 +46,340 @@ struct ShortcutRecorderView: NSViewRepresentable {
     }
 }
 
-final class ShortcutRecorderButton: NSButton {
-    private let horizontalPadding: CGFloat = 20
-    private let verticalPadding: CGFloat = 9
-    private let shortcutFont = NSFont.monospacedSystemFont(ofSize: 14, weight: .semibold)
-    private let placeholderFont = NSFont.systemFont(ofSize: 13, weight: .medium)
-
-    var placeholder: String = "Record Shortcut" {
-        didSet { updateTitle() }
+final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
+    var onShortcutChange: ((Shortcut?) -> Void)?
+    var placeholderText: String = "Record Shortcut" {
+        didSet { updatePlaceholder() }
     }
-
     var shortcut: Shortcut? {
         didSet {
-            updateTitle()
-            updateImage()
+            guard !isRecording else { return }
+            updateTextFieldContents()
         }
     }
 
-    var onShortcutChange: ((Shortcut?) -> Void)?
-
+    private let minimumWidth: CGFloat = 130
+    private var eventMonitor: LocalEventMonitor?
+    private var cancelButtonCell: NSButtonCell?
     private var isRecording = false {
         didSet {
-            updateAppearance(animated: true)
-            if isRecording {
-                updateTitle()
-                updateImage()
-            } else {
-                updateTitle()
-                updateImage()
-            }
+            updateAppearance()
+            updatePlaceholder()
         }
     }
-    private var isHovered = false {
-        didSet { updateAppearance(animated: true) }
-    }
-    private var trackingArea: NSTrackingArea?
+    private var previousShortcut: Shortcut?
+    private var windowDidResignKeyObserver: NSObjectProtocol?
+    private var windowWillCloseObserver: NSObjectProtocol?
 
     override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        bezelStyle = .regularSquare
-        isBordered = false
-        font = shortcutFont
+        super.init(frame: NSRect(x: 0, y: 0, width: minimumWidth, height: 24))
+        delegate = self
+        alignment = .center
         focusRingType = .default
-        target = self
-        action = #selector(toggleRecording)
-        setButtonType(.momentaryPushIn)
-        imagePosition = .imageLeading
+        placeholderString = placeholderText
         wantsLayer = true
-        layer?.cornerRadius = 12
-        layer?.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        updateAppearance(animated: false)
-        updateImage()
+        setContentHuggingPriority(.defaultHigh, for: .vertical)
+        setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        (cell as? NSSearchFieldCell)?.searchButtonCell = nil
+        cancelButtonCell = (cell as? NSSearchFieldCell)?.cancelButtonCell
+        showsCancelButton = false
+        updateAppearance()
+        updateTextFieldContents()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        nil
+        fatalError("init(coder:) has not been implemented")
     }
 
-    override var acceptsFirstResponder: Bool {
-        true
-    }
-
-    override var isEnabled: Bool {
-        didSet { updateAppearance(animated: true) }
-    }
-
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if let trackingArea {
-            removeTrackingArea(trackingArea)
-        }
-        let options: NSTrackingArea.Options = [.mouseEnteredAndExited, .activeAlways, .inVisibleRect]
-        let area = NSTrackingArea(rect: bounds, options: options, owner: self, userInfo: nil)
-        addTrackingArea(area)
-        trackingArea = area
-    }
-
-    override func mouseEntered(with event: NSEvent) {
-        isHovered = true
-    }
-
-    override func mouseExited(with event: NSEvent) {
-        isHovered = false
-    }
-
-    override func keyDown(with event: NSEvent) {
-        guard isRecording else {
-            super.keyDown(with: event)
-            return
-        }
-
-        if Shortcut.isClearingKey(keyCode: UInt16(event.keyCode)) {
-            onShortcutChange?(nil)
-            endRecording()
-            return
-        }
-
-        if event.keyCode == kVK_Escape {
-            onShortcutChange?(nil)
-            endRecording()
-            return
-        }
-
-        guard let newShortcut = Shortcut(event: event) else {
-            NSSound.beep()
-            return
-        }
-
-        onShortcutChange?(newShortcut)
-        endRecording()
-    }
-
-    override func cancelOperation(_ sender: Any?) {
-        if isRecording {
-            endRecording()
-        }
+    deinit {
+        eventMonitor?.stop()
+        removeWindowObservers()
     }
 
     override var intrinsicContentSize: NSSize {
         var size = super.intrinsicContentSize
-        size.width += horizontalPadding * 2
-        size.height += verticalPadding * 2
+        size.width = max(size.width, minimumWidth)
         return size
     }
 
-    @objc private func toggleRecording() {
-        if isRecording {
-            endRecording()
-        } else {
+    override var isEnabled: Bool {
+        didSet { updateAppearance() }
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        installWindowObservers()
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        guard isEnabled else { return false }
+        let shouldBecome = super.becomeFirstResponder()
+        if shouldBecome {
             beginRecording()
         }
+        return shouldBecome
     }
+
+    override func resignFirstResponder() -> Bool {
+        if isRecording {
+            endRecording(commitChanges: false)
+        }
+        return super.resignFirstResponder()
+    }
+
+    override func cancelOperation(_ sender: Any?) {
+        if isRecording {
+            endRecording(commitChanges: false)
+        } else {
+            applyShortcut(nil, notify: true)
+        }
+    }
+
+    func controlTextDidChange(_ obj: Notification) {
+        guard !isRecording else { return }
+        if stringValue.isEmpty, shortcut != nil {
+            applyShortcut(nil, notify: true)
+        }
+    }
+
+    func controlTextDidEndEditing(_ obj: Notification) {
+        if isRecording {
+            endRecording(commitChanges: true)
+        }
+    }
+
+    // MARK: - Recording
 
     private func beginRecording() {
-        window?.makeFirstResponder(self)
+        guard !isRecording else { return }
+        previousShortcut = shortcut
         isRecording = true
+        showsCancelButton = false
+        hideCaret()
+        stringValue = ""
+        NotificationCenter.default.post(name: .shortcutRecorderActiveDidChange, object: self, userInfo: ["isActive": true])
+        startEventMonitor()
     }
 
-    private func endRecording() {
+    private func endRecording(commitChanges: Bool) {
+        guard isRecording else { return }
         isRecording = false
-        updateTitle()
+        eventMonitor?.stop()
+        eventMonitor = nil
+        restoreCaret()
+        if !commitChanges {
+            shortcut = previousShortcut
+        }
+        updateTextFieldContents()
+        previousShortcut = nil
+        NotificationCenter.default.post(name: .shortcutRecorderActiveDidChange, object: self, userInfo: ["isActive": false])
     }
 
-    private func updateAppearance(animated: Bool = true) {
-        guard let layer else { return }
-        wantsLayer = true
+    private func startEventMonitor() {
+        eventMonitor?.stop()
+        eventMonitor = LocalEventMonitor(events: [.keyDown, .leftMouseUp, .rightMouseUp]) { [weak self] event in
+            guard let self else { return event }
 
-        let accent = NSColor.controlAccentColor
-        let baseBackground: NSColor
-        let border: NSColor
-        let shadowOpacity: Float
-
-        if !isEnabled {
-            baseBackground = NSColor.controlBackgroundColor.withAlphaComponent(0.4)
-            border = NSColor.separatorColor.withAlphaComponent(0.4)
-            shadowOpacity = 0
-        } else if isRecording {
-            baseBackground = accent.withAlphaComponent(0.25)
-            border = accent.withAlphaComponent(0.9)
-            shadowOpacity = 0.35
-        } else if isHovered {
-            baseBackground = accent.withAlphaComponent(0.14)
-            border = accent.withAlphaComponent(0.45)
-            shadowOpacity = 0.28
-        } else {
-            baseBackground = NSColor.windowBackgroundColor.withAlphaComponent(0.65)
-            border = NSColor.separatorColor.withAlphaComponent(0.35)
-            shadowOpacity = 0.18
-        }
-
-        let duration: CFTimeInterval = animated ? 0.18 : 0
-
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(duration)
-        CATransaction.setAnimationTimingFunction(CAMediaTimingFunction(name: .easeInEaseOut))
-
-        layer.backgroundColor = baseBackground.cgColor
-        layer.borderColor = border.cgColor
-        layer.borderWidth = 1
-        layer.cornerRadius = 12
-        layer.masksToBounds = false
-        layer.shadowColor = NSColor.black.withAlphaComponent(0.45).cgColor
-        layer.shadowOpacity = shadowOpacity
-        layer.shadowRadius = isRecording ? 8 : (isHovered ? 6 : 4)
-        layer.shadowOffset = CGSize(width: 0, height: -1.5)
-
-        CATransaction.commit()
-
-        let tint = isEnabled ? (isRecording ? accent : NSColor.labelColor) : NSColor.secondaryLabelColor
-
-        if animated, window != nil {
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = duration
-                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                self.animator().contentTintColor = tint
+            switch event.type {
+            case .leftMouseUp, .rightMouseUp:
+                let point = self.convert(event.locationInWindow, from: nil)
+                let margin: CGFloat = 3
+                if !self.bounds.insetBy(dx: -margin, dy: -margin).contains(point) {
+                    self.endRecording(commitChanges: false)
+                    return event
+                }
+                return nil
+            case .keyDown:
+                return self.handleKeyDown(event)
+            default:
+                return event
             }
-        } else {
-            contentTintColor = tint
-        }
-
-        updateTitle()
+        }.start()
     }
 
-    private func updateTitle() {
-        if isRecording {
-            applyAttributedTitle("Recording…", color: NSColor.controlAccentColor)
-            return
+    private func handleKeyDown(_ event: NSEvent) -> NSEvent? {
+        let keyCode = UInt16(event.keyCode)
+
+        if keyCode == kVK_Tab {
+            endRecording(commitChanges: false)
+            return event
         }
 
+        if keyCode == kVK_Escape {
+            endRecording(commitChanges: false)
+            return nil
+        }
+
+        if Shortcut.isClearingKey(keyCode: keyCode) {
+            applyShortcut(nil, notify: true)
+            endRecording(commitChanges: true)
+            return nil
+        }
+
+        let modifiers = event.modifierFlags.intersection(.permittedShortcutFlags)
+        if !allowsShortcutWithoutModifiers(keyCode: keyCode, modifiers: modifiers) {
+            NSSound.beep()
+            return nil
+        }
+
+        guard let newShortcut = Shortcut(event: event) else {
+            NSSound.beep()
+            return nil
+        }
+
+        applyShortcut(newShortcut, notify: true)
+        endRecording(commitChanges: true)
+        return nil
+    }
+
+    private func allowsShortcutWithoutModifiers(keyCode: UInt16, modifiers: NSEvent.ModifierFlags) -> Bool {
+        let permittingKey: Bool = {
+            switch keyCode {
+            case UInt16(kVK_Return),
+                 UInt16(kVK_ANSI_KeypadEnter),
+                 UInt16(kVK_Space),
+                 UInt16(kVK_Tab),
+                 UInt16(kVK_Delete),
+                 UInt16(kVK_ForwardDelete),
+                 UInt16(kVK_Escape),
+                 UInt16(kVK_CapsLock),
+                 UInt16(kVK_Help),
+                 UInt16(kVK_Home),
+                 UInt16(kVK_End),
+                 UInt16(kVK_PageUp),
+                 UInt16(kVK_PageDown),
+                 UInt16(kVK_LeftArrow),
+                 UInt16(kVK_RightArrow),
+                 UInt16(kVK_UpArrow),
+                 UInt16(kVK_DownArrow):
+                return true
+            case UInt16(kVK_F1)...UInt16(kVK_F20):
+                return true
+            default:
+                return false
+            }
+        }()
+
+        if modifiers.isEmpty {
+            return permittingKey
+        }
+
+        let disallowedOnlyShiftOrFunction = modifiers.subtracting([.shift, .function]).isEmpty
+        return permittingKey || !disallowedOnlyShiftOrFunction
+    }
+
+    private func applyShortcut(_ newShortcut: Shortcut?, notify: Bool) {
+        shortcut = newShortcut
+        if notify {
+            onShortcutChange?(newShortcut)
+        }
+        if isRecording {
+            stringValue = newShortcut?.displayString ?? ""
+        } else {
+            updateTextFieldContents()
+        }
+    }
+
+    private func updateTextFieldContents() {
         if let shortcut {
-            applyAttributedTitle(shortcut.displayString, color: NSColor.labelColor, font: shortcutFont, kern: 2.0)
+            stringValue = shortcut.displayString
+            showsCancelButton = true
         } else {
-            applyAttributedTitle(placeholder, color: NSColor.secondaryLabelColor, font: placeholderFont)
+            stringValue = ""
+            showsCancelButton = false
         }
     }
 
-    private func applyAttributedTitle(_ string: String, color: NSColor, font: NSFont = NSFont.systemFont(ofSize: 13, weight: .semibold), kern: CGFloat? = nil) {
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .center
-        paragraph.lineBreakMode = .byTruncatingTail
-
-        let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: color,
-            .font: font,
-            .paragraphStyle: paragraph
-        ]
-
-        let attributed = NSMutableAttributedString(string: string, attributes: attributes)
-
-        if let kern, attributed.length > 1 {
-            attributed.addAttribute(.kern, value: kern, range: NSRange(location: 0, length: attributed.length - 1))
-        }
-
-        attributedTitle = attributed
-        invalidateIntrinsicContentSize()
+    private func updatePlaceholder() {
+        placeholderString = isRecording ? "Press shortcut" : placeholderText
     }
 
-    private func updateImage() {
-        guard let symbol = NSImage(systemSymbolName: imageSymbolName(), accessibilityDescription: nil) else {
-            image = nil
-            return
+    private func updateAppearance() {
+        wantsLayer = true
+        guard let layer else { return }
+        let borderColor: NSColor
+        if !isEnabled {
+            borderColor = NSColor.separatorColor.withAlphaComponent(0.25)
+        } else if isRecording {
+            borderColor = NSColor.controlAccentColor
+        } else {
+            borderColor = NSColor.separatorColor.withAlphaComponent(0.45)
         }
 
-        let configuration = NSImage.SymbolConfiguration(pointSize: 15, weight: .semibold)
-        image = symbol.withSymbolConfiguration(configuration)
+        let background = isEnabled ? NSColor.controlBackgroundColor : NSColor.controlBackgroundColor.withAlphaComponent(0.6)
+
+        layer.cornerRadius = 6
+        layer.borderWidth = isRecording ? 1.5 : 1
+        layer.borderColor = borderColor.cgColor
+        layer.backgroundColor = background.cgColor
+        layer.shadowOpacity = 0
+        alphaValue = isEnabled ? 1 : 0.6
     }
 
-    private func imageSymbolName() -> String {
-        if isRecording {
-            return "record.circle.fill"
-        }
+    // MARK: - Window observers
 
-        if shortcut != nil {
-            return "keyboard"
+    private func installWindowObservers() {
+        removeWindowObservers()
+        guard let window else { return }
+        windowDidResignKeyObserver = NotificationCenter.default.addObserver(forName: NSWindow.didResignKeyNotification, object: window, queue: nil) { [weak self] _ in
+            self?.endRecording(commitChanges: false)
         }
-
-        return "plus.circle"
+        windowWillCloseObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: nil) { [weak self] _ in
+            self?.endRecording(commitChanges: false)
+        }
     }
+
+    private func removeWindowObservers() {
+        if let observer = windowDidResignKeyObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        if let observer = windowWillCloseObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        windowDidResignKeyObserver = nil
+        windowWillCloseObserver = nil
+    }
+
+    private var showsCancelButton: Bool {
+        get { (cell as? NSSearchFieldCell)?.cancelButtonCell != nil }
+        set { (cell as? NSSearchFieldCell)?.cancelButtonCell = newValue ? cancelButtonCell : nil }
+    }
+}
+
+private final class LocalEventMonitor {
+    private let events: NSEvent.EventTypeMask
+    private let handler: (NSEvent) -> NSEvent?
+    private weak var monitor: AnyObject?
+
+    init(events: NSEvent.EventTypeMask, handler: @escaping (NSEvent) -> NSEvent?) {
+        self.events = events
+        self.handler = handler
+    }
+
+    @discardableResult
+    func start() -> Self {
+        monitor = NSEvent.addLocalMonitorForEvents(matching: events, handler: handler) as AnyObject
+        return self
+    }
+
+    func stop() {
+        guard let monitor else { return }
+        NSEvent.removeMonitor(monitor)
+        self.monitor = nil
+    }
+}
+
+private extension NSSearchField {
+    func hideCaret() {
+        (currentEditor() as? NSTextView)?.insertionPointColor = .clear
+    }
+
+    func restoreCaret() {
+        (currentEditor() as? NSTextView)?.insertionPointColor = .labelColor
+    }
+}
+
+extension Notification.Name {
+    static let shortcutRecorderActiveDidChange = Notification.Name("com.rokartur.Micmute.shortcutRecorderActiveDidChange")
 }

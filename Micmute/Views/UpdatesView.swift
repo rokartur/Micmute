@@ -129,15 +129,15 @@ struct UpdatesView: View {
                     .buttonStyle(UpdatesSecondaryButtonStyle())
                 }
 
-                if updatesModel.announcementAvailable {
-                    Button {
-                        activeSheet = .announcement
-                    } label: {
-                        Label("View announcement", systemImage: "sparkles")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .buttonStyle(.link)
-                }
+                // if updatesModel.announcementAvailable {
+                //     Button {
+                //         activeSheet = .announcement
+                //     } label: {
+                //         Label("View announcement", systemImage: "sparkles")
+                //             .font(.system(size: 12, weight: .medium))
+                //     }
+                //     .buttonStyle(.link)
+                // }
 
                 if !updatesModel.releases.isEmpty {
                     Button {
@@ -513,24 +513,32 @@ private struct UpdatesPrimaryButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
+        let accent = Color.accentColor
+        let activeOpacity: Double = configuration.isPressed ? 0.85 : 1.0
+        let inactiveOpacity: Double = configuration.isPressed ? 0.65 : 0.78
+        let gradientColors: [Color] = isEnabled
+            ? [accent.opacity(activeOpacity), accent.opacity(inactiveOpacity)]
+            : [accent.opacity(0.42), accent.opacity(0.32)]
 
         return configuration.label
-            .foregroundColor(isEnabled ? Color.white.opacity(0.96) : Color.white.opacity(0.6))
+            .foregroundColor(isEnabled ? Color.white : Color.white.opacity(0.7))
             .padding(.vertical, 8)
             .padding(.horizontal, 14)
             .background(
                 ZStack {
-                    shape.fill(.ultraThinMaterial)
-                    shape.fill(Color.accentColor.opacity(isEnabled ? (configuration.isPressed ? 0.34 : 0.26) : 0.16))
+                    shape.fill(LinearGradient(colors: gradientColors, startPoint: .topLeading, endPoint: .bottomTrailing))
+                    shape.stroke(Color.white.opacity(isEnabled ? 0.18 : 0.1), lineWidth: 0.6)
+                        .blur(radius: 0.4)
+                        .clipShape(shape)
                     if configuration.isPressed {
-                        shape.fill(Color.white.opacity(0.12))
+                        shape.fill(Color.white.opacity(0.08))
                     }
                 }
             )
             .overlay(
-                shape.stroke(Color.white.opacity(isEnabled ? 0.22 : 0.12), lineWidth: 1)
+                shape.stroke(accent.opacity(isEnabled ? 0.55 : 0.32), lineWidth: 1)
             )
-            .shadow(color: Color.black.opacity(isEnabled ? 0.28 : 0.12), radius: configuration.isPressed ? 5 : 8, y: configuration.isPressed ? 2 : 3)
+            .shadow(color: accent.opacity(isEnabled ? 0.45 : 0.2), radius: configuration.isPressed ? 4 : 8, y: configuration.isPressed ? 2 : 6)
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
     }
