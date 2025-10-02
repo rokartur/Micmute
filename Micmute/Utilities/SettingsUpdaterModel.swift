@@ -37,7 +37,7 @@ final class SettingsUpdaterModel: ObservableObject {
         static let frequency = "com.rokartur.micmute.updater.frequency"
         static let nextCheck = "com.rokartur.micmute.updater.nextCheck"
         static let lastSeenRelease = "com.rokartur.micmute.updater.lastSeenRelease"
-        static let lastFetch = "com.rokartur.micmute.updater.lastFetch"
+    static let lastFetch = "com.rokartur.micmute.updater.lastFetch"
     }
 
     private enum FetchReason {
@@ -291,10 +291,11 @@ final class SettingsUpdaterModel: ObservableObject {
     }
 
     private func handleFetchedReleases(_ releases: [GitHubReleaseDTO]) {
-    let filtered = releases.filter { !$0.draft && !$0.prerelease }
-        self.releases = filtered.map { SettingsRelease(dto: $0) }
-        updateAvailable = determineUpdateAvailability(from: filtered.first)
-        updateAnnouncementState(using: filtered.first)
+        let visible = releases.filter { !$0.draft && !$0.prerelease }
+        self.releases = visible.map { SettingsRelease(dto: $0) }
+        let latest = visible.first
+        updateAvailable = determineUpdateAvailability(from: latest)
+        updateAnnouncementState(using: latest)
 
         if progressValue > 0 {
             progressValue = min(progressValue + 0.2, 1.0)
@@ -628,6 +629,7 @@ struct SettingsRelease: Identifiable {
     let body: String
     let publishedAt: Date?
     let assets: [Asset]
+    let isPrerelease: Bool
 
     init(dto: GitHubReleaseDTO) {
         self.id = dto.id
@@ -636,6 +638,7 @@ struct SettingsRelease: Identifiable {
         self.body = dto.body ?? ""
         self.publishedAt = dto.publishedAt
         self.assets = dto.assets.map { Asset(dto: $0) }
+        self.isPrerelease = dto.prerelease
     }
 
     var displayTitle: String {
@@ -716,46 +719,54 @@ private extension UpdaterError {
     var userFacingMessage: String {
         switch self {
         case .invalidResponse:
-            return "GitHub returned an unexpected response."
+            return "Micmute couldn't understand GitHub's response."
         case .invalidDownloadURL:
-            return "No valid download URL was found for the selected release."
+            return "The release is missing a valid download link."
         case .cannotAccessApplicationSupport:
-            return "Micmute couldn't access Application Support."
-        case .failedToExtractArchive(let message):
-            return message.isEmpty ? "Micmute couldn't extract the update." : "Extraction failed: \(message)"
+            return "Micmute can't access Application Support."
+        case .failedToExtractArchive(let reason):
+            return "Couldn't unpack the update (\(reason))."
         case .applicationBundleNotFound:
-            return "The downloaded archive didn't contain a Micmute app."
+            return "Micmute couldn't find the app bundle inside the archive."
         case .installationFailed(let message):
-            return message.isEmpty ? "Installing the update failed." : message
+            return message.isEmpty ? "Update installation failed." : message
         case .installationCancelled:
-            return "Installation cancelled."
+            return "Installation cancelled"
         }
     }
 
     var logDescription: String {
         switch self {
         case .invalidResponse:
-            return "Invalid HTTP response while fetching release data"
+            return "Invalid response from GitHub"
         case .invalidDownloadURL:
-            return "Release asset missing a usable download URL"
+            return "Missing or invalid download URL"
         case .cannotAccessApplicationSupport:
-            return "Application Support directory not accessible"
-        case .failedToExtractArchive(let message):
-            return "Archive extraction failed: \(message)"
+            return "Cannot access Application Support directory"
+        case .failedToExtractArchive(let reason):
+            return "Extraction failed: \(reason)"
         case .applicationBundleNotFound:
-            return "Extracted archive did not contain an .app bundle"
+            return "Application bundle not found in archive"
         case .installationFailed(let message):
-            return "Application installation failed: \(message)"
+            return "Installation failed: \(message)"
         case .installationCancelled:
-            return "Installation cancelled by the user"
+            return "Installation cancelled by user"
         }
     }
 }
 
 private extension Bundle {
     var name: String {
-        object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-            ?? object(forInfoDictionaryKey: "CFBundleName") as? String
-            ?? bundleURL.deletingPathExtension().lastPathComponent
+        if let displayName = object(forInfoDictionaryKey: "CFBundleDisplayName") as? String,
+           !displayName.isEmpty {
+            return displayName
+        }
+
+        if let bundleName = object(forInfoDictionaryKey: "CFBundleName") as? String,
+           !bundleName.isEmpty {
+            return bundleName
+        }
+
+        return bundleURL.deletingPathExtension().lastPathComponent
     }
 }

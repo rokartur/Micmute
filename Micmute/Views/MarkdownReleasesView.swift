@@ -48,8 +48,10 @@ struct MarkdownReleasesView: View {
 
     @ViewBuilder
     private func releaseView(for release: SettingsRelease) -> some View {
+        let isLatest = release.id == releases.first?.id
+
         VStack(alignment: .leading, spacing: 12) {
-            header(for: release)
+            header(for: release, isLatest: isLatest)
 
             if let markdown = release.githubMarkdownBody() {
                 Text(markdown)
@@ -107,9 +109,18 @@ struct MarkdownReleasesView: View {
     }
 
     @ViewBuilder
-    private func header(for release: SettingsRelease) -> some View {
-        Text(release.displayTitle)
-            .font(.headline)
-            .fontWeight(.semibold)
+    private func header(for release: SettingsRelease, isLatest: Bool) -> some View {
+        HStack(alignment: .center, spacing: 10) {
+            Text(release.displayTitle)
+                .font(.headline)
+                .fontWeight(.semibold)
+
+            Spacer(minLength: 6)
+
+            if isLatest {
+                ReleaseBadge(label: "Latest", style: .latest)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
     }
 }
