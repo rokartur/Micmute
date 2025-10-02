@@ -59,6 +59,7 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
     }
 
     private let minimumWidth: CGFloat = 130
+    private let clearedShortcutDisplayText = "None"
     private var eventMonitor: LocalEventMonitor?
     private var cancelButtonCell: NSButtonCell?
     private var isRecording = false {
@@ -70,6 +71,7 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
     private var previousShortcut: Shortcut?
     private var windowDidResignKeyObserver: NSObjectProtocol?
     private var windowWillCloseObserver: NSObjectProtocol?
+    private var hasUserInitiatedFocus = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: NSRect(x: 0, y: 0, width: minimumWidth, height: 24))
@@ -110,10 +112,26 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         installWindowObservers()
+        hasUserInitiatedFocus = false
     }
 
     override func becomeFirstResponder() -> Bool {
         guard isEnabled else { return false }
+        if !hasUserInitiatedFocus {
+            if let event = NSApp.currentEvent {
+                switch event.type {
+                case .leftMouseDown, .rightMouseDown, .otherMouseDown, .keyDown:
+                    hasUserInitiatedFocus = true
+                default:
+                    break
+                }
+            }
+        }
+
+        if !hasUserInitiatedFocus {
+            return false
+        }
+
         let shouldBecome = super.becomeFirstResponder()
         if shouldBecome {
             beginRecording()
@@ -136,6 +154,12 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
         }
     }
 
+    override func mouseDown(with event: NSEvent) {
+        guard isEnabled else { return }
+        hasUserInitiatedFocus = true
+        super.mouseDown(with: event)
+    }
+
     func controlTextDidChange(_ obj: Notification) {
         guard !isRecording else { return }
         if stringValue.isEmpty, shortcut != nil {
@@ -155,6 +179,7 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
         guard !isRecording else { return }
         previousShortcut = shortcut
         isRecording = true
+        hasUserInitiatedFocus = true
         showsCancelButton = false
         hideCaret()
         stringValue = ""
@@ -207,7 +232,9 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
         }
 
         if keyCode == kVK_Escape {
-            endRecording(commitChanges: false)
+            applyShortcut(nil, notify: true)
+            endRecording(commitChanges: true)
+            window?.makeFirstResponder(nil)
             return nil
         }
 
@@ -254,7 +281,26 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
                  UInt16(kVK_UpArrow),
                  UInt16(kVK_DownArrow):
                 return true
-            case UInt16(kVK_F1)...UInt16(kVK_F20):
+            case UInt16(kVK_F1),
+                 UInt16(kVK_F2),
+                 UInt16(kVK_F3),
+                 UInt16(kVK_F4),
+                 UInt16(kVK_F5),
+                 UInt16(kVK_F6),
+                 UInt16(kVK_F7),
+                 UInt16(kVK_F8),
+                 UInt16(kVK_F9),
+                 UInt16(kVK_F10),
+                 UInt16(kVK_F11),
+                 UInt16(kVK_F12),
+                 UInt16(kVK_F13),
+                 UInt16(kVK_F14),
+                 UInt16(kVK_F15),
+                 UInt16(kVK_F16),
+                 UInt16(kVK_F17),
+                 UInt16(kVK_F18),
+                 UInt16(kVK_F19),
+                 UInt16(kVK_F20):
                 return true
             default:
                 return false
@@ -275,7 +321,7 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
             onShortcutChange?(newShortcut)
         }
         if isRecording {
-            stringValue = newShortcut?.displayString ?? ""
+            stringValue = newShortcut?.displayString ?? clearedShortcutDisplayText
         } else {
             updateTextFieldContents()
         }
@@ -286,7 +332,7 @@ final class ShortcutRecorderField: NSSearchField, NSSearchFieldDelegate {
             stringValue = shortcut.displayString
             showsCancelButton = true
         } else {
-            stringValue = ""
+            stringValue = clearedShortcutDisplayText
             showsCancelButton = false
         }
     }

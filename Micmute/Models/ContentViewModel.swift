@@ -65,6 +65,7 @@ class ContentViewModel: ObservableObject {
     private var wasMutedBeforePushToTalk = true
     private var observedOutputVolumeDeviceID: AudioDeviceID?
     private var outputVolumeListenerBlock: AudioObjectPropertyListenerBlock?
+    private var didTearDown = false
     
     init(shortcutPreferences: ShortcutPreferences) {
         self.shortcutPreferences = shortcutPreferences
@@ -78,14 +79,19 @@ class ContentViewModel: ObservableObject {
         print("ContentViewModel initialized")
     }
 
-    @MainActor deinit {
+    func tearDown() {
+        guard !didTearDown else { return }
+        didTearDown = true
+
         GlobalShortcutManager.shared.unregister(.toggleMute)
         GlobalShortcutManager.shared.unregister(.checkMute)
         GlobalShortcutManager.shared.unregister(.pushToTalk)
         unregisterDeviceChangeListener()
         stopObservingOutputVolume()
         NotificationCenter.default.removeObserver(self, name: .notificationConfigurationDidChange, object: nil)
-        print("ContentViewModel deinitialized")
+        notificationWindowController?.close()
+        notificationWindowController = nil
+        print("ContentViewModel torn down")
     }
     
     func toggleMute(deviceID: AudioDeviceID) {
@@ -661,7 +667,7 @@ class ContentViewModel: ObservableObject {
         AudioObjectAddPropertyListener(AudioObjectID(kAudioObjectSystemObject), &address, deviceChangeListener, nil)
     }
     
-    nonisolated(unsafe) func unregisterDeviceChangeListener() {
+    nonisolated func unregisterDeviceChangeListener() {
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDevices,
             mScope: kAudioObjectPropertyScopeGlobal,
