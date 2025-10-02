@@ -580,6 +580,7 @@ private struct MenuRowButtonStyle: ButtonStyle {
 private struct MenuCommand<Label: View>: View {
     private let action: () -> Void
     private let label: () -> Label
+    @State private var isHovered = false
 
     init(_ title: LocalizedStringKey, action: @escaping () -> Void) where Label == Text {
         self.action = action
@@ -605,7 +606,12 @@ private struct MenuCommand<Label: View>: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .buttonStyle(MenuRowButtonStyle(isActive: false))
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.12)) {
+                isHovered = hovering
+            }
+        }
+        .buttonStyle(MenuRowButtonStyle(isActive: false, isHovered: isHovered))
     }
 }
 
