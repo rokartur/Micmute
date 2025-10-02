@@ -171,7 +171,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     func openMenu() {
         contentViewModel.loadAudioDevices()
-        contentViewModel.setDefaultSystemInputDevice()
+        contentViewModel.syncSelectedInputDeviceWithSystemDefault()
         contentViewModel.setDefaultSystemOutputDevice()
         contentViewModel.registerDeviceChangeListener()
         startAutoRefresh()
