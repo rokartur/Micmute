@@ -19,6 +19,7 @@ struct MainMenuView: View {
     @Binding var availableDevices: [AudioDeviceID: String]
     @Binding var availableOutputDevices: [AudioDeviceID: String]
     @Binding var selectedOutputDeviceID: AudioDeviceID
+    @Binding var outputVolume: CGFloat
     @State private var sliderGain: CGFloat = 1.0
     @State private var selectedDevice: DeviceEntry.ID? = nil
     @State private var selectedOutputDevice: DeviceEntry.ID? = nil
@@ -29,6 +30,7 @@ struct MainMenuView: View {
     @State private var isDeviceSelectionLocked = false
     var onDeviceSelected: (AudioDeviceID) -> Void
     var onOutputDeviceSelected: (AudioDeviceID) -> Void
+    var onOutputVolumeChange: (CGFloat) -> Void
     var onAppear: () -> Void = { }
     var onDisappear: () -> Void = { }
 
@@ -51,8 +53,10 @@ struct MainMenuView: View {
         availableDevices: Binding<[AudioDeviceID: String]>,
         availableOutputDevices: Binding<[AudioDeviceID: String]>,
         selectedOutputDeviceID: Binding<AudioDeviceID>,
+        outputVolume: Binding<CGFloat>,
         onDeviceSelected: @escaping (AudioDeviceID) -> Void,
         onOutputDeviceSelected: @escaping (AudioDeviceID) -> Void,
+        onOutputVolumeChange: @escaping (CGFloat) -> Void,
         onAppear: @escaping () -> Void = { },
         onDisappear: @escaping () -> Void = { }
     ) {
@@ -61,8 +65,10 @@ struct MainMenuView: View {
         self._availableDevices = availableDevices
         self._availableOutputDevices = availableOutputDevices
         self._selectedOutputDeviceID = selectedOutputDeviceID
+        self._outputVolume = outputVolume
         self.onDeviceSelected = onDeviceSelected
         self.onOutputDeviceSelected = onOutputDeviceSelected
+        self.onOutputVolumeChange = onOutputVolumeChange
         self.onAppear = onAppear
         self.onDisappear = onDisappear
         self._sliderGain = State(initialValue: unmuteGain.wrappedValue)
@@ -162,9 +168,21 @@ struct MainMenuView: View {
         }
     }
 
+    private var outputVolumePercentage: String {
+        let clampedVolume = min(max(outputVolume, .zero), CGFloat(1))
+        let percentValue = Int((clampedVolume * 100).rounded())
+        return "\(percentValue)%"
+    }
+
     private var outputSection: some View {
         CollapsibleMenuSection(title: "Output", isExpanded: $isOutputExpanded) {
-            availableOutputDevicesContent
+            VStack(alignment: .leading, spacing: 14) {
+                outputVolumeContent
+
+                Divider()
+
+                availableOutputDevicesContent
+            }
         }
     }
 
@@ -209,6 +227,34 @@ struct MainMenuView: View {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private var outputVolumeContent: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            MenuSectionHeader("Output volume")
+
+            HStack(alignment: .center, spacing: 8) {
+                MenuVolumeSlider(
+                    value: Binding(
+                        get: { outputVolume },
+                        set: { newValue in
+                            let clampedValue = min(max(newValue, 0), 1)
+                            if outputVolume != clampedValue {
+                                outputVolume = clampedValue
+                            }
+                            onOutputVolumeChange(clampedValue)
+                        }
+                    ),
+                    accessibilityLabel: "Output device volume"
+                )
+
+                Text(outputVolumePercentage)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                    .frame(width: 40, alignment: .trailing)
             }
         }
     }
@@ -392,6 +438,12 @@ private struct CollapsibleMenuSection<Content: View>: View {
 
 private struct MenuVolumeSlider: View {
     @Binding var value: CGFloat
+    var accessibilityLabel: LocalizedStringKey
+
+    init(value: Binding<CGFloat>, accessibilityLabel: LocalizedStringKey = "Microphone volume after unmute") {
+        self._value = value
+        self.accessibilityLabel = accessibilityLabel
+    }
 
     var body: some View {
         Slider(
@@ -404,7 +456,7 @@ private struct MenuVolumeSlider: View {
         )
         .controlSize(.regular)
         .tint(.accentColor)
-        .accessibilityLabel(Text("Microphone volume after unmute"))
+        .accessibilityLabel(Text(accessibilityLabel))
     }
 }
 
@@ -414,6 +466,7 @@ private struct SelectableMenuRow: View {
     let isSelected: Bool
     var isDisabled: Bool = false
     let action: () -> Void
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
@@ -440,7 +493,10 @@ private struct SelectableMenuRow: View {
                 }
             }
         }
-        .buttonStyle(MenuRowButtonStyle(isActive: isSelected))
+        .onHover { hovering in
+            isHovered = hovering
+        }
+        .buttonStyle(MenuRowButtonStyle(isActive: isSelected, isHovered: isHovered))
         .disabled(isDisabled)
         .opacity(isDisabled ? 0.55 : 1)
         .animation(.easeInOut(duration: 0.12), value: isDisabled)
@@ -484,6 +540,7 @@ private struct MenuStaticRow: View {
 
 private struct MenuRowButtonStyle: ButtonStyle {
     var isActive: Bool
+    var isHovered: Bool = false
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -494,6 +551,11 @@ private struct MenuRowButtonStyle: ButtonStyle {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
                         .fill(.ultraThinMaterial)
+
+                    if isHovered {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(Color.white.opacity(0.06))
+                    }
 
                     if isActive {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -510,6 +572,7 @@ private struct MenuRowButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .stroke(Color.white.opacity(0.08), lineWidth: 1)
             )
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
     }
 }

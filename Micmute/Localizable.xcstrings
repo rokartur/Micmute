@@ -477,6 +477,12 @@
     "Output" : {
 
     },
+    "Output device volume" : {
+
+    },
+    "Output volume" : {
+
+    },
     "Padding" : {
       "localizations" : {
         "pl" : {

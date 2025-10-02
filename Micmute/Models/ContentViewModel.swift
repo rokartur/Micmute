@@ -8,7 +8,10 @@
 import SwiftUI
 import CoreAudio
 import CoreAudioKit
+import AudioToolbox
 import Combine
+
+private let virtualMasterScalarVolumeSelector = AudioObjectPropertySelector(0x766D7663) // 'vmvc'
 
 @MainActor
 class ContentViewModel: ObservableObject {
@@ -41,6 +44,7 @@ class ContentViewModel: ObservableObject {
 
     @Published public var availableDevices: [AudioDeviceID: String] = [:]
     @Published public var availableOutputDevices: [AudioDeviceID: String] = [:]
+    @Published public var outputVolume: CGFloat = 1.0
 
     @AppStorage(AppStorageEntry.animationType.rawValue) var animationType: AnimationType = .scale
     @AppStorage(AppStorageEntry.animationDuration.rawValue) var animationDuration: Double = 1.3
@@ -58,6 +62,8 @@ class ContentViewModel: ObservableObject {
     var notificationWindowController: NotificationWindowController?
     private var isPushToTalkActive = false
     private var wasMutedBeforePushToTalk = true
+    private var observedOutputVolumeDeviceID: AudioDeviceID?
+    private var outputVolumeListenerBlock: AudioObjectPropertyListenerBlock?
     
     init(shortcutPreferences: ShortcutPreferences) {
         self.shortcutPreferences = shortcutPreferences
@@ -71,11 +77,12 @@ class ContentViewModel: ObservableObject {
         print("ContentViewModel initialized")
     }
 
-    deinit {
+    @MainActor deinit {
         GlobalShortcutManager.shared.unregister(.toggleMute)
         GlobalShortcutManager.shared.unregister(.checkMute)
         GlobalShortcutManager.shared.unregister(.pushToTalk)
         unregisterDeviceChangeListener()
+        stopObservingOutputVolume()
         NotificationCenter.default.removeObserver(self, name: .notificationConfigurationDidChange, object: nil)
         print("ContentViewModel deinitialized")
     }
@@ -265,6 +272,8 @@ class ContentViewModel: ObservableObject {
                     self.selectedOutputDeviceID = updatedOutputDevices.keys.first ?? kAudioObjectUnknown
                 }
             }
+
+            self.refreshOutputVolumeState()
         }
     }
     
@@ -347,6 +356,7 @@ class ContentViewModel: ObservableObject {
 
         DispatchQueue.main.async {
             self.selectedOutputDeviceID = defaultDeviceID
+            self.refreshOutputVolumeState()
         }
     }
     
@@ -386,6 +396,117 @@ class ContentViewModel: ObservableObject {
         if status != noErr {
             print("Error setting default output device: \(status)")
         }
+    }
+
+    func refreshOutputVolumeState() {
+        let deviceID = selectedOutputDeviceID
+        loadOutputVolume(for: deviceID)
+        observeOutputVolume(for: deviceID)
+    }
+
+    func loadOutputVolume(for deviceID: AudioDeviceID) {
+        guard deviceID != kAudioObjectUnknown,
+              availableOutputDevices.keys.contains(deviceID),
+              var address = outputVolumePropertyAddress(for: deviceID) else {
+            outputVolume = 1.0
+            return
+        }
+
+        var volume: Float32 = 1.0
+        var size = UInt32(MemoryLayout.size(ofValue: volume))
+        let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &volume)
+
+        if status == noErr {
+            outputVolume = CGFloat(min(max(volume, 0), 1))
+        } else {
+            print("Error loading output volume: \(status)")
+        }
+    }
+
+    func setOutputVolume(for deviceID: AudioDeviceID, volume: CGFloat) {
+        guard deviceID != kAudioObjectUnknown,
+              availableOutputDevices.keys.contains(deviceID),
+              var address = outputVolumePropertyAddress(for: deviceID) else {
+            return
+        }
+
+        var clampedVolume = Float32(min(max(volume, 0), 1))
+        let size = UInt32(MemoryLayout.size(ofValue: clampedVolume))
+        let status = AudioObjectSetPropertyData(deviceID, &address, 0, nil, size, &clampedVolume)
+
+        if status != noErr {
+            print("Error setting output volume: \(status)")
+        } else {
+            outputVolume = CGFloat(clampedVolume)
+        }
+    }
+
+    private func observeOutputVolume(for deviceID: AudioDeviceID) {
+        guard deviceID != kAudioObjectUnknown,
+              availableOutputDevices.keys.contains(deviceID) else {
+            stopObservingOutputVolume()
+            return
+        }
+
+        if observedOutputVolumeDeviceID == deviceID,
+           outputVolumeListenerBlock != nil {
+            return
+        }
+
+        stopObservingOutputVolume()
+
+        guard var address = outputVolumePropertyAddress(for: deviceID) else {
+            return
+        }
+
+        let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+            guard let self else { return }
+            self.loadOutputVolume(for: deviceID)
+        }
+
+        AudioObjectAddPropertyListenerBlock(deviceID, &address, DispatchQueue.main, block)
+        observedOutputVolumeDeviceID = deviceID
+        outputVolumeListenerBlock = block
+    }
+
+    private func stopObservingOutputVolume() {
+        guard let deviceID = observedOutputVolumeDeviceID,
+              let block = outputVolumeListenerBlock else {
+            observedOutputVolumeDeviceID = nil
+            outputVolumeListenerBlock = nil
+            return
+        }
+
+        if var address = outputVolumePropertyAddress(for: deviceID) {
+            AudioObjectRemovePropertyListenerBlock(deviceID, &address, DispatchQueue.main, block)
+        }
+
+        observedOutputVolumeDeviceID = nil
+        outputVolumeListenerBlock = nil
+    }
+
+    private func outputVolumePropertyAddress(for deviceID: AudioDeviceID) -> AudioObjectPropertyAddress? {
+        var virtualMasterAddress = AudioObjectPropertyAddress(
+            mSelector: virtualMasterScalarVolumeSelector,
+            mScope: kAudioDevicePropertyScopeOutput,
+            mElement: kAudioObjectPropertyElementMain
+        )
+
+        if AudioObjectHasProperty(deviceID, &virtualMasterAddress) {
+            return virtualMasterAddress
+        }
+
+        var scalarAddress = AudioObjectPropertyAddress(
+            mSelector: kAudioDevicePropertyVolumeScalar,
+            mScope: kAudioDevicePropertyScopeOutput,
+            mElement: kAudioObjectPropertyElementMain
+        )
+
+        if AudioObjectHasProperty(deviceID, &scalarAddress) {
+            return scalarAddress
+        }
+
+        return nil
     }
     
     func loadInputGain(for deviceID: AudioDeviceID) {
