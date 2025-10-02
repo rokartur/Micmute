@@ -37,6 +37,7 @@ enum AppStorageEntry: String {
     case menuInputSectionExpanded
     case menuOutputSectionExpanded
     case selectedOutputDeviceID
+    case syncSoundEffectsWithOutput
 }
 
 enum Appearance {
