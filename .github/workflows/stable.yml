@@ -86,14 +86,15 @@ jobs:
           set -euo pipefail
 
           RELEASE_DIR="build_output/Bundle"
-          mkdir -p "$RELEASE_DIR"
+          RELEASE_DIR_ABS="$(pwd)/$RELEASE_DIR"
+          mkdir -p "$RELEASE_DIR_ABS"
 
           package_variant() {
             local identifier="$1"
             local label="$2"
 
             local source="build_output/${identifier}/Build/Products/Release/Micmute.app"
-            local staging="$RELEASE_DIR/staging-${label}"
+            local staging="$RELEASE_DIR_ABS/staging-${label}"
 
             rm -rf "$staging"
             mkdir -p "$staging"
@@ -101,7 +102,7 @@ jobs:
             ditto "$source" "$staging/Micmute.app"
 
             pushd "$staging" >/dev/null
-            ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "$RELEASE_DIR/Micmute-${label}.zip"
+            ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "$RELEASE_DIR_ABS/Micmute-${label}.zip"
             popd >/dev/null
 
             rm -rf "$staging"
@@ -109,7 +110,7 @@ jobs:
 
           package_variant universal universal
 
-          UNIVERSAL_ZIP="$RELEASE_DIR/Micmute-universal.zip"
+          UNIVERSAL_ZIP="$RELEASE_DIR_ABS/Micmute-universal.zip"
           if [ ! -f "$UNIVERSAL_ZIP" ]; then
             echo "Universal zip not found at $UNIVERSAL_ZIP" >&2
             exit 1
