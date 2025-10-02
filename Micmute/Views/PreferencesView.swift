@@ -10,7 +10,7 @@ import AppKit
 
 enum PreferenceTab: String, CaseIterable {
     case general = "General"
-    case perAppAudio = "Per-app Audio"
+    // case perAppAudio = "Per-app Audio"
     case notification = "Notification"
     case updates = "Updates"
     case about = "About"
@@ -19,8 +19,8 @@ enum PreferenceTab: String, CaseIterable {
         switch self {
         case .general:
             return "gearshape"
-        case .perAppAudio:
-            return "slider.horizontal.3"
+        // case .perAppAudio:
+        //     return "slider.horizontal.3"
         case .notification:
             return "bell.badge"
         case .updates:
@@ -33,6 +33,7 @@ enum PreferenceTab: String, CaseIterable {
 
 struct PreferencesView: View {
     @EnvironmentObject private var updatesModel: SettingsUpdaterModel
+    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab: PreferenceTab = .general
 
     private let sidebarWidth: CGFloat = 216
@@ -127,8 +128,8 @@ struct PreferencesView: View {
         switch selectedTab {
         case .general:
             GeneralView()
-        case .perAppAudio:
-            PerAppAudioView()
+//        case .perAppAudio:
+//            PerAppAudioView()
         case .notification:
             NotificationView()
         case .updates:
@@ -173,11 +174,11 @@ struct PreferencesView: View {
         Group {
             if #available(macOS 26, *) {
                 RoundedRectangle(cornerRadius: chromeCornerRadius, style: .continuous)
-                    .fill(Color.black.opacity(0.28))
+                    .fill(chromeFillColor(isModernStyle: true))
                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: chromeCornerRadius, style: .continuous))
             } else {
                 RoundedRectangle(cornerRadius: chromeCornerRadius, style: .continuous)
-                    .fill(Color.black.opacity(0.24))
+                    .fill(chromeFillColor(isModernStyle: false))
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: chromeCornerRadius, style: .continuous))
             }
         }
@@ -186,8 +187,8 @@ struct PreferencesView: View {
 
     private var chromeBorder: some View {
         RoundedRectangle(cornerRadius: chromeCornerRadius, style: .continuous)
-            .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
-            .blendMode(.plusLighter)
+            .strokeBorder(chromeBorderColor, lineWidth: 1)
+            .blendMode(colorScheme == .dark ? .plusLighter : .normal)
     }
 
     private func closePreferencesWindow() {
@@ -196,6 +197,20 @@ struct PreferencesView: View {
         } else {
             NSApp?.keyWindow?.performClose(nil)
         }
+    }
+}
+
+private extension PreferencesView {
+    func chromeFillColor(isModernStyle: Bool) -> Color {
+        if colorScheme == .dark {
+            return isModernStyle ? Color.black.opacity(0.28) : Color.black.opacity(0.24)
+        } else {
+            return isModernStyle ? Color.white.opacity(0.88) : Color.white.opacity(0.82)
+        }
+    }
+
+    var chromeBorderColor: Color {
+        colorScheme == .dark ? Color.white.opacity(0.08) : Color.black.opacity(0.06)
     }
 }
 
