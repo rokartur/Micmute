@@ -46,7 +46,40 @@ jobs:
 
           build_variant arm64 -arch arm64
           build_variant x86_64 -arch x86_64
-          build_variant universal -arch arm64 -arch x86_64
+
+          create_universal_variant() {
+            local universal_root="build_output/universal/Build/Products/Release"
+            local universal_app="$universal_root/Micmute.app"
+            local arm_app="build_output/arm64/Build/Products/Release/Micmute.app"
+            local intel_app="build_output/x86_64/Build/Products/Release/Micmute.app"
+
+            if [ ! -d "$arm_app" ] || [ ! -d "$intel_app" ]; then
+              echo "Missing architecture build outputs; cannot create universal binary." >&2
+              exit 1
+            fi
+
+            rm -rf "build_output/universal"
+            mkdir -p "$universal_root"
+
+            ditto "$arm_app" "$universal_app"
+
+            while IFS= read -r arm_file; do
+              local rel="${arm_file#${arm_app}/}"
+              local intel_file="$intel_app/$rel"
+              local universal_file="$universal_app/$rel"
+
+              if [ ! -f "$intel_file" ]; then
+                continue
+              fi
+
+              if file "$arm_file" | grep -q "Mach-O"; then
+                lipo -create "$arm_file" "$intel_file" -output "$universal_file"
+                codesign --remove-signature "$universal_file" || true
+              fi
+            done < <(find "$arm_app" -type f)
+          }
+
+          create_universal_variant
 
       - name: Prepare release bundle
         run: |
@@ -60,19 +93,20 @@ jobs:
             local label="$2"
 
             local source="build_output/${identifier}/Build/Products/Release/Micmute.app"
-            local renamed="Micmute-${label}.app"
+            local staging="$RELEASE_DIR/staging-${label}"
 
-            rm -rf "$RELEASE_DIR/$renamed"
-            ditto "$source" "$RELEASE_DIR/$renamed"
+            rm -rf "$staging"
+            mkdir -p "$staging"
 
-            pushd "$RELEASE_DIR" >/dev/null
-            ditto -c -k --sequesterRsrc --keepParent "$renamed" "Micmute-${label}.zip"
-            rm -rf "$renamed"
+            ditto "$source" "$staging/Micmute.app"
+
+            pushd "$staging" >/dev/null
+            ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "$RELEASE_DIR/Micmute-${label}.zip"
             popd >/dev/null
+
+            rm -rf "$staging"
           }
 
-          package_variant arm64 arm64
-          package_variant x86_64 intel
           package_variant universal universal
 
           mv "$RELEASE_DIR"/Micmute-*.zip "$GITHUB_WORKSPACE"/
@@ -82,8 +116,6 @@ jobs:
         with:
           name: Micmute
           path: |
-            ${{ github.workspace }}/Micmute-arm64.zip
-            ${{ github.workspace }}/Micmute-intel.zip
             ${{ github.workspace }}/Micmute-universal.zip
 
   release:
@@ -125,9 +157,7 @@ jobs:
 
       - name: Rename artifact
         run: |
-          for flavor in arm64 intel universal; do
-            mv "Micmute-${flavor}.zip" "Micmute-${flavor}-${{ steps.appver.outputs.version }}.zip"
-          done
+          mv "Micmute-universal.zip" "Micmute-universal-${{ steps.appver.outputs.version }}.zip"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -135,8 +165,6 @@ jobs:
           tag_name: ${{ steps.appver.outputs.version }}
           name: ${{ steps.appver.outputs.version }}
           files: |
-            Micmute-arm64-${{ steps.appver.outputs.version }}.zip
-            Micmute-intel-${{ steps.appver.outputs.version }}.zip
             Micmute-universal-${{ steps.appver.outputs.version }}.zip
           make_latest: true
         env:
