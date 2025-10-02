@@ -11,7 +11,6 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,115 +24,125 @@ jobs:
         run: |
           brew install cocoapods || true
 
-      - name: Build Micmute
+      - name: Build with Xcode
         run: |
           set -euo pipefail
 
-          DERIVED_DATA="build_output/universal"
-          rm -rf "$DERIVED_DATA"
+          PROJECT="Micmute.xcodeproj"
+          SCHEME="Micmute"
+          CONFIG="Release"
 
-          xcodebuild clean build \
-            -project Micmute.xcodeproj \
-            -scheme Micmute \
-            -configuration Release \
-            -derivedDataPath "$DERIVED_DATA" \
-            -arch arm64 \
-            -arch x86_64 \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_ENTITLEMENTS=""
+          build_variant() {
+            local identifier="$1"
+            shift
 
-      - name: Package app bundle
+            rm -rf "build_output/${identifier}"
+            xcodebuild clean build \
+              -project "$PROJECT" \
+              -scheme "$SCHEME" \
+              -configuration "$CONFIG" \
+              -derivedDataPath "build_output/${identifier}" \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGN_ENTITLEMENTS="" \
+              "$@"
+          }
+
+          build_variant arm64 -arch arm64
+          build_variant x86_64 -arch x86_64
+          build_variant universal -arch arm64 -arch x86_64
+
+      - name: Prepare release bundle
         run: |
           set -euo pipefail
 
-          APP_PATH="build_output/universal/Build/Products/Release/Micmute.app"
-          OUTPUT_DIR="beta_artifacts"
-          ARCHIVE_NAME="Micmute-beta-universal.zip"
+          RELEASE_DIR="build_output/Bundle"
+          mkdir -p "$RELEASE_DIR"
 
-          if [ ! -d "$APP_PATH" ]; then
-            echo "Expected app not found at $APP_PATH" >&2
-            exit 1
-          fi
+          package_variant() {
+            local identifier="$1"
+            local label="$2"
 
-          mkdir -p "$OUTPUT_DIR"
-          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" "$OUTPUT_DIR/$ARCHIVE_NAME"
+            local source="build_output/${identifier}/Build/Products/Release/Micmute.app"
+            local renamed="Micmute-${label}.app"
+
+            rm -rf "$RELEASE_DIR/$renamed"
+            ditto "$source" "$RELEASE_DIR/$renamed"
+
+            pushd "$RELEASE_DIR" >/dev/null
+            ditto -c -k --sequesterRsrc --keepParent "$renamed" "Micmute-${label}.zip"
+            rm -rf "$renamed"
+            popd >/dev/null
+          }
+
+          package_variant arm64 arm64
+          package_variant x86_64 intel
+          package_variant universal universal
+
+          mv "$RELEASE_DIR"/Micmute-*.zip "$GITHUB_WORKSPACE"/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Micmute-beta
-          path: beta_artifacts/Micmute-beta-universal.zip
+          name: Micmute
+          path: |
+            ${{ github.workspace }}/Micmute-arm64.zip
+            ${{ github.workspace }}/Micmute-intel.zip
+            ${{ github.workspace }}/Micmute-universal.zip
 
-  prerelease:
+  release:
     needs: build
-    if: github.event_name == 'push'
-    runs-on: macos-latest
+    runs-on: macos-15
     permissions:
       contents: write
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: Micmute-beta
-          path: beta_release
+          name: Micmute
+          path: .
 
-      - name: Gather version metadata
-        id: meta
+      - name: Read app version from Xcode settings
+        id: appver
         run: |
-          set -euo pipefail
-
           VERSION=$(xcodebuild -project Micmute.xcodeproj -scheme Micmute -showBuildSettings | awk -F= '/MARKETING_VERSION/ {gsub(/ /,"",$2); print $2; exit}')
           if [ -z "$VERSION" ]; then
-            echo "MARKETING_VERSION not found" >&2
+            echo "MARKETING_VERSION not found. Ensure it's set in target Build Settings." >&2
             exit 1
           fi
-
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          TIMESTAMP=$(date -u +"%Y%m%d%H%M%S")
-
-          TAG="v${VERSION}-beta.${SHORT_SHA}"
-          NAME="${VERSION}-beta.${TIMESTAMP}"
-
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare release asset
+      - name: Create tag if missing
         run: |
-          set -euo pipefail
-
-          SOURCE="beta_release/Micmute-beta-universal.zip"
-          DEST="Micmute-${{ steps.meta.outputs.name }}.zip"
-
-          if [ ! -f "$SOURCE" ]; then
-            echo "Beta artifact not found at $SOURCE" >&2
-            exit 1
+          TAG="v${{ steps.appver.outputs.version }}"
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag $TAG already exists"
+          else
+            git config user.name "github-actions"
+            git config user.email "github-actions@users.noreply.github.com"
+            git tag "$TAG"
+            git push origin "$TAG"
           fi
 
-          mv "$SOURCE" "$DEST"
-
-      - name: Push prerelease tag
+      - name: Rename artifact
         run: |
-          set -euo pipefail
+          for flavor in arm64 intel universal; do
+            mv "Micmute-${flavor}.zip" "Micmute-${flavor}-${{ steps.appver.outputs.version }}.zip"
+          done
 
-          TAG="${{ steps.meta.outputs.tag }}"
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git tag -f "$TAG"
-          git push origin "$TAG" --force
-
-      - name: Create prerelease
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.meta.outputs.tag }}
-          name: ${{ steps.meta.outputs.name }}
-          files: Micmute-${{ steps.meta.outputs.name }}.zip
+          tag_name: ${{ steps.appver.outputs.version }}
+          name: ${{ steps.appver.outputs.version }}
+          files: |
+            Micmute-arm64-${{ steps.appver.outputs.version }}.zip
+            Micmute-intel-${{ steps.appver.outputs.version }}.zip
+            Micmute-universal-${{ steps.appver.outputs.version }}.zip
           prerelease: true
           make_latest: false
         env:

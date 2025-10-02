@@ -53,23 +53,38 @@ jobs:
           set -euo pipefail
 
           RELEASE_DIR="build_output/Bundle"
-          mkdir -p "$RELEASE_DIR/Micmute"
+          mkdir -p "$RELEASE_DIR"
 
-          ditto build_output/arm64/Build/Products/Release/Micmute.app "$RELEASE_DIR/Micmute/Micmute-arm64.app"
-          ditto build_output/x86_64/Build/Products/Release/Micmute.app "$RELEASE_DIR/Micmute/Micmute-intel.app"
-          ditto build_output/universal/Build/Products/Release/Micmute.app "$RELEASE_DIR/Micmute/Micmute-universal.app"
+          package_variant() {
+            local identifier="$1"
+            local label="$2"
 
-          pushd "$RELEASE_DIR" >/dev/null
-          ditto -c -k --sequesterRsrc --keepParent Micmute Micmute.zip
-          popd >/dev/null
+            local source="build_output/${identifier}/Build/Products/Release/Micmute.app"
+            local renamed="Micmute-${label}.app"
 
-          mv "$RELEASE_DIR/Micmute.zip" "$GITHUB_WORKSPACE/Micmute.zip"
+            rm -rf "$RELEASE_DIR/$renamed"
+            ditto "$source" "$RELEASE_DIR/$renamed"
+
+            pushd "$RELEASE_DIR" >/dev/null
+            ditto -c -k --sequesterRsrc --keepParent "$renamed" "Micmute-${label}.zip"
+            rm -rf "$renamed"
+            popd >/dev/null
+          }
+
+          package_variant arm64 arm64
+          package_variant x86_64 intel
+          package_variant universal universal
+
+          mv "$RELEASE_DIR"/Micmute-*.zip "$GITHUB_WORKSPACE"/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Micmute
-          path: ${{ github.workspace }}/Micmute.zip
+          path: |
+            ${{ github.workspace }}/Micmute-arm64.zip
+            ${{ github.workspace }}/Micmute-intel.zip
+            ${{ github.workspace }}/Micmute-universal.zip
 
   release:
     needs: build
@@ -110,14 +125,19 @@ jobs:
 
       - name: Rename artifact
         run: |
-          mv Micmute.zip Micmute-${{ steps.appver.outputs.version }}.zip
+          for flavor in arm64 intel universal; do
+            mv "Micmute-${flavor}.zip" "Micmute-${flavor}-${{ steps.appver.outputs.version }}.zip"
+          done
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.appver.outputs.version }}
           name: ${{ steps.appver.outputs.version }}
-          files: Micmute-${{ steps.appver.outputs.version }}.zip
+          files: |
+            Micmute-arm64-${{ steps.appver.outputs.version }}.zip
+            Micmute-intel-${{ steps.appver.outputs.version }}.zip
+            Micmute-universal-${{ steps.appver.outputs.version }}.zip
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
