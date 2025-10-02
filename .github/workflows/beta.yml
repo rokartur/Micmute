@@ -1,9 +1,6 @@
 name: Beta build
 
 on:
-  push:
-    branches:
-      - beta
   pull_request:
     branches:
       - beta
@@ -162,10 +159,10 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.appver.outputs.version }}
-          name: ${{ steps.appver.outputs.version }}
+          tag_name: preview
+          name: ${{ steps.appver.outputs.version }}-preview
           files: |
-            Micmute-universal-${{ steps.appver.outputs.version }}.zip
+            Micmute-universal-${{ steps.appver.outputs.version }}-preview.zip
           prerelease: true
           make_latest: false
         env:
