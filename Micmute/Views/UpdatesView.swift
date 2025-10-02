@@ -63,15 +63,19 @@ struct UpdatesView: View {
     }
 
     private var updateStatusSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        let statusIconName = updatesModel.updateAvailable ? "arrow.down.circle.fill" : "checkmark.circle.fill"
+        let statusColor: Color = updatesModel.updateAvailable ? .orange : .green
+        let statusBackground = updatesModel.updateAvailable ? Color.orange.opacity(0.18) : Color.green.opacity(0.16)
+
+        return VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: updatesModel.updateAvailable ? "arrow.down.circle.fill" : "checkmark.circle.fill")
+                Image(systemName: statusIconName)
                     .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(updatesModel.updateAvailable ? Color.accentColor : Color.green)
+                    .foregroundStyle(statusColor)
                     .padding(10)
                     .background(
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.12))
+                            .fill(statusBackground)
                     )
 
                 VStack(alignment: .leading, spacing: 6) {
@@ -93,34 +97,20 @@ struct UpdatesView: View {
                 }
             }
 
-            if updatesModel.isCheckingForUpdates {
-                HStack(spacing: 10) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text(checkingMessage)
-                        .font(.system(size: 12))
-                        .foregroundColor(.secondary)
-                }
-            } else if !updatesModel.progressMessage.isEmpty && updatesModel.progressValue > 0 {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(updatesModel.progressMessage)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundColor(.secondary)
-                    ProgressView(value: updatesModel.progressValue)
-                        .controlSize(.small)
-                }
-            }
-
             HStack(spacing: 12) {
-                Button(action: updatesModel.checkForUpdates) {
-                    Label("Check for updates", systemImage: "arrow.clockwise")
-                        .font(.system(size: 13, weight: .semibold))
-                        .labelStyle(.titleAndIcon)
+                if let descriptor = currentOperationStatusDescriptor {
+                    UpdateOperationStatusView(descriptor: descriptor)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Button(action: updatesModel.checkForUpdates) {
+                        Label("Check for updates", systemImage: "arrow.clockwise")
+                            .font(.system(size: 13, weight: .semibold))
+                            .labelStyle(.titleAndIcon)
+                    }
+                    .buttonStyle(UpdatesPrimaryButtonStyle())
                 }
-                .buttonStyle(UpdatesPrimaryButtonStyle())
-                .disabled(updatesModel.isCheckingForUpdates)
 
-                if updatesModel.updateAvailable {
+                if currentOperationStatusDescriptor == nil && updatesModel.updateAvailable {
                     Button(action: updatesModel.downloadUpdate) {
                         Label("Download update", systemImage: "arrow.down.to.line")
                             .font(.system(size: 13, weight: .semibold))
@@ -269,6 +259,103 @@ struct UpdatesView: View {
         return updatesModel.progressMessage
     }
 
+    private var currentOperationStatusDescriptor: UpdateOperationStatusDescriptor? {
+        if updatesModel.isCheckingForUpdates {
+            let tint = Color.accentColor
+            return UpdateOperationStatusDescriptor(
+                title: checkingMessage,
+                showsSpinner: true,
+                iconName: nil,
+                iconColor: tint,
+                textColor: .primary,
+                background: tintedBackground(using: tint),
+                border: tintedBorder(using: tint),
+                progress: nil
+            )
+        }
+
+        let trimmedMessage = updatesModel.progressMessage.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedMessage.isEmpty else { return nil }
+        return descriptor(for: trimmedMessage, progress: updatesModel.progressValue)
+    }
+
+    private func descriptor(for message: String, progress: Double) -> UpdateOperationStatusDescriptor {
+        let lowercased = message.lowercased()
+
+        var iconName: String? = "info.circle.fill"
+        var tint: Color = .accentColor
+        var textColor: Color = .primary
+
+        if lowercased.contains("download") {
+            iconName = "arrow.down.circle.fill"
+        }
+
+        if lowercased.contains("prepar") {
+            iconName = "gearshape.2.fill"
+        }
+
+        if lowercased.contains("extract") {
+            iconName = "shippingbox.fill"
+        }
+
+        if lowercased.contains("install") {
+            iconName = "square.and.arrow.down.on.square.fill"
+        }
+
+        if lowercased.contains("restart") || lowercased.contains("relaunch") {
+            iconName = "arrow.triangle.2.circlepath.circle.fill"
+        }
+
+        if lowercased.contains("update installed") || lowercased.contains("latest release info fetched") {
+            iconName = "checkmark.circle.fill"
+            tint = .green
+        }
+
+        if lowercased.contains("cancel") {
+            iconName = "exclamationmark.triangle.fill"
+            tint = .orange
+        }
+
+        if lowercased.contains("failed") || lowercased.contains("unable") || lowercased.contains("couldn't") || lowercased.contains("error") {
+            iconName = "xmark.octagon.fill"
+            tint = .red
+            textColor = .primary
+        }
+
+        if lowercased.contains("no releases") || lowercased.contains("no suitable") {
+            iconName = "questionmark.circle.fill"
+            tint = .orange
+        }
+
+        let shouldDisplayProgress = progress > 0 && progress < 0.999 && (
+            lowercased.contains("prepar") ||
+            lowercased.contains("download") ||
+            lowercased.contains("extract") ||
+            lowercased.contains("install")
+        )
+
+        let progressForDisplay: Double? = shouldDisplayProgress ? progress : nil
+
+        return UpdateOperationStatusDescriptor(
+            title: message,
+            showsSpinner: false,
+            iconName: iconName,
+            iconColor: tint,
+            textColor: textColor,
+            background: tintedBackground(using: tint),
+            border: tintedBorder(using: tint),
+            progress: progressForDisplay
+        )
+    }
+
+    private func tintedBackground(using tint: Color) -> Color {
+        tint.opacity(0.12)
+    }
+
+    private func tintedBorder(using tint: Color) -> Color {
+        tint.opacity(0.26)
+    }
+
     private var automaticChecksSummary: String {
         switch updatesModel.frequency {
         case .never:
@@ -294,6 +381,7 @@ struct UpdatesView: View {
         let relative = relativeFormatter.localizedString(for: nextDate, relativeTo: Date())
         return "\(relative) (\(absoluteFormatter.string(from: nextDate)))"
     }
+
 }
 
 private struct FrequencyOptionRow: View {
@@ -438,11 +526,21 @@ private struct ReleaseNotesSheet: View {
     @ViewBuilder
     private func releaseCard(for release: SettingsRelease) -> some View {
         let title = release.tagName.isEmpty ? release.displayTitle : release.tagName
+        let isLatest = release.id == releases.first?.id
 
         VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.primary)
+            HStack(alignment: .center, spacing: 8) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(.primary)
+
+                Spacer(minLength: 8)
+
+                if isLatest {
+                    ReleaseBadge(label: "Latest", style: .latest)
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
 
             if let markdown = release.githubMarkdownBody() {
                 Text(markdown)
@@ -467,6 +565,96 @@ private struct ReleaseNotesSheet: View {
                         .strokeBorder(Color.primary.opacity(0.08))
                 )
         )
+    }
+}
+
+private struct UpdateOperationStatusView: View {
+    let descriptor: UpdateOperationStatusDescriptor
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            if descriptor.showsSpinner {
+                ProgressView()
+                    .controlSize(.small)
+            } else if let icon = descriptor.iconName {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(descriptor.iconColor)
+                    .frame(width: 18)
+            }
+
+            Text(descriptor.title)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(descriptor.textColor)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let progress = descriptor.progress {
+                Text(progressFormatted(progress))
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(descriptor.iconColor)
+            }
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(descriptor.background)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(descriptor.border, lineWidth: 1)
+        )
+    }
+
+    private func progressFormatted(_ value: Double) -> String {
+        let clamped = max(0, min(1, value))
+        let percent = Int((clamped * 100).rounded())
+        return "\(percent)%"
+    }
+}
+
+private struct UpdateOperationStatusDescriptor {
+    let title: String
+    let showsSpinner: Bool
+    let iconName: String?
+    let iconColor: Color
+    let textColor: Color
+    let background: Color
+    let border: Color
+    let progress: Double?
+}
+
+struct ReleaseBadge: View {
+    enum Style {
+        case latest
+
+        var foreground: Color { .white }
+
+        var background: LinearGradient {
+            LinearGradient(colors: [Color.accentColor.opacity(0.85), Color.accentColor.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+
+        var border: Color { Color.accentColor.opacity(0.8) }
+    }
+
+    let label: String
+    let style: Style
+
+    var body: some View {
+        Text(label.uppercased())
+            .font(.system(size: 9.5, weight: .heavy))
+            .tracking(0.5)
+            .foregroundStyle(style.foreground)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 8)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(style.background)
+            )
+            .overlay(
+                Capsule(style: .continuous)
+                    .stroke(style.border, lineWidth: 0.8)
+            )
     }
 }
 
