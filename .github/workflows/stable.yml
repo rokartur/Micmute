@@ -1,4 +1,4 @@
-name: Build and release
+name: Stable release
 
 on:
   workflow_dispatch:
@@ -21,22 +21,49 @@ jobs:
 
       - name: Build with Xcode
         run: |
-          xcodebuild clean build \
-            -project Micmute.xcodeproj \
-            -scheme Micmute \
-            -configuration Release \
-            -destination "platform=macOS,arch=arm64" \
-            -derivedDataPath build_output \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_ENTITLEMENTS=""
+          set -euo pipefail
 
-      - name: Archive artifact
+          PROJECT="Micmute.xcodeproj"
+          SCHEME="Micmute"
+          CONFIG="Release"
+
+          build_variant() {
+            local identifier="$1"
+            shift
+
+            rm -rf "build_output/${identifier}"
+            xcodebuild clean build \
+              -project "$PROJECT" \
+              -scheme "$SCHEME" \
+              -configuration "$CONFIG" \
+              -derivedDataPath "build_output/${identifier}" \
+              CODE_SIGN_IDENTITY="" \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGN_ENTITLEMENTS="" \
+              "$@"
+          }
+
+          build_variant arm64 -arch arm64
+          build_variant x86_64 -arch x86_64
+          build_variant universal -arch arm64 -arch x86_64
+
+      - name: Prepare release bundle
         run: |
-          cd ./build_output/Build/Products/Release
-          ditto -c -k --sequesterRsrc --keepParent Micmute.app Micmute.zip
-          mv Micmute.zip $GITHUB_WORKSPACE/
+          set -euo pipefail
+
+          RELEASE_DIR="build_output/Bundle"
+          mkdir -p "$RELEASE_DIR/Micmute"
+
+          ditto build_output/arm64/Build/Products/Release/Micmute.app "$RELEASE_DIR/Micmute/Micmute-arm64.app"
+          ditto build_output/x86_64/Build/Products/Release/Micmute.app "$RELEASE_DIR/Micmute/Micmute-intel.app"
+          ditto build_output/universal/Build/Products/Release/Micmute.app "$RELEASE_DIR/Micmute/Micmute-universal.app"
+
+          pushd "$RELEASE_DIR" >/dev/null
+          ditto -c -k --sequesterRsrc --keepParent Micmute Micmute.zip
+          popd >/dev/null
+
+          mv "$RELEASE_DIR/Micmute.zip" "$GITHUB_WORKSPACE/Micmute.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
