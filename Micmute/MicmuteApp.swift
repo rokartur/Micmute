@@ -87,8 +87,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             availableDevices: $contentViewModel.availableDevices,
             availableOutputDevices: $contentViewModel.availableOutputDevices,
             selectedOutputDeviceID: $contentViewModel.selectedOutputDeviceID,
+            outputVolume: $contentViewModel.outputVolume,
             onDeviceSelected: { [weak self] deviceID in self?.updateSelectedDevice(to: deviceID) },
             onOutputDeviceSelected: { [weak self] deviceID in self?.updateSelectedOutputDevice(to: deviceID) },
+            onOutputVolumeChange: { [weak self] newVolume in
+                guard let self else { return }
+                self.contentViewModel.setOutputVolume(for: self.contentViewModel.selectedOutputDeviceID, volume: newVolume)
+            },
             onAppear: { [weak self ] in self?.openMenu() },
             onDisappear: { [weak self ] in self?.closeMenu() }
         )
@@ -205,6 +210,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func updateSelectedOutputDevice(to deviceID: AudioDeviceID) {
         contentViewModel.selectedOutputDeviceID = deviceID
         contentViewModel.changeDefaultOutputDevice(to: deviceID)
+        contentViewModel.refreshOutputVolumeState()
         contentViewModel.loadAudioDevices()
     }
     
