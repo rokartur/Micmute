@@ -1,4 +1,4 @@
-name: Stable release
+name: Stable build
 
 on:
   workflow_dispatch:
