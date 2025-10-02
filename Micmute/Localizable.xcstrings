@@ -66,6 +66,9 @@
         }
       }
     },
+    "Automatic update checks" : {
+
+    },
     "Available devices" : {
       "localizations" : {
         "pl" : {
@@ -106,6 +109,9 @@
         }
       }
     },
+    "Check for updates" : {
+
+    },
     "Check for Updates" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -126,6 +132,12 @@
           }
         }
       }
+    },
+    "Close" : {
+
+    },
+    "Close settings window" : {
+
     },
     "Control the volume of individual apps playing audio on your Mac." : {
 
@@ -149,6 +161,9 @@
           }
         }
       }
+    },
+    "Download update" : {
+
     },
     "Downloads" : {
       "localizations" : {
@@ -229,6 +244,9 @@
     "Installation issue" : {
 
     },
+    "Installed" : {
+
+    },
     "Installing virtual audio driver…" : {
       "localizations" : {
         "pl" : {
@@ -258,6 +276,9 @@
           }
         }
       }
+    },
+    "Latest announcement" : {
+
     },
     "Launch an app that plays audio to adjust its individual volume. We'll update automatically when new sessions appear." : {
       "localizations" : {
@@ -320,6 +341,9 @@
         }
       }
     },
+    "Match macOS \"Play sound effects through\" with the selected output device" : {
+
+    },
     "Medium" : {
       "localizations" : {
         "pl" : {
@@ -360,6 +384,9 @@
         }
       }
     },
+    "Micmute helps you stay in control of your microphone with quick shortcuts, per-app audio and a native macOS design." : {
+
+    },
     "Micmute needs administrator permission to install its virtual audio driver. We'll restart audio services automatically." : {
       "localizations" : {
         "pl" : {
@@ -370,7 +397,11 @@
         }
       }
     },
+    "Micmute needs to restart to finish installing the update." : {
+
+    },
     "Micmute settings..." : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -379,6 +410,9 @@
           }
         }
       }
+    },
+    "Micmute won't check automatically — you'll need to run manual checks." : {
+
     },
     "Microphone volume after unmute" : {
 
@@ -403,6 +437,9 @@
         }
       }
     },
+    "Next check %@" : {
+
+    },
     "No animation" : {
       "localizations" : {
         "pl" : {
@@ -422,6 +459,9 @@
           }
         }
       }
+    },
+    "No release description provided." : {
+
     },
     "No release notes available" : {
       "localizations" : {
@@ -533,6 +573,9 @@
         }
       }
     },
+    "Pulled straight from GitHub" : {
+
+    },
     "Push to talk" : {
       "localizations" : {
         "pl" : {
@@ -553,6 +596,9 @@
         }
       }
     },
+    "Recent release notes" : {
+
+    },
     "Refresh active applications list" : {
       "localizations" : {
         "pl" : {
@@ -564,6 +610,9 @@
       }
     },
     "Reinstall driver" : {
+
+    },
+    "Release notes" : {
 
     },
     "Release notes are still loading" : {
@@ -589,6 +638,12 @@
           }
         }
       }
+    },
+    "Restart" : {
+
+    },
+    "Restart required" : {
+
     },
     "Retry installation" : {
       "localizations" : {
@@ -650,6 +705,9 @@
         }
       }
     },
+    "Settings" : {
+
+    },
     "Show" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -671,7 +729,11 @@
         }
       }
     },
+    "Showing last \\(releases.count) releases" : {
+
+    },
     "Showing last %lld releases" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -700,6 +762,12 @@
           }
         }
       }
+    },
+    "Sync system sound effects" : {
+
+    },
+    "They will appear here once Micmute fetches them from GitHub." : {
+
     },
     "They will appear here right after Micmute fetches them from GitHub." : {
       "localizations" : {
@@ -790,6 +858,29 @@
         }
       }
     },
+    "v%@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "v%1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "v%@ • build %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "v%1$@ • build %2$@"
+          }
+        }
+      }
+    },
+    "Version" : {
+
+    },
     "Version %@" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -802,6 +893,7 @@
       }
     },
     "Version %@  Build (%@)" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -826,6 +918,9 @@
           }
         }
       }
+    },
+    "View announcement" : {
+
     },
     "View on GitHub" : {
       "localizations" : {

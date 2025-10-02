@@ -1,11 +1,8 @@
 import SwiftUI
 import AppKit
-import AlinFoundation
 
 struct MarkdownReleasesView: View {
-    @ObservedObject var updater: Updater
-
-    private var releases: [Release] { updater.releases }
+    let releases: [SettingsRelease]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -22,7 +19,7 @@ struct MarkdownReleasesView: View {
                     .padding(.horizontal, 1)
                 }
 
-                Text("Showing last \(releases.count) releases")
+                Text("Showing last \\(releases.count) releases")
                     .font(.callout)
                     .opacity(0.55)
                     .padding(.horizontal, 2)
@@ -50,7 +47,7 @@ struct MarkdownReleasesView: View {
     }
 
     @ViewBuilder
-    private func releaseView(for release: Release) -> some View {
+    private func releaseView(for release: SettingsRelease) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             header(for: release)
 
@@ -75,21 +72,21 @@ struct MarkdownReleasesView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
 
-                    ForEach(release.assets.prefix(3), id: \.name) { asset in
-                        if let url = URL(string: asset.browser_download_url) {
+                    ForEach(release.assets.prefix(3)) { asset in
+                        if let url = asset.downloadURL ?? asset.apiURL {
                             Link(asset.name, destination: url)
                                 .font(.footnote)
                         }
                     }
 
-                    if release.assets.count > 3, let releaseURL = url(for: release) {
+                    if release.assets.count > 3, let releaseURL = release.githubURL {
                         Link("View all assets on GitHub", destination: releaseURL)
                             .font(.footnote)
                     }
                 }
             }
 
-            if let releaseURL = url(for: release) {
+            if let releaseURL = release.githubURL {
                 Link("View on GitHub", destination: releaseURL)
                     .font(.footnote)
                     .foregroundColor(.accentColor)
@@ -110,24 +107,9 @@ struct MarkdownReleasesView: View {
     }
 
     @ViewBuilder
-    private func header(for release: Release) -> some View {
-        Text(releaseDisplayName(for: release))
+    private func header(for release: SettingsRelease) -> some View {
+        Text(release.displayTitle)
             .font(.headline)
             .fontWeight(.semibold)
     }
-
-    private func releaseDisplayName(for release: Release) -> String {
-        release.name.isEmpty ? release.tag_name : release.name
-    }
-
-    private func url(for release: Release) -> URL? {
-        guard let owner = GitHubReleaseConfiguration.owner,
-              let repo = GitHubReleaseConfiguration.repository else { return nil }
-        let encodedTag = release.tag_name.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? release.tag_name
-        return URL(string: "https://github.com/\(owner)/\(repo)/releases/tag/\(encodedTag)")
-    }
-}
-
-#Preview {
-    MarkdownReleasesView(updater: Updater(owner: "rokartur", repo: "Micmute"))
 }

@@ -1,8 +1,6 @@
 import SwiftUI
 import CoreAudio
 import CoreAudioKit
-import Combine
-import AlinFoundation
 import AppKit
 
 
@@ -11,45 +9,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let shortcutPreferences: ShortcutPreferences
     @ObservedObject var contentViewModel: ContentViewModel
     let perAppVolumeManager = PerAppAudioVolumeManager()
-    let updater = Updater(owner: "rokartur", repo: "Micmute")
+    let settingsUpdaterModel: SettingsUpdaterModel
     var statusBarItem: NSStatusItem!
     var statusBarMenu: NSMenu!
     var statusBarMenuItem: NSMenuItem!
 
     private var preferencesWindow: PreferencesWindow!
-    private var updaterWindow: NSWindow?
     var micMute: NSImage = getMicMuteImage()
     var micUnmute: NSImage = getMicUnmuteImage()
 
     private let refreshInterval: TimeInterval = 1.0
     @State private var refreshTimer: Timer?
-    private var cancellables = Set<AnyCancellable>()
     
     override init() {
         let shortcutPreferences = ShortcutPreferences()
         self.shortcutPreferences = shortcutPreferences
         self.contentViewModel = ContentViewModel(shortcutPreferences: shortcutPreferences)
+        self.settingsUpdaterModel = SettingsUpdaterModel(owner: "rokartur", repository: "Micmute")
         super.init()
     }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         UpdaterSupport.ensureDownloadDirectoryExists()
-
-        // Observe updater sheet state and trigger windows when needed
-        updater.$sheet
-            .receive(on: RunLoop.main)
-            .sink { [weak self] showSheet in
-                guard let self else { return }
-                if showSheet {
-                    self.presentUpdaterWindow()
-                } else {
-                    self.closeUpdaterWindow()
-                }
-            }
-            .store(in: &cancellables)
-
-        // Initialize updater and check for updates
-        updater.checkAndUpdateIfNeeded()
+        settingsUpdaterModel.bootstrapOnLaunch()
         
         let statusBar = NSStatusBar.system
         statusBarItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
@@ -97,7 +79,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             onAppear: { [weak self ] in self?.openMenu() },
             onDisappear: { [weak self ] in self?.closeMenu() }
         )
-        .environmentObject(updater)
         .environmentObject(perAppVolumeManager))
         volumeView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -146,58 +127,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         if preferencesWindow == nil {
             preferencesWindow = PreferencesWindow()
-            let preferencesRoot = PreferencesView(parentWindow: preferencesWindow)
-                .environmentObject(updater)
+            let preferencesRoot = PreferencesView()
+                .environmentObject(settingsUpdaterModel)
                 .environmentObject(perAppVolumeManager)
                 .environmentObject(shortcutPreferences)
+                .environmentObject(contentViewModel)
             let hostedPrefView = NSHostingView(rootView: preferencesRoot)
             preferencesWindow.contentView = hostedPrefView
-            let fittingSize = hostedPrefView.intrinsicContentSize
-            preferencesWindow.setContentSize(fittingSize)
+            preferencesWindow.setContentSize(PreferencesWindow.defaultSize)
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        guard let preferencesWindow else { return }
+
+        let shouldCenter = !preferencesWindow.isVisible
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self, weak preferencesWindow] in
+            guard let self, let preferencesWindow else { return }
+
+            self.settingsUpdaterModel.refreshIfNeeded()
             NSApplication.shared.activate(ignoringOtherApps: true)
-            self.preferencesWindow.center()
-            self.preferencesWindow.makeKeyAndOrderFront(nil)
-            self.preferencesWindow.makeKey()
-        }
-    }
 
-    private func presentUpdaterWindow() {
-        if updaterWindow == nil {
-            let hostView = UpdateSheetHost(updater: updater) { [weak self] in
-                guard let self else { return }
-                updater.sheet = false
-                closeUpdaterWindow()
+            if shouldCenter {
+                preferencesWindow.center()
             }
 
-            let hostingController = NSHostingController(rootView: hostView)
-            let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 10, height: 10),
-                styleMask: [.borderless],
-                backing: .buffered,
-                defer: false
-            )
-            window.isOpaque = false
-            window.alphaValue = 0.01
-            window.backgroundColor = .clear
-            window.hasShadow = false
-            window.level = .floating
-            window.ignoresMouseEvents = true
-            window.isReleasedWhenClosed = false
-            window.contentViewController = hostingController
-            updaterWindow = window
+            preferencesWindow.makeKeyAndOrderFront(nil)
         }
-
-        guard let window = updaterWindow else { return }
-        NSApplication.shared.activate(ignoringOtherApps: true)
-        window.makeKeyAndOrderFront(nil)
-    }
-
-    private func closeUpdaterWindow() {
-        updaterWindow?.close()
-        updaterWindow = nil
     }
 
     func updateSelectedDevice(to deviceID: AudioDeviceID) {
@@ -281,29 +236,4 @@ struct MicmuteApp: App {
 @MainActor
 func activateApp() {
     NSApp.activate(ignoringOtherApps: true)
-}
-
-private struct UpdateSheetHost: View {
-    @ObservedObject var updater: Updater
-    var onDismiss: () -> Void
-    @State private var showSheet = true
-
-    var body: some View {
-        Color.clear
-            .frame(width: 1, height: 1)
-            .sheet(isPresented: $showSheet, onDismiss: onDismiss) {
-                updater.getUpdateView()
-                    .onAppear {
-                        UpdaterSupport.ensureDownloadDirectoryExists()
-                    }
-            }
-            .onAppear {
-                showSheet = true
-            }
-            .onChange(of: updater.sheet, initial: false) { _, newValue in
-                if showSheet != newValue {
-                    showSheet = newValue
-                }
-            }
-    }
 }

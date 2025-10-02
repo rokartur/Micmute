@@ -58,6 +58,7 @@ class ContentViewModel: ObservableObject {
     @AppStorage(AppStorageEntry.pushToTalk.rawValue) var pushToTalk: Bool = false
     @AppStorage(AppStorageEntry.menuGrayscaleIcon.rawValue) var menuGrayscaleIcon: Bool = false
     @AppStorage(AppStorageEntry.menuBehaviorOnClick.rawValue) var menuBehaviorOnClick: MenuBarBehavior = .menu
+    @AppStorage(AppStorageEntry.syncSoundEffectsWithOutput.rawValue) var syncSoundEffectsWithOutput: Bool = true
 
     var notificationWindowController: NotificationWindowController?
     private var isPushToTalkActive = false
@@ -274,6 +275,7 @@ class ContentViewModel: ObservableObject {
             }
 
             self.refreshOutputVolumeState()
+            self.syncSoundEffectsToCurrentOutput()
         }
     }
     
@@ -357,6 +359,7 @@ class ContentViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.selectedOutputDeviceID = defaultDeviceID
             self.refreshOutputVolumeState()
+            self.syncSoundEffectsToCurrentOutput()
         }
     }
     
@@ -395,7 +398,41 @@ class ContentViewModel: ObservableObject {
                                                 &newDeviceID)
         if status != noErr {
             print("Error setting default output device: \(status)")
+        } else if syncSoundEffectsWithOutput {
+            changeSystemSoundEffectsDevice(to: deviceID)
         }
+    }
+
+    private func changeSystemSoundEffectsDevice(to deviceID: AudioDeviceID) {
+        guard deviceID != kAudioObjectUnknown else { return }
+
+        var newDeviceID = deviceID
+        let size = UInt32(MemoryLayout<AudioDeviceID>.size)
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioHardwarePropertyDefaultSystemOutputDevice,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+
+        let status = AudioObjectSetPropertyData(
+            AudioObjectID(kAudioObjectSystemObject),
+            &address,
+            0,
+            nil,
+            size,
+            &newDeviceID
+        )
+
+        if status != noErr {
+            print("Error setting system sound effects device: \(status)")
+        }
+    }
+
+    func syncSoundEffectsToCurrentOutput() {
+        guard syncSoundEffectsWithOutput else { return }
+        let currentOutput = selectedOutputDeviceID
+        guard currentOutput != kAudioObjectUnknown else { return }
+        changeSystemSoundEffectsDevice(to: currentOutput)
     }
 
     func refreshOutputVolumeState() {

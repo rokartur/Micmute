@@ -7,12 +7,10 @@
 
 import SwiftUI
 import CoreAudio
-import AlinFoundation
 
 
 @MainActor
 struct MainMenuView: View {
-    @EnvironmentObject private var updater: Updater
     @EnvironmentObject private var perAppVolumeManager: PerAppAudioVolumeManager
     @Binding var unmuteGain: CGFloat
     @Binding var selectedDeviceID: AudioDeviceID
@@ -92,7 +90,7 @@ struct MainMenuView: View {
 
                 inputSection
 
-                MenuCommand("Micmute settings...") {
+                MenuCommand("Settings") {
                     NSApp.sendAction(#selector(AppDelegate.showPreferences(_:)), to: nil, from: nil)
                 }
                 .padding(.top, 2)
@@ -158,12 +156,16 @@ struct MainMenuView: View {
 
     private var inputSection: some View {
         CollapsibleMenuSection(title: "Input", isExpanded: $isInputExpanded) {
-            VStack(alignment: .leading, spacing: 14) {
-                volumeAfterUnmuteContent
-
-                Divider()
-
+            if inputDeviceEntries.isEmpty {
                 availableDevicesContent
+            } else {
+                VStack(alignment: .leading, spacing: 14) {
+                    volumeAfterUnmuteContent
+
+                    Divider()
+
+                    availableDevicesContent
+                }
             }
         }
     }
@@ -210,19 +212,28 @@ struct MainMenuView: View {
             MenuSectionHeader("Available devices")
 
             VStack(spacing: 6) {
-                ForEach(inputDeviceEntries) { item in
-                    SelectableMenuRow(
-                        title: item.name,
-                        systemImage: icon(for: item.name, defaultSymbol: "mic.fill"),
-                        isSelected: selectedDevice == item.id,
-                        isDisabled: isDeviceSelectionLocked
-                    ) {
-                        performWithDeviceSelectionLock {
-                            let wasSelected = selectedDevice == item.id
-                            selectedDevice = item.id
+                if inputDeviceEntries.isEmpty {
+                    MenuStaticRow(
+                        title: "No input devices found",
+                        systemImage: "mic.slash.fill",
+                        textColor: .secondary,
+                        iconColor: .secondary
+                    )
+                } else {
+                    ForEach(inputDeviceEntries) { item in
+                        SelectableMenuRow(
+                            title: item.name,
+                            systemImage: icon(for: item.name, defaultSymbol: "mic.fill"),
+                            isSelected: selectedDevice == item.id,
+                            isDisabled: isDeviceSelectionLocked
+                        ) {
+                            performWithDeviceSelectionLock {
+                                let wasSelected = selectedDevice == item.id
+                                selectedDevice = item.id
 
-                            if wasSelected {
-                                onDeviceSelected(item.id)
+                                if wasSelected {
+                                    onDeviceSelected(item.id)
+                                }
                             }
                         }
                     }

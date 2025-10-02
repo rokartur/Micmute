@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct GeneralView: View {
+    @EnvironmentObject private var contentViewModel: ContentViewModel
     @EnvironmentObject private var shortcutPreferences: ShortcutPreferences
     @AppStorage(AppStorageEntry.pushToTalk.rawValue) var pushToTalk: Bool = false
     @AppStorage(AppStorageEntry.menuBehaviorOnClick.rawValue) var menuBehaviorOnClick: MenuBarBehavior = .menu
     @AppStorage(AppStorageEntry.launchAtLogin.rawValue) var launchAtLogin: Bool = false
+    @AppStorage(AppStorageEntry.syncSoundEffectsWithOutput.rawValue) var syncSoundEffectsWithOutput: Bool = true
 
     var body: some View {
         VStack(spacing: 16) {
@@ -27,6 +29,7 @@ struct GeneralView: View {
                             ),
                             placeholder: "None"
                         )
+                        .frame(width: 110, alignment: .trailing)
                     }
 
                     Divider()
@@ -41,6 +44,7 @@ struct GeneralView: View {
                             ),
                             placeholder: "None"
                         )
+                        .frame(width: 110, alignment: .trailing)
                     }
 
                     Divider()
@@ -61,6 +65,7 @@ struct GeneralView: View {
                             isEnabled: pushToTalk,
                             placeholder: "None"
                         )
+                        .frame(width: 110, alignment: .trailing)
                         .opacity(pushToTalk ? 1 : 0.5)
                     }
                 }
@@ -90,6 +95,24 @@ struct GeneralView: View {
                             .controlSize(.mini)
                             .onChange(of: launchAtLogin) { newValue, _ in
                                 LaunchAtLoginManager.update(newValue)
+                            }
+                    }
+
+                    Divider()
+
+                    HStack(alignment: .center, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Sync system sound effects")
+                            Text("Match macOS \"Play sound effects through\" with the selected output device")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Toggle("", isOn: $syncSoundEffectsWithOutput)
+                            .controlSize(.mini)
+                            .onChange(of: syncSoundEffectsWithOutput) { _, newValue in
+                                guard newValue else { return }
+                                contentViewModel.syncSoundEffectsToCurrentOutput()
                             }
                     }
                 }

@@ -21,13 +21,13 @@
 		752628CE2D596C8D00B54A0B /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752628CD2D596C8900B54A0B /* ContentViewModel.swift */; };
 		75294FD82D598D8F006A58AF /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 75294FD72D598D8F006A58AF /* Localizable.xcstrings */; };
 		7535635C2D5A9F55003391A1 /* MenuBarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */; };
-		7540E7D22E8C1DB600AC906F /* AlinFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 7540E7D12E8C1DB600AC906F /* AlinFoundation */; };
 		754C61882D5A378500A418EA /* PreferencesWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61872D5A377F00A418EA /* PreferencesWindow.swift */; };
 		754C618A2D5A3AA000A418EA /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61892D5A3A9E00A418EA /* GeneralView.swift */; };
 		75A98F022D5B04DC00246E68 /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */; };
 		75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */; };
 		75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */; };
 		75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */; };
+		75F1C0E12E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */; };
 		76B7D5A12F0A8BF500AB1234 /* UpdaterSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */; };
 		76E1FA002F0B123400AB5678 /* VirtualDriverBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F02F0B11FF00AB5678 /* VirtualDriverBridge.swift */; };
 		76E1FA012F0B123400AB5678 /* DriverInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F62F0B11FF00AB5678 /* DriverInstaller.swift */; };
@@ -103,6 +103,7 @@
 		75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesView.swift; sourceTree = "<group>"; };
 		75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownReleasesView.swift; sourceTree = "<group>"; };
 		75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Release+Markdown.swift"; sourceTree = "<group>"; };
+		75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUpdaterModel.swift; sourceTree = "<group>"; };
 		76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterSupport.swift; sourceTree = "<group>"; };
 		76E1F9F02F0B11FF00AB5678 /* VirtualDriverBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualDriverBridge.swift; sourceTree = "<group>"; };
 		76E1F9F12F0B11FF00AB5678 /* VirtualAudioDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirtualAudioDriver.h; sourceTree = "<group>"; };
@@ -141,7 +142,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7540E7D22E8C1DB600AC906F /* AlinFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +251,7 @@
 				427A86A82C0A0B1A000AFAD4 /* Constants.swift */,
 				76F5F0042F0D000000AB0001 /* GlobalShortcutManager.swift */,
 				75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */,
+				75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */,
 				76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */,
 				76E1FA192F0B145500AB5678 /* LiquidGlassModifier.swift */,
 			);
@@ -389,9 +390,6 @@
 				76F0A03B2F0C030000AB5678 /* PBXTargetDependency */,
 			);
 			name = Micmute;
-			packageProductDependencies = (
-				7540E7D12E8C1DB600AC906F /* AlinFoundation */,
-			);
 			productName = Micmute;
 			productReference = 42698EBB2C0BD99D00648D4C /* Micmute.app */;
 			productType = "com.apple.product-type.application";
@@ -441,7 +439,6 @@
 			);
 			mainGroup = 421B6AF02B37504000946AF4;
 			packageReferences = (
-				7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */,
 			);
 			productRefGroup = 76F5F0052F0D000000AB0001 /* Products */;
 			projectDirPath = "";
@@ -498,6 +495,7 @@
 				75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */,
 				75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */,
 				75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */,
+				75F1C0E12E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift in Sources */,
 				76E1FA022F0B123400AB5678 /* PerAppAudioVolumeManager.swift in Sources */,
 				76E1FA072F0B145500AB5678 /* ApplicationVolumeRowViewModel.swift in Sources */,
 				76E1FA082F0B145500AB5678 /* ApplicationVolumeListViewModel.swift in Sources */,
@@ -843,25 +841,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/alienator88/AlinFoundation.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.5;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		7540E7D12E8C1DB600AC906F /* AlinFoundation */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 7540E7D02E8C1DB600AC906F /* XCRemoteSwiftPackageReference "AlinFoundation" */;
-			productName = AlinFoundation;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 421B6AF12B37504000946AF4 /* Project object */;
 }

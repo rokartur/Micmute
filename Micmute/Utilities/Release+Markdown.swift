@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import AlinFoundation
 
 enum GitHubReleaseConfiguration {
     static var owner: String? {
@@ -17,7 +16,7 @@ enum GitHubReleaseConfiguration {
     }
 }
 
-extension Release {
+extension SettingsRelease {
     /// Returns a GitHub-flavoured markdown `AttributedString` for the release body.
     /// - Parameter overrideOwner: Optional owner that overrides the inferred one from `AppInfo`.
     /// - Parameter overrideRepository: Optional repo that overrides the inferred one from `AppInfo`.
