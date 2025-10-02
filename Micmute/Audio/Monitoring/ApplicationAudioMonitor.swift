@@ -16,7 +16,7 @@ public final class ApplicationAudioMonitor {
 
     private let refreshInterval: TimeInterval
 
-    public init(driver: VirtualDriverBridge = .shared, refreshInterval: TimeInterval = 1.0) {
+    public init(driver: VirtualDriverBridge, refreshInterval: TimeInterval = 1.0) {
         self.driver = driver
         self.refreshInterval = refreshInterval
     }
@@ -51,6 +51,14 @@ public final class ApplicationAudioMonitor {
     }
 
     private func pollRunningApplications() {
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.publishActiveApplications()
+        }
+    }
+
+    @MainActor
+    private func publishActiveApplications() {
         #if DEBUG
         // In debug builds, provide mock data to allow UI prototyping without a driver.
         subject.send(AudioApplication.mockItems)
@@ -78,8 +86,8 @@ public final class ApplicationAudioMonitor {
             let icon = app?.icon
             
             // Get volume and mute state from driver
-            let volume = driver.volume(bundleID: bundleID).map { Double($0) } ?? 1.0
-            let isMuted = driver.isMuted(bundleID: bundleID).map { $0 } ?? false
+            let volume = (try? driver.volume(bundleID: bundleID).get()).map(Double.init) ?? 1.0
+            let isMuted = (try? driver.isMuted(bundleID: bundleID).get()) ?? false
             
             return AudioApplication(
                 name: name,
