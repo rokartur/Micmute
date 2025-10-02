@@ -69,9 +69,9 @@ class ContentViewModel: ObservableObject {
     init(shortcutPreferences: ShortcutPreferences) {
         self.shortcutPreferences = shortcutPreferences
         configureShortcutBindings()
-    loadAudioDevices()
-    setDefaultSystemInputDevice()
-    setDefaultSystemOutputDevice()
+        loadAudioDevices()
+        setDefaultSystemInputDevice()
+        setDefaultSystemOutputDevice()
         registerDeviceChangeListener()
         NotificationCenter.default.addObserver(self, selector: #selector(handleNotificationConfigurationChange(_:)), name: .notificationConfigurationDidChange, object: nil)
 
@@ -89,28 +89,15 @@ class ContentViewModel: ObservableObject {
     }
     
     func toggleMute(deviceID: AudioDeviceID) {
+        let resolvedDeviceID = syncSelectedInputDeviceWithSystemDefault() ?? selectedDeviceID
         isMuted.toggle()
         if isMuted {
-            muteMicrophone(selectedDevice: deviceID)
+            muteMicrophone(selectedDevice: resolvedDeviceID)
         } else {
-            unmuteMicrophone(selectedDevice: deviceID)
-        }
-        
-        if isNotificationEnabled {
-            notificationWindowController?.close()
-            notificationWindowController = NotificationWindowController(
-                isMuted: isMuted,
-                animationType: animationType,
-                animationDuration: animationDuration,
-                displayOption: displayOption,
-                placement: placement,
-                padding: padding,
-                pinBehavior: notificationPinBehavior
-            )
-            notificationWindowController?.showWindow(nil)
+            unmuteMicrophone(selectedDevice: resolvedDeviceID)
         }
 
-        NotificationCenter.default.post(name: NSNotification.Name("MuteStateChanged"), object: nil)
+        publishMuteStateChange()
     }
     
     func checkMuteStatus() {
@@ -156,6 +143,41 @@ class ContentViewModel: ObservableObject {
         )
         notificationWindowController = newController
         newController.showWindow(nil)
+    }
+
+    private func publishMuteStateChange() {
+        notificationWindowController?.close()
+        notificationWindowController = nil
+
+        if isNotificationEnabled {
+            let controller = NotificationWindowController(
+                isMuted: isMuted,
+                animationType: animationType,
+                animationDuration: animationDuration,
+                displayOption: displayOption,
+                placement: placement,
+                padding: padding,
+                pinBehavior: notificationPinBehavior
+            )
+            notificationWindowController = controller
+            controller.showWindow(nil)
+        }
+
+        NotificationCenter.default.post(name: NSNotification.Name("MuteStateChanged"), object: nil)
+    }
+
+    private func reconcileMuteStateWithCurrentGain(_ gain: Float) {
+        let threshold: Float = 0.0001
+
+        if gain <= threshold {
+            guard !isMuted else { return }
+            isMuted = true
+            publishMuteStateChange()
+        } else {
+            guard isMuted else { return }
+            isMuted = false
+            publishMuteStateChange()
+        }
     }
 
     private func configureShortcutBindings() {
@@ -256,27 +278,60 @@ class ContentViewModel: ObservableObject {
             }
         }
         
-        DispatchQueue.main.async {
-            self.availableDevices = updatedInputDevices
-            self.availableOutputDevices = updatedOutputDevices
-            
-            if !updatedInputDevices.keys.contains(self.selectedDeviceID) {
-                self.selectedDeviceID = updatedInputDevices.keys.first ?? kAudioObjectUnknown
-                self.loadInputGain(for: self.selectedDeviceID)
-            }
+        availableDevices = updatedInputDevices
+        availableOutputDevices = updatedOutputDevices
 
-            if !updatedOutputDevices.keys.contains(self.selectedOutputDeviceID) {
-                if let systemDefault = self.systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultOutputDevice),
-                   updatedOutputDevices.keys.contains(systemDefault) {
-                    self.selectedOutputDeviceID = systemDefault
-                } else {
-                    self.selectedOutputDeviceID = updatedOutputDevices.keys.first ?? kAudioObjectUnknown
-                }
-            }
+        let systemInputDefault = systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultInputDevice)
+        var resolvedInputDevice = selectedDeviceID
 
-            self.refreshOutputVolumeState()
-            self.syncSoundEffectsToCurrentOutput()
+        if let systemInputDefault,
+           updatedInputDevices.keys.contains(systemInputDefault) {
+            resolvedInputDevice = systemInputDefault
+        } else if !updatedInputDevices.keys.contains(resolvedInputDevice) {
+            resolvedInputDevice = updatedInputDevices.keys.first ?? kAudioObjectUnknown
         }
+
+        if selectedDeviceID != resolvedInputDevice {
+            selectedDeviceID = resolvedInputDevice
+        }
+        loadInputGain(for: resolvedInputDevice)
+
+        let systemOutputDefault = systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultOutputDevice)
+        var resolvedOutputDevice = selectedOutputDeviceID
+
+        if let systemOutputDefault,
+           updatedOutputDevices.keys.contains(systemOutputDefault) {
+            resolvedOutputDevice = systemOutputDefault
+        } else if !updatedOutputDevices.keys.contains(resolvedOutputDevice) {
+            resolvedOutputDevice = updatedOutputDevices.keys.first ?? kAudioObjectUnknown
+        }
+
+        if selectedOutputDeviceID != resolvedOutputDevice {
+            selectedOutputDeviceID = resolvedOutputDevice
+        }
+
+        refreshOutputVolumeState()
+        syncSoundEffectsToCurrentOutput()
+    }
+
+    @discardableResult
+    func syncSelectedInputDeviceWithSystemDefault() -> AudioDeviceID? {
+        guard let defaultDeviceID = systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultInputDevice) else {
+            return nil
+        }
+
+        if !availableDevices.keys.contains(defaultDeviceID) {
+            loadAudioDevices()
+        }
+
+        if availableDevices.keys.contains(defaultDeviceID) && selectedDeviceID != defaultDeviceID {
+            selectedDeviceID = defaultDeviceID
+            loadInputGain(for: defaultDeviceID)
+        } else if selectedDeviceID == defaultDeviceID {
+            loadInputGain(for: defaultDeviceID)
+        }
+
+        return defaultDeviceID
     }
     
     private func channelCount(for deviceID: AudioDeviceID, scope: AudioObjectPropertyScope) -> UInt32 {
@@ -347,20 +402,16 @@ class ContentViewModel: ObservableObject {
     func setDefaultSystemInputDevice() {
         guard let defaultDeviceID = systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultInputDevice) else { return }
 
-        DispatchQueue.main.async {
-            self.selectedDeviceID = defaultDeviceID
-            self.loadInputGain(for: defaultDeviceID)
-        }
+        selectedDeviceID = defaultDeviceID
+        loadInputGain(for: defaultDeviceID)
     }
 
     func setDefaultSystemOutputDevice() {
         guard let defaultDeviceID = systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultOutputDevice) else { return }
 
-        DispatchQueue.main.async {
-            self.selectedOutputDeviceID = defaultDeviceID
-            self.refreshOutputVolumeState()
-            self.syncSoundEffectsToCurrentOutput()
-        }
+        selectedOutputDeviceID = defaultDeviceID
+        refreshOutputVolumeState()
+        syncSoundEffectsToCurrentOutput()
     }
     
     func changeDefaultInputDevice(to deviceID: AudioDeviceID) {
@@ -559,18 +610,21 @@ class ContentViewModel: ObservableObject {
             mScope: kAudioDevicePropertyScopeInput,
             mElement: kAudioObjectPropertyElementMain
         )
-        
+
         if AudioObjectHasProperty(deviceID, &address) {
-            AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &gain)
-            inputGain = gain
-        } else {
-            inputGain = 0.0
+            let status = AudioObjectGetPropertyData(deviceID, &address, 0, nil, &size, &gain)
+            if status != noErr {
+                gain = 0.0
+            }
         }
+
+        inputGain = gain
+        reconcileMuteStateWithCurrentGain(gain)
     }
         
     func setInputGain(for deviceID: AudioDeviceID, gain: CGFloat) {
-        guard availableDevices.keys.contains(deviceID) else { return }
-        
+        guard deviceID != kAudioObjectUnknown else { return }
+
         var gainFloat: Float32 = Float(gain)
         let size = UInt32(MemoryLayout.size(ofValue: gainFloat))
         var address = AudioObjectPropertyAddress(
@@ -583,6 +637,8 @@ class ContentViewModel: ObservableObject {
             let status = AudioObjectSetPropertyData(deviceID, &address, 0, nil, size, &gainFloat)
             if status != noErr {
                 print("Error setting input gain: \(status)")
+            } else if deviceID == selectedDeviceID {
+                inputGain = Float(gain)
             }
         }
     }
