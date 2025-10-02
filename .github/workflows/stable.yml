@@ -150,18 +150,6 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      # - name: Create tag if missing
-      #   run: |
-      #     TAG="v${{ steps.appver.outputs.version }}"
-      #     if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-      #       echo "Tag $TAG already exists"
-      #     else
-      #       git config user.name "github-actions"
-      #       git config user.email "github-actions@users.noreply.github.com"
-      #       git tag "$TAG"
-      #       git push origin "$TAG"
-      #     fi
-
       - name: Rename artifact
         run: |
           mv "Micmute-universal.zip" "Micmute-universal-${{ steps.appver.outputs.version }}.zip"
