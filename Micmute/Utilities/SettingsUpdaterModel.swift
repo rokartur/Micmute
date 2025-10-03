@@ -1,4 +1,5 @@
 import Foundation
+import MachO
 import os.log
 #if canImport(AppKit)
 import AppKit
@@ -326,12 +327,65 @@ final class SettingsUpdaterModel: ObservableObject {
         let candidates = release.assets.filter { $0.name.lowercased().hasSuffix(".zip") }
         guard !candidates.isEmpty else { return nil }
 
-        let bundleName = Bundle.main.name
-        let archIdentifier = isRunningOnAppleSilicon ? "arm" : "intel"
+        let bundleToken = Bundle.main.name.normalizedAssetToken()
+        let architecture = currentBinaryArchitecture()
+        let normalizedCandidates = candidates.map { asset -> (SettingsRelease.Asset, String) in
+            (asset, asset.name.normalizedAssetToken())
+        }
 
-        return candidates.first(where: { $0.name.contains("\(bundleName)-\(archIdentifier)") })
-            ?? candidates.first(where: { $0.name.contains(bundleName) })
-            ?? candidates.first
+        if let preciseMatch = normalizedCandidates.first(where: { candidate in
+            candidate.1.contains(bundleToken) && candidate.1.containsAny(of: architecture.assetPreferenceTokens)
+        }) {
+            return preciseMatch.0
+        }
+
+        if let archMatch = normalizedCandidates.first(where: { $0.1.containsAny(of: architecture.assetPreferenceTokens) }) {
+            return archMatch.0
+        }
+
+        if let bundleMatch = normalizedCandidates.first(where: { $0.1.contains(bundleToken) }) {
+            return bundleMatch.0
+        }
+
+        return candidates.first
+    }
+
+    private func currentBinaryArchitecture() -> BinaryArchitecture {
+        if let architectures = Bundle.main.executableArchitectures?.compactMap({ BinaryArchitecture(bundleValue: $0.intValue) }),
+           let firstMatch = architectures.first {
+            return firstMatch
+        }
+
+        #if arch(arm64)
+        return .arm64
+        #else
+        return .x86_64
+        #endif
+    }
+
+    private enum BinaryArchitecture {
+        case arm64
+        case x86_64
+
+        init?(bundleValue: Int) {
+            switch bundleValue {
+            case Int(CPU_TYPE_ARM64):
+                self = .arm64
+            case Int(CPU_TYPE_X86_64):
+                self = .x86_64
+            default:
+                return nil
+            }
+        }
+
+        var assetPreferenceTokens: [String] {
+            switch self {
+            case .arm64:
+                return ["arm64", "apple-silicon", "applesilicon", "aarch64", "arm"]
+            case .x86_64:
+                return ["x86-64", "x86_64", "x86", "intel"]
+            }
+        }
     }
 
     private func prepareDownloadDestination(for filename: String) throws -> URL {
@@ -561,13 +615,6 @@ final class SettingsUpdaterModel: ObservableObject {
         return sanitized.split(separator: ".").compactMap { Int($0) }
     }
 
-    private var isRunningOnAppleSilicon: Bool {
-        #if arch(arm64)
-        return true
-        #else
-        return false
-        #endif
-    }
 }
 
 // MARK: - Supporting models
@@ -650,6 +697,21 @@ struct SettingsRelease: Identifiable {
               let repo = GitHubReleaseConfiguration.repository else { return nil }
         let encodedTag = tagName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? tagName
         return URL(string: "https://github.com/\(owner)/\(repo)/releases/tag/\(encodedTag)")
+    }
+}
+
+private extension String {
+    func normalizedAssetToken() -> String {
+        let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)
+        let lowered = trimmed.lowercased()
+        let underscored = lowered.replacingOccurrences(of: "_", with: "-")
+        let spaced = underscored.replacingOccurrences(of: " ", with: "-")
+        return spaced.replacingOccurrences(of: "--", with: "-")
+    }
+
+    func containsAny(of tokens: [String]) -> Bool {
+        guard !tokens.isEmpty else { return false }
+        return tokens.contains(where: { !$0.isEmpty && self.contains($0) })
     }
 }
  

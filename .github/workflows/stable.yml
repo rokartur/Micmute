@@ -47,39 +47,52 @@ jobs:
           build_variant arm64 -arch arm64
           build_variant x86_64 -arch x86_64
 
-          create_universal_variant() {
-            local universal_root="build_output/universal/Build/Products/Release"
-            local universal_app="$universal_root/Micmute.app"
-            local arm_app="build_output/arm64/Build/Products/Release/Micmute.app"
-            local intel_app="build_output/x86_64/Build/Products/Release/Micmute.app"
+      - name: Re-seal app bundles
+        run: |
+          set -euo pipefail
 
-            if [ ! -d "$arm_app" ] || [ ! -d "$intel_app" ]; then
-              echo "Missing architecture build outputs; cannot create universal binary." >&2
+          reseal_variant() {
+            local identifier="$1"
+            local app_path="build_output/${identifier}/Build/Products/Release/Micmute.app"
+
+            if [ ! -d "$app_path" ]; then
+              echo "App bundle not found at $app_path" >&2
               exit 1
             fi
 
-            rm -rf "build_output/universal"
-            mkdir -p "$universal_root"
-
-            ditto "$arm_app" "$universal_app"
-
-            while IFS= read -r arm_file; do
-              local rel="${arm_file#${arm_app}/}"
-              local intel_file="$intel_app/$rel"
-              local universal_file="$universal_app/$rel"
-
-              if [ ! -f "$intel_file" ]; then
-                continue
-              fi
-
-              if file "$arm_file" | grep -q "Mach-O"; then
-                lipo -create "$arm_file" "$intel_file" -output "$universal_file"
-                codesign --remove-signature "$universal_file" || true
-              fi
-            done < <(find "$arm_app" -type f)
+            chmod +x "$app_path/Contents/MacOS/Micmute" || true
+            xattr -cr "$app_path" || true
+            codesign -f --deep -s - "$app_path" || true
           }
 
-          create_universal_variant
+          reseal_variant arm64
+          reseal_variant x86_64
+
+      - name: Verify binaries and bundles
+        run: |
+          set -euo pipefail
+
+          verify_variant() {
+            local identifier="$1"
+            local label="$2"
+            local app_path="build_output/${identifier}/Build/Products/Release/Micmute.app"
+
+            echo "=== ${label} binary architecture check ==="
+            file "$app_path/Contents/MacOS/Micmute"
+            otool -hv "$app_path/Contents/MacOS/Micmute" || true
+
+            echo "=== ${label} bundle Info.plist check ==="
+            plutil -p "$app_path/Contents/Info.plist" | egrep 'CFBundleExecutable|CFBundleIdentifier|LSMinimumSystemVersion' || true
+
+            echo "=== ${label} code signing verification ==="
+            codesign -vvv --deep --strict "$app_path" || true
+
+            echo "=== ${label} Gatekeeper assessment ==="
+            spctl --assess --type execute -v "$app_path" || true
+          }
+
+          verify_variant arm64 "arm64"
+          verify_variant x86_64 "Intel"
 
       - name: Prepare release bundle
         run: |
@@ -107,23 +120,16 @@ jobs:
 
             rm -rf "$staging"
           }
-
-          package_variant universal universal
-
-          UNIVERSAL_ZIP="$RELEASE_DIR_ABS/Micmute-universal.zip"
-          if [ ! -f "$UNIVERSAL_ZIP" ]; then
-            echo "Universal zip not found at $UNIVERSAL_ZIP" >&2
-            exit 1
-          fi
-
-          mv "$UNIVERSAL_ZIP" "$GITHUB_WORKSPACE"/
+          package_variant arm64 arm64
+          package_variant x86_64 intel
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Micmute
           path: |
-            ${{ github.workspace }}/Micmute-universal.zip
+            ${{ github.workspace }}/Micmute-arm64.zip
+            ${{ github.workspace }}/Micmute-intel.zip
 
   release:
     needs: build
@@ -150,9 +156,10 @@ jobs:
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Rename artifact
+      - name: Rename artifacts
         run: |
-          mv "Micmute-universal.zip" "Micmute-universal-${{ steps.appver.outputs.version }}.zip"
+          mv "Micmute-arm64.zip" "Micmute-arm64-${{ steps.appver.outputs.version }}.zip"
+          mv "Micmute-intel.zip" "Micmute-intel-${{ steps.appver.outputs.version }}.zip"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -160,7 +167,8 @@ jobs:
           tag_name: ${{ steps.appver.outputs.version }}
           name: ${{ steps.appver.outputs.version }}
           files: |
-            Micmute-universal-${{ steps.appver.outputs.version }}.zip
+            Micmute-arm64-${{ steps.appver.outputs.version }}.zip
+            Micmute-intel-${{ steps.appver.outputs.version }}.zip
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
