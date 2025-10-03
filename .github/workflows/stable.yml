@@ -3,9 +3,14 @@ name: Stable build
 on:
   workflow_dispatch:
 
+
 jobs:
   build:
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [arm64, x86_64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,80 +24,73 @@ jobs:
         run: |
           brew install cocoapods || true
 
-      - name: Build per-architecture variants
+      - name: Determine architecture label
+        id: arch_label
+        run: |
+          if [ "${{ matrix.arch }}" = "x86_64" ]; then
+            echo "label=intel" >> "$GITHUB_OUTPUT"
+          else
+            echo "label=arm64" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build ${{ matrix.arch }} variant
         run: |
           set -euo pipefail
 
           PROJECT="Micmute.xcodeproj"
           SCHEME="Micmute"
           CONFIG="Release"
+          ARCH="${{ matrix.arch }}"
+          DERIVED="build_output/${ARCH}"
 
-          build_variant() {
-            local identifier="$1"
-            local arch_flag="$2"
+          rm -rf "$DERIVED"
+          xcodebuild clean build \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration "$CONFIG" \
+            -derivedDataPath "$DERIVED" \
+            -arch "$ARCH" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_ENTITLEMENTS=""
 
-            rm -rf "build_output/${identifier}"
-            xcodebuild clean build \
-              -project "$PROJECT" \
-              -scheme "$SCHEME" \
-              -configuration "$CONFIG" \
-              -derivedDataPath "build_output/${identifier}" \
-              CODE_SIGN_IDENTITY="" \
-              CODE_SIGNING_REQUIRED=NO \
-              CODE_SIGNING_ALLOWED=NO \
-              CODE_SIGN_ENTITLEMENTS="" \
-              -arch "$arch_flag"
-          }
-
-          build_variant arm64 arm64
-          build_variant x86_64 x86_64
-
-      - name: Re-seal app bundles
+      - name: Re-seal app bundle
         run: |
           set -euo pipefail
 
-          reseal_variant() {
-            local identifier="$1"
-            local app_path="build_output/${identifier}/Build/Products/Release/Micmute.app"
+          ARCH="${{ matrix.arch }}"
+          APP_PATH="build_output/${ARCH}/Build/Products/Release/Micmute.app"
 
-            if [ ! -d "$app_path" ]; then
-              echo "App bundle not found at $app_path" >&2
-              exit 1
-            fi
+          if [ ! -d "$APP_PATH" ]; then
+            echo "App bundle not found at $APP_PATH" >&2
+            exit 1
+          fi
 
-            chmod +x "$app_path/Contents/MacOS/Micmute" || true
-            xattr -cr "$app_path" || true
-            codesign -f --deep -s - "$app_path" || true
-          }
+          chmod +x "$APP_PATH/Contents/MacOS/Micmute" || true
+          xattr -cr "$APP_PATH" || true
+          codesign -f --deep -s - "$APP_PATH" || true
 
-          reseal_variant arm64
-          reseal_variant x86_64
-
-      - name: Verify binaries and bundles
+      - name: Verify binary and bundle
         run: |
           set -euo pipefail
 
-          verify_variant() {
-            local identifier="$1"
-            local label="$2"
-            local app_path="build_output/${identifier}/Build/Products/Release/Micmute.app"
+          ARCH="${{ matrix.arch }}"
+          ARCH_LABEL="${{ steps.arch_label.outputs.label }}"
+          APP_PATH="build_output/${ARCH}/Build/Products/Release/Micmute.app"
 
-            echo "=== ${label} binary architecture check ==="
-            file "$app_path/Contents/MacOS/Micmute"
-            otool -hv "$app_path/Contents/MacOS/Micmute" || true
+          echo "=== ${ARCH_LABEL} binary architecture check ==="
+          file "$APP_PATH/Contents/MacOS/Micmute"
+          otool -hv "$APP_PATH/Contents/MacOS/Micmute" || true
 
-            echo "=== ${label} bundle Info.plist check ==="
-            plutil -p "$app_path/Contents/Info.plist" | egrep 'CFBundleExecutable|CFBundleIdentifier|LSMinimumSystemVersion' || true
+          echo "=== ${ARCH_LABEL} bundle Info.plist check ==="
+          plutil -p "$APP_PATH/Contents/Info.plist" | egrep 'CFBundleExecutable|CFBundleIdentifier|LSMinimumSystemVersion' || true
 
-            echo "=== ${label} code signing verification ==="
-            codesign -vvv --deep --strict "$app_path" || true
+          echo "=== ${ARCH_LABEL} code signing verification ==="
+          codesign -vvv --deep --strict "$APP_PATH" || true
 
-            echo "=== ${label} Gatekeeper assessment ==="
-            spctl --assess --type execute -v "$app_path" || true
-          }
-
-          verify_variant arm64 "arm64"
-          verify_variant x86_64 "Intel"
+          echo "=== ${ARCH_LABEL} Gatekeeper assessment ==="
+          spctl --assess --type execute -v "$APP_PATH" || true
 
       - name: Prepare release bundle
         run: |
@@ -102,41 +100,35 @@ jobs:
           RELEASE_DIR_ABS="$(pwd)/$RELEASE_DIR"
           mkdir -p "$RELEASE_DIR_ABS"
 
-          package_variant() {
-            local identifier="$1"
-            local label="$2"
-            local source="build_output/${identifier}/Build/Products/Release/Micmute.app"
-            local staging="$RELEASE_DIR_ABS/staging-${label}"
+          ARCH="${{ matrix.arch }}"
+          ARCH_LABEL="${{ steps.arch_label.outputs.label }}"
+          SOURCE="build_output/${ARCH}/Build/Products/Release/Micmute.app"
+          STAGING="$RELEASE_DIR_ABS/staging-${ARCH_LABEL}"
 
-            rm -rf "$staging"
-            mkdir -p "$staging"
+          rm -rf "$STAGING"
+          mkdir -p "$STAGING"
 
-            ditto "$source" "$staging/Micmute.app"
+          ditto "$SOURCE" "$STAGING/Micmute.app"
 
-            pushd "$staging" >/dev/null
-            ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "$RELEASE_DIR_ABS/Micmute-${label}.zip"
-            popd >/dev/null
+          pushd "$STAGING" >/dev/null
+          ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "$RELEASE_DIR_ABS/Micmute-${ARCH_LABEL}.zip"
+          popd >/dev/null
 
-            rm -rf "$staging"
+          rm -rf "$STAGING"
 
-            local zip_path="$RELEASE_DIR_ABS/Micmute-${label}.zip"
-            if [ ! -f "$zip_path" ]; then
-              echo "Zip not found at $zip_path" >&2
-              exit 1
-            fi
+          ZIP_PATH="$RELEASE_DIR_ABS/Micmute-${ARCH_LABEL}.zip"
+          if [ ! -f "$ZIP_PATH" ]; then
+            echo "Zip not found at $ZIP_PATH" >&2
+            exit 1
+          fi
 
-            mv "$zip_path" "$GITHUB_WORKSPACE"/
-          }
-          package_variant arm64 arm64
-          package_variant x86_64 intel
+          mv "$ZIP_PATH" "$GITHUB_WORKSPACE"/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Micmute
-          path: |
-            ${{ github.workspace }}/Micmute-arm64.zip
-            ${{ github.workspace }}/Micmute-intel.zip
+          name: Micmute-${{ steps.arch_label.outputs.label }}
+          path: ${{ github.workspace }}/Micmute-${{ steps.arch_label.outputs.label }}.zip
 
   release:
     needs: build
@@ -147,11 +139,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: Micmute
+          pattern: Micmute-*
           path: .
+          merge-multiple: true
 
       - name: Read app version from Xcode settings
         id: appver
@@ -165,8 +158,12 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv "Micmute-arm64.zip" "Micmute-arm64-${{ steps.appver.outputs.version }}.zip"
-          mv "Micmute-intel.zip" "Micmute-intel-${{ steps.appver.outputs.version }}.zip"
+          VERSION="${{ steps.appver.outputs.version }}"
+          for zip in Micmute-*.zip; do
+            arch="${zip#Micmute-}"
+            arch="${arch%.zip}"
+            mv "$zip" "Micmute-${arch}-${VERSION}.zip"
+          done
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -174,8 +171,7 @@ jobs:
           tag_name: ${{ steps.appver.outputs.version }}
           name: ${{ steps.appver.outputs.version }}
           files: |
-            Micmute-arm64-${{ steps.appver.outputs.version }}.zip
-            Micmute-intel-${{ steps.appver.outputs.version }}.zip
+            Micmute-*-${{ steps.appver.outputs.version }}.zip
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
