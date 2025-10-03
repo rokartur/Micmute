@@ -1,7 +1,9 @@
 name: Beta build
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - beta
 
 jobs:
   build:
