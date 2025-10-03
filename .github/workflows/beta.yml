@@ -21,67 +21,70 @@ jobs:
         run: |
           brew install cocoapods || true
 
-      - name: Build with Xcode
+      - name: Build universal with Xcode
         run: |
           set -euo pipefail
 
           PROJECT="Micmute.xcodeproj"
           SCHEME="Micmute"
           CONFIG="Release"
+          DERIVED="build_output/universal"
 
-          build_variant() {
-            local identifier="$1"
-            shift
+          # Clean previous builds
+          rm -rf "$DERIVED"
 
-            rm -rf "build_output/${identifier}"
-            xcodebuild clean build \
-              -project "$PROJECT" \
-              -scheme "$SCHEME" \
-              -configuration "$CONFIG" \
-              -derivedDataPath "build_output/${identifier}" \
-              CODE_SIGN_IDENTITY="" \
-              CODE_SIGNING_REQUIRED=NO \
-              CODE_SIGNING_ALLOWED=NO \
-              CODE_SIGN_ENTITLEMENTS="" \
-              "$@"
-          }
+          # Build universal binary directly with Xcode
+          xcodebuild clean build \
+            -project "$PROJECT" \
+            -scheme "$SCHEME" \
+            -configuration "$CONFIG" \
+            -derivedDataPath "$DERIVED" \
+            -arch arm64 \
+            -arch x86_64 \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_ENTITLEMENTS=""
 
-          build_variant arm64 -arch arm64
-          build_variant x86_64 -arch x86_64
+      - name: Verify and re-seal app bundle
+        run: |
+          set -euo pipefail
 
-          create_universal_variant() {
-            local universal_root="build_output/universal/Build/Products/Release"
-            local universal_app="$universal_root/Micmute.app"
-            local arm_app="build_output/arm64/Build/Products/Release/Micmute.app"
-            local intel_app="build_output/x86_64/Build/Products/Release/Micmute.app"
+          APP="build_output/universal/Build/Products/Release/Micmute.app"
 
-            if [ ! -d "$arm_app" ] || [ ! -d "$intel_app" ]; then
-              echo "Missing architecture build outputs; cannot create universal binary." >&2
-              exit 1
-            fi
+          # Verify the app exists
+          if [ ! -d "$APP" ]; then
+            echo "App bundle not found at $APP" >&2
+            exit 1
+          fi
 
-            rm -rf "build_output/universal"
-            mkdir -p "$universal_root"
+          # Ensure executable bits are set
+          chmod +x "$APP/Contents/MacOS/Micmute" || true
 
-            ditto "$arm_app" "$universal_app"
+          # Clear extended attributes that might cause issues
+          xattr -cr "$APP" || true
 
-            while IFS= read -r arm_file; do
-              local rel="${arm_file#${arm_app}/}"
-              local intel_file="$intel_app/$rel"
-              local universal_file="$universal_app/$rel"
+          # Re-codesign entire bundle ad-hoc for macOS 15 compatibility
+          codesign -f --deep -s - "$APP" || true
 
-              if [ ! -f "$intel_file" ]; then
-                continue
-              fi
+      - name: Verify binary and bundle
+        run: |
+          set -euo pipefail
 
-              if file "$arm_file" | grep -q "Mach-O"; then
-                lipo -create "$arm_file" "$intel_file" -output "$universal_file"
-                codesign --remove-signature "$universal_file" || true
-              fi
-            done < <(find "$arm_app" -type f)
-          }
+          APP="build_output/universal/Build/Products/Release/Micmute.app"
 
-          create_universal_variant
+          echo "=== Binary architecture check ==="
+          file "$APP/Contents/MacOS/Micmute"
+          otool -hv "$APP/Contents/MacOS/Micmute" || true
+
+          echo "=== Bundle Info.plist check ==="
+          plutil -p "$APP/Contents/Info.plist" | egrep 'CFBundleExecutable|CFBundleIdentifier|LSMinimumSystemVersion' || true
+
+          echo "=== Code signing verification ==="
+          codesign -vvv --deep --strict "$APP" || true
+
+          echo "=== Gatekeeper assessment ==="
+          spctl --assess --type execute -v "$APP" || true
 
       - name: Prepare release bundle
         run: |
@@ -91,33 +94,32 @@ jobs:
           RELEASE_DIR_ABS="$(pwd)/$RELEASE_DIR"
           mkdir -p "$RELEASE_DIR_ABS"
 
-          package_variant() {
-            local identifier="$1"
-            local label="$2"
+          APP_SOURCE="build_output/universal/Build/Products/Release/Micmute.app"
+          STAGING="$RELEASE_DIR_ABS/staging-universal"
 
-            local source="build_output/${identifier}/Build/Products/Release/Micmute.app"
-            local staging="$RELEASE_DIR_ABS/staging-${label}"
+          # Clean staging area
+          rm -rf "$STAGING"
+          mkdir -p "$STAGING"
 
-            rm -rf "$staging"
-            mkdir -p "$staging"
+          # Copy app to staging
+          ditto "$APP_SOURCE" "$STAGING/Micmute.app"
 
-            ditto "$source" "$staging/Micmute.app"
+          # Create zip from staging
+          pushd "$STAGING" >/dev/null
+          ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "$RELEASE_DIR_ABS/Micmute-universal.zip"
+          popd >/dev/null
 
-            pushd "$staging" >/dev/null
-            ditto -c -k --sequesterRsrc --keepParent "Micmute.app" "$RELEASE_DIR_ABS/Micmute-${label}.zip"
-            popd >/dev/null
+          # Clean staging
+          rm -rf "$STAGING"
 
-            rm -rf "$staging"
-          }
-
-          package_variant universal universal
-
+          # Verify zip was created
           UNIVERSAL_ZIP="$RELEASE_DIR_ABS/Micmute-universal.zip"
           if [ ! -f "$UNIVERSAL_ZIP" ]; then
             echo "Universal zip not found at $UNIVERSAL_ZIP" >&2
             exit 1
           fi
 
+          # Move to workspace root
           mv "$UNIVERSAL_ZIP" "$GITHUB_WORKSPACE"/
 
       - name: Upload artifact
@@ -165,5 +167,19 @@ jobs:
             Micmute-universal-${{ steps.appver.outputs.version }}-preview.zip
           prerelease: true
           make_latest: false
+          body: |
+            ## Micmute Preview Build
+
+            **Version:** ${{ steps.appver.outputs.version }}
+
+            ### Installation Notes
+            This is an unsigned build. You may need to:
+            1. Right-click the app and select "Open" the first time
+            2. Or remove quarantine in Terminal: `xattr -dr com.apple.quarantine /Applications/Micmute.app`
+
+            ### Architecture Support
+            - ✅ Apple Silicon (M1/M2/M3/M4)
+            - ✅ Intel (x86_64)
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
