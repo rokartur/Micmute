@@ -171,7 +171,8 @@ jobs:
           tag_name: ${{ steps.appver.outputs.version }}
           name: ${{ steps.appver.outputs.version }}
           files: |
-            Micmute-*-${{ steps.appver.outputs.version }}.zip
+            Micmute-arm64-${{ steps.appver.outputs.version }}.zip
+            Micmute-intel-${{ steps.appver.outputs.version }}.zip
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

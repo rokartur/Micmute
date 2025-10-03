@@ -172,7 +172,8 @@ jobs:
           tag_name: preview
           name: ${{ steps.appver.outputs.version }}-preview
           files: |
-            Micmute-*-${{ steps.appver.outputs.version }}-preview.zip
+            Micmute-arm64-${{ steps.appver.outputs.version }}-preview.zip
+            Micmute-intel-${{ steps.appver.outputs.version }}-preview.zip
           prerelease: true
           make_latest: false
           body: |
