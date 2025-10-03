@@ -7,11 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1CDC683BE71A42D29D7A2E5C /* PerAppAudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2413EF4829D74975B7782B3A /* PerAppAudioView.swift */; };
 		42016B352C0C3A69002135AB /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42016B342C0C3A69002135AB /* PreferencesView.swift */; };
 		421B6AFD2B37504000946AF4 /* MicmuteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 421B6AFC2B37504000946AF4 /* MicmuteApp.swift */; };
 		421B6B012B37504100946AF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B002B37504100946AF4 /* Assets.xcassets */; };
-		421B6B042B37504100946AF4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 421B6B032B37504100946AF4 /* Preview Assets.xcassets */; };
 		42698EBD2C0BE7CB00648D4C /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42698EBC2C0BE7CB00648D4C /* NotificationView.swift */; };
 		427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86A82C0A0B1A000AFAD4 /* Constants.swift */; };
 		427A86C12C0A52D1000AFAD4 /* CustomSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */; };
@@ -29,39 +27,12 @@
 		75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */; };
 		75F1C0E12E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */; };
 		76B7D5A12F0A8BF500AB1234 /* UpdaterSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */; };
-		76E1FA012F0B123400AB5678 /* DriverInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F62F0B11FF00AB5678 /* DriverInstaller.swift */; };
-		76E1FA022F0B123400AB5678 /* PerAppAudioVolumeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F72F0B11FF00AB5678 /* PerAppAudioVolumeManager.swift */; };
-		76E1FA032F0B123400AB5678 /* AudioApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F82F0B11FF00AB5678 /* AudioApplication.swift */; };
-		76E1FA052F0B123400AB5678 /* BGMHALBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F12F0B11FF00AB5678 /* BGMHALBackend.swift */; };
-		76E1FA062F0B123400AB5678 /* HALDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F22F0B11FF00AB5678 /* HALDiagnostics.swift */; };
-		76E1FA0C2F0B145500AB5678 /* HALPluginInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1F9F32F0B11FF00AB5678 /* HALPluginInstaller.swift */; };
-		76E1FA072F0B145500AB5678 /* ApplicationVolumeRowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1FA172F0B145500AB5678 /* ApplicationVolumeRowViewModel.swift */; };
-		76E1FA082F0B145500AB5678 /* ApplicationVolumeListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1FA182F0B145500AB5678 /* ApplicationVolumeListViewModel.swift */; };
 		76E1FA092F0B145500AB5678 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1FA192F0B145500AB5678 /* LiquidGlassModifier.swift */; };
-		76E1FA0A2F0B145500AB5678 /* ApplicationVolumeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1FA1A2F0B145500AB5678 /* ApplicationVolumeListView.swift */; };
-		76E1FA0B2F0B145500AB5678 /* ApplicationVolumeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1FA1B2F0B145500AB5678 /* ApplicationVolumeRow.swift */; };
-		76E1FA232F0B200000AB5678 /* AuthorizationHelper.c in Sources */ = {isa = PBXBuildFile; fileRef = 76E1FA222F0B200000AB5678 /* AuthorizationHelper.c */; };
-		76F0A0332F0C020000AB5678 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F0A0302F0C020000AB5678 /* CoreAudio.framework */; };
-		76F0A0342F0C020000AB5678 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F0A0312F0C020000AB5678 /* AudioToolbox.framework */; };
-		76F0A0352F0C020000AB5678 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F0A0322F0C020000AB5678 /* CoreFoundation.framework */; };
-		76F0A0362F0C020000AB5678 /* BGMPlugIn.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76F0A0002F0C000000AB5678 /* BGMPlugIn.cpp */; };
-		76F0A0392F0C030000AB5678 /* PerAppVolumeDevice.driver in CopyFiles */ = {isa = PBXBuildFile; fileRef = 76F0A0102F0C010000AB5678 /* PerAppVolumeDevice.driver */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		76F0A03D2F0C12A000AB5678 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F0A03C2F0C12A000AB5678 /* Security.framework */; };
 		76F5F0112F0D000000AB0001 /* Shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0012F0D000000AB0001 /* Shortcut.swift */; };
 		76F5F0122F0D000000AB0001 /* ShortcutPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0022F0D000000AB0001 /* ShortcutPreferences.swift */; };
 		76F5F0132F0D000000AB0001 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */; };
 		76F5F0142F0D000000AB0001 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0042F0D000000AB0001 /* GlobalShortcutManager.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		75C27AD32E8DAC0E00FAE2F2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 421B6AF12B37504000946AF4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 76F0A0142F0C010000AB5678;
-			remoteInfo = PerAppVolumeDevice;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		76F0A03A2F0C030000AB5678 /* CopyFiles */ = {
@@ -70,18 +41,15 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
-				76F0A0392F0C030000AB5678 /* PerAppVolumeDevice.driver in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2413EF4829D74975B7782B3A /* PerAppAudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerAppAudioView.swift; sourceTree = "<group>"; };
 		42016B342C0C3A69002135AB /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		421B6AFC2B37504000946AF4 /* MicmuteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicmuteApp.swift; sourceTree = "<group>"; };
 		421B6B002B37504100946AF4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		421B6B032B37504100946AF4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		421B6B052B37504100946AF4 /* Micmute.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Micmute.entitlements; sourceTree = "<group>"; };
 		421B6B0B2B3764BC00946AF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		42698EBB2C0BD99D00648D4C /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Micmute.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,25 +70,7 @@
 		75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Release+Markdown.swift"; sourceTree = "<group>"; };
 		75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUpdaterModel.swift; sourceTree = "<group>"; };
 		76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterSupport.swift; sourceTree = "<group>"; };
-		76E1F9F12F0B11FF00AB5678 /* BGMHALBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGMHALBackend.swift; sourceTree = "<group>"; };
-		76E1F9F22F0B11FF00AB5678 /* HALDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HALDiagnostics.swift; sourceTree = "<group>"; };
-		76E1F9F32F0B11FF00AB5678 /* HALPluginInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HALPluginInstaller.swift; sourceTree = "<group>"; };
-		76E1F9F52F0B11FF00AB5678 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		76E1F9F62F0B11FF00AB5678 /* DriverInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverInstaller.swift; sourceTree = "<group>"; };
-		76E1F9F72F0B11FF00AB5678 /* PerAppAudioVolumeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerAppAudioVolumeManager.swift; sourceTree = "<group>"; };
-		76E1F9F82F0B11FF00AB5678 /* AudioApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioApplication.swift; sourceTree = "<group>"; };
-		76E1F9FA2F0B11FF00AB5678 /* Micmute-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Micmute-Bridging-Header.h"; sourceTree = "<group>"; };
-		76E1FA172F0B145500AB5678 /* ApplicationVolumeRowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationVolumeRowViewModel.swift; sourceTree = "<group>"; };
-		76E1FA182F0B145500AB5678 /* ApplicationVolumeListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationVolumeListViewModel.swift; sourceTree = "<group>"; };
 		76E1FA192F0B145500AB5678 /* LiquidGlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifier.swift; sourceTree = "<group>"; };
-		76E1FA1A2F0B145500AB5678 /* ApplicationVolumeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationVolumeListView.swift; sourceTree = "<group>"; };
-		76E1FA1B2F0B145500AB5678 /* ApplicationVolumeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationVolumeRow.swift; sourceTree = "<group>"; };
-		76E1FA222F0B200000AB5678 /* AuthorizationHelper.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = AuthorizationHelper.c; sourceTree = "<group>"; };
-		76E1FA242F0B200000AB5678 /* AuthorizationHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AuthorizationHelper.h; sourceTree = "<group>"; };
-		76F0A0002F0C000000AB5678 /* BGMPlugIn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BGMPlugIn.cpp; sourceTree = "<group>"; };
-		76F0A0022F0C000000AB5678 /* BGMPlugIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGMPlugIn.h; sourceTree = "<group>"; };
-		76F0A0032F0C000000AB5678 /* BGMShared.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BGMShared.h; sourceTree = "<group>"; };
-		76F0A0102F0C010000AB5678 /* PerAppVolumeDevice.driver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PerAppVolumeDevice.driver; sourceTree = BUILT_PRODUCTS_DIR; };
 		76F0A0302F0C020000AB5678 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		76F0A0312F0C020000AB5678 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		76F0A0322F0C020000AB5678 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -136,17 +86,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		76F0A0122F0C010000AB5678 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				76F0A0332F0C020000AB5678 /* CoreAudio.framework in Frameworks */,
-				76F0A0342F0C020000AB5678 /* AudioToolbox.framework in Frameworks */,
-				76F0A0352F0C020000AB5678 /* CoreFoundation.framework in Frameworks */,
-				76F0A03D2F0C12A000AB5678 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,28 +113,17 @@
 		421B6AFB2B37504000946AF4 /* Micmute */ = {
 			isa = PBXGroup;
 			children = (
-				76E1FA102F0B145500AB5678 /* Audio */,
 				427A86A72C0A0B0C000AFAD4 /* Utilities */,
 				427A86A22C0A0343000AFAD4 /* Models */,
 				42016B1E2C0C2F17002135AB /* Windows */,
 				427A869D2C0A0142000AFAD4 /* Views */,
 				421B6AFC2B37504000946AF4 /* MicmuteApp.swift */,
-				76E1F9FA2F0B11FF00AB5678 /* Micmute-Bridging-Header.h */,
 				421B6B0B2B3764BC00946AF4 /* Info.plist */,
 				421B6B002B37504100946AF4 /* Assets.xcassets */,
 				421B6B052B37504100946AF4 /* Micmute.entitlements */,
-				421B6B022B37504100946AF4 /* Preview Content */,
 				75294FD72D598D8F006A58AF /* Localizable.xcstrings */,
 			);
 			path = Micmute;
-			sourceTree = "<group>";
-		};
-		421B6B022B37504100946AF4 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				421B6B032B37504100946AF4 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		42698EC12C0C008C00648D4C /* Frameworks */ = {
@@ -212,12 +140,10 @@
 		427A869D2C0A0142000AFAD4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				76E1FA212F0B146600AB5678 /* PerAppAudio */,
 				752628CA2D596C2400B54A0B /* MenuView.swift */,
 				427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */,
 				754C61892D5A3A9E00A418EA /* GeneralView.swift */,
 				76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */,
-				2413EF4829D74975B7782B3A /* PerAppAudioView.swift */,
 				42698EBC2C0BE7CB00648D4C /* NotificationView.swift */,
 				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
 				42016B342C0C3A69002135AB /* PreferencesView.swift */,
@@ -252,89 +178,10 @@
 			path = Utilities;
 			sourceTree = "<group>";
 		};
-		76E1FA102F0B145500AB5678 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				76E1FA122F0B145500AB5678 /* HAL */,
-				76E1FA132F0B145500AB5678 /* Installer */,
-				76E1FA142F0B145500AB5678 /* Manager */,
-				76E1FA152F0B145500AB5678 /* Models */,
-				76E1FA202F0B146600AB5678 /* ViewModels */,
-			);
-			path = Audio;
-			sourceTree = "<group>";
-		};
-		76E1FA122F0B145500AB5678 /* HAL */ = {
-			isa = PBXGroup;
-			children = (
-				76E1F9F12F0B11FF00AB5678 /* BGMHALBackend.swift */,
-				76E1F9F22F0B11FF00AB5678 /* HALDiagnostics.swift */,
-				76E1F9F32F0B11FF00AB5678 /* HALPluginInstaller.swift */,
-				76F0A0042F0C000000AB5678 /* Plugin */,
-			);
-			path = HAL;
-			sourceTree = "<group>";
-		};
-		76E1FA132F0B145500AB5678 /* Installer */ = {
-			isa = PBXGroup;
-			children = (
-				76E1FA242F0B200000AB5678 /* AuthorizationHelper.h */,
-				76E1FA222F0B200000AB5678 /* AuthorizationHelper.c */,
-				76E1F9F62F0B11FF00AB5678 /* DriverInstaller.swift */,
-			);
-			path = Installer;
-			sourceTree = "<group>";
-		};
-		76E1FA142F0B145500AB5678 /* Manager */ = {
-			isa = PBXGroup;
-			children = (
-				76E1F9F72F0B11FF00AB5678 /* PerAppAudioVolumeManager.swift */,
-			);
-			path = Manager;
-			sourceTree = "<group>";
-		};
-		76E1FA152F0B145500AB5678 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				76E1F9F82F0B11FF00AB5678 /* AudioApplication.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		76E1FA202F0B146600AB5678 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				76E1FA172F0B145500AB5678 /* ApplicationVolumeRowViewModel.swift */,
-				76E1FA182F0B145500AB5678 /* ApplicationVolumeListViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		76E1FA212F0B146600AB5678 /* PerAppAudio */ = {
-			isa = PBXGroup;
-			children = (
-				76E1FA1A2F0B145500AB5678 /* ApplicationVolumeListView.swift */,
-				76E1FA1B2F0B145500AB5678 /* ApplicationVolumeRow.swift */,
-			);
-			path = PerAppAudio;
-			sourceTree = "<group>";
-		};
-		76F0A0042F0C000000AB5678 /* Plugin */ = {
-			isa = PBXGroup;
-			children = (
-				76F0A0002F0C000000AB5678 /* BGMPlugIn.cpp */,
-				76F0A0022F0C000000AB5678 /* BGMPlugIn.h */,
-				76F0A0032F0C000000AB5678 /* BGMShared.h */,
-				76E1F9F52F0B11FF00AB5678 /* Info.plist */,
-			);
-			path = Plugin;
-			sourceTree = "<group>";
-		};
 		76F5F0052F0D000000AB0001 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				42698EBB2C0BD99D00648D4C /* Micmute.app */,
-				76F0A0102F0C010000AB5678 /* PerAppVolumeDevice.driver */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -354,28 +201,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				76F0A03B2F0C030000AB5678 /* PBXTargetDependency */,
 			);
 			name = Micmute;
 			productName = Micmute;
 			productReference = 42698EBB2C0BD99D00648D4C /* Micmute.app */;
 			productType = "com.apple.product-type.application";
-		};
-		76F0A0142F0C010000AB5678 /* PerAppVolumeDevice */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 76F0A0172F0C010000AB5678 /* Build configuration list for PBXNativeTarget "PerAppVolumeDevice" */;
-			buildPhases = (
-				76F0A0112F0C010000AB5678 /* Sources */,
-				76F0A0122F0C010000AB5678 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = PerAppVolumeDevice;
-			productName = PerAppVolumeDevice;
-			productReference = 76F0A0102F0C010000AB5678 /* PerAppVolumeDevice.driver */;
-			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
@@ -388,9 +218,6 @@
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					421B6AF82B37504000946AF4 = {
-						CreatedOnToolsVersion = 15.1;
-					};
-					76F0A0142F0C010000AB5678 = {
 						CreatedOnToolsVersion = 15.1;
 					};
 				};
@@ -412,7 +239,6 @@
 			projectRoot = "";
 			targets = (
 				421B6AF82B37504000946AF4 /* Micmute */,
-				76F0A0142F0C010000AB5678 /* PerAppVolumeDevice */,
 			);
 		};
 /* End PBXProject section */
@@ -422,7 +248,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				421B6B042B37504100946AF4 /* Preview Assets.xcassets in Resources */,
 				421B6B012B37504100946AF4 /* Assets.xcassets in Resources */,
 				75294FD82D598D8F006A58AF /* Localizable.xcstrings in Resources */,
 			);
@@ -435,13 +260,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				76E1FA232F0B200000AB5678 /* AuthorizationHelper.c in Sources */,
 				42016B352C0C3A69002135AB /* PreferencesView.swift in Sources */,
 				754C61882D5A378500A418EA /* PreferencesWindow.swift in Sources */,
 				427A86C12C0A52D1000AFAD4 /* CustomSectionView.swift in Sources */,
 				754C618A2D5A3AA000A418EA /* GeneralView.swift in Sources */,
 				76F5F0132F0D000000AB0001 /* ShortcutRecorderView.swift in Sources */,
-				1CDC683BE71A42D29D7A2E5C /* PerAppAudioView.swift in Sources */,
 				752628CE2D596C8D00B54A0B /* ContentViewModel.swift in Sources */,
 				76F5F0112F0D000000AB0001 /* Shortcut.swift in Sources */,
 				76F5F0122F0D000000AB0001 /* ShortcutPreferences.swift in Sources */,
@@ -454,42 +277,16 @@
 				76F5F0142F0D000000AB0001 /* GlobalShortcutManager.swift in Sources */,
 				42698EBD2C0BE7CB00648D4C /* NotificationView.swift in Sources */,
 				427A86A92C0A0B1A000AFAD4 /* Constants.swift in Sources */,
-				76E1FA0A2F0B145500AB5678 /* ApplicationVolumeListView.swift in Sources */,
-				76E1FA0B2F0B145500AB5678 /* ApplicationVolumeRow.swift in Sources */,
 				75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */,
 				75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */,
 				75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */,
 				75F1C0E12E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift in Sources */,
-				76E1FA022F0B123400AB5678 /* PerAppAudioVolumeManager.swift in Sources */,
-				76E1FA072F0B145500AB5678 /* ApplicationVolumeRowViewModel.swift in Sources */,
-				76E1FA082F0B145500AB5678 /* ApplicationVolumeListViewModel.swift in Sources */,
 				76E1FA092F0B145500AB5678 /* LiquidGlassModifier.swift in Sources */,
-				76E1FA032F0B123400AB5678 /* AudioApplication.swift in Sources */,
-				76E1FA012F0B123400AB5678 /* DriverInstaller.swift in Sources */,
 				76B7D5A12F0A8BF500AB1234 /* UpdaterSupport.swift in Sources */,
-				76E1FA052F0B123400AB5678 /* BGMHALBackend.swift in Sources */,
-				76E1FA062F0B123400AB5678 /* HALDiagnostics.swift in Sources */,
-				76E1FA0C2F0B145500AB5678 /* HALPluginInstaller.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		76F0A0112F0C010000AB5678 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				76F0A0362F0C020000AB5678 /* BGMPlugIn.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		76F0A03B2F0C030000AB5678 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 76F0A0142F0C010000AB5678 /* PerAppVolumeDevice */;
-			targetProxy = 75C27AD32E8DAC0E00FAE2F2 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		421B6B062B37504100946AF4 /* Debug */ = {
@@ -622,6 +419,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -629,10 +427,15 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Micmute/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Micmute;
@@ -649,8 +452,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Micmute/Micmute-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -662,6 +470,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				AUTOMATION_APPLE_EVENTS = NO;
 				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -669,10 +478,15 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_ASSET_PATHS = "\"Micmute/Preview Content\"";
 				DEVELOPMENT_TEAM = N529W98U62;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Micmute/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Micmute;
@@ -689,88 +503,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
+				RUNTIME_EXCEPTION_ALLOW_JIT = NO;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = NO;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = NO;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Micmute/Micmute-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		76F0A0152F0C010000AB5678 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = N529W98U62;
-				ENABLE_HARDENED_RUNTIME = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = "Micmute/Audio/HAL/Plugin/Info.plist";
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@loader_path/../Frameworks",
-				);
-				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute.PerAppVolumeDevice;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = macosx;
-				TARGETED_DEVICE_FAMILY = "";
-				WRAPPER_EXTENSION = driver;
-			};
-			name = Debug;
-		};
-		76F0A0162F0C010000AB5678 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = N529W98U62;
-				ENABLE_HARDENED_RUNTIME = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				INFOPLIST_FILE = "Micmute/Audio/HAL/Plugin/Info.plist";
-				INSTALL_PATH = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@loader_path/../Frameworks",
-				);
-				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MTL_FAST_MATH = YES;
-				OTHER_CFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute.PerAppVolumeDevice;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = macosx;
-				TARGETED_DEVICE_FAMILY = "";
-				WRAPPER_EXTENSION = driver;
 			};
 			name = Release;
 		};
@@ -791,15 +531,6 @@
 			buildConfigurations = (
 				421B6B092B37504100946AF4 /* Debug */,
 				421B6B0A2B37504100946AF4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		76F0A0172F0C010000AB5678 /* Build configuration list for PBXNativeTarget "PerAppVolumeDevice" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				76F0A0152F0C010000AB5678 /* Debug */,
-				76F0A0162F0C010000AB5678 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

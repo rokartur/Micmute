@@ -15,10 +15,8 @@
         }
       }
     },
-    "Active per-app audio backend" : {
-
-    },
     "Adjust %@'s volume" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -27,9 +25,6 @@
           }
         }
       }
-    },
-    "Adjust volume for %@" : {
-
     },
     "Always show" : {
       "localizations" : {
@@ -145,9 +140,6 @@
     "Close settings window" : {
 
     },
-    "Control the volume of individual apps playing audio on your Mac." : {
-
-    },
     "Disabled" : {
       "localizations" : {
         "pl" : {
@@ -181,9 +173,6 @@
         }
       }
     },
-    "Driver not installed" : {
-
-    },
     "Duration" : {
       "localizations" : {
         "pl" : {
@@ -216,6 +205,7 @@
       }
     },
     "HAL audio plugin required" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -226,6 +216,7 @@
       }
     },
     "HAL audio plugin unavailable" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -234,9 +225,6 @@
           }
         }
       }
-    },
-    "HAL plugin backend" : {
-
     },
     "Hold the shortcut to temporarily unmute" : {
       "localizations" : {
@@ -252,6 +240,7 @@
 
     },
     "Install driver" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -261,19 +250,11 @@
         }
       }
     },
-    "Install the HAL audio plugin to enable per-app volume control." : {
-
-    },
-    "Install the HAL audio plugin to enable per-app volume control. You'll need to provide administrator permission." : {
-
-    },
-    "Installation issue" : {
-
-    },
     "Installed" : {
 
     },
     "Installing HAL audio plugin…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -307,6 +288,7 @@
 
     },
     "Launch an app that plays audio to adjust its individual volume. We'll update automatically when new sessions appear." : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -400,9 +382,6 @@
         }
       }
     },
-    "Micmute couldn't locate its HAL audio plugin. Try reinstalling or rebooting your Mac." : {
-
-    },
     "Micmute couldn't start its HAL audio plugin. Try reinstalling or rebooting your Mac." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -418,6 +397,7 @@
 
     },
     "Micmute needs administrator permission to install its HAL audio plugin. We'll restart audio services automatically." : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -448,6 +428,7 @@
 
     },
     "Mute" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -456,9 +437,6 @@
           }
         }
       }
-    },
-    "muted" : {
-
     },
     "Muted" : {
       "localizations" : {
@@ -483,10 +461,8 @@
         }
       }
     },
-    "No applications matching filter" : {
-
-    },
     "No audio sources detected" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -570,6 +546,7 @@
       }
     },
     "Peak" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -580,6 +557,7 @@
       }
     },
     "Per-app volume" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -599,13 +577,8 @@
         }
       }
     },
-    "Plugin not installed" : {
-
-    },
-    "Plugin unavailable" : {
-
-    },
     "Preparing HAL audio plugin…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -642,6 +615,7 @@
 
     },
     "Refresh active applications list" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -650,12 +624,6 @@
           }
         }
       }
-    },
-    "Reinstall" : {
-
-    },
-    "Reinstall driver" : {
-
     },
     "Release notes" : {
 
@@ -669,9 +637,6 @@
           }
         }
       }
-    },
-    "Removing plugin and restarting audio services." : {
-
     },
     "Repository" : {
       "extractionState" : "stale",
@@ -691,6 +656,7 @@
 
     },
     "Retry installation" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -741,6 +707,7 @@
       }
     },
     "Search apps" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -773,9 +740,6 @@
           }
         }
       }
-    },
-    "Show only active (last 5s)" : {
-
     },
     "Showing last \\(releases.count) releases" : {
 
@@ -828,6 +792,7 @@
       }
     },
     "This takes only a moment." : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -847,16 +812,8 @@
         }
       }
     },
-    "Uninstall driver" : {
-
-    },
-    "Uninstall HAL audio plugin" : {
-
-    },
-    "Uninstalling HAL audio plugin…" : {
-
-    },
     "Unmute" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -977,9 +934,6 @@
         }
       }
     },
-    "Volume" : {
-
-    },
     "Volume after unmute" : {
       "localizations" : {
         "pl" : {
@@ -1014,9 +968,6 @@
           }
         }
       }
-    },
-    "You'll be asked for administrator permission so we can place the plugin in the HAL folder." : {
-
     }
   },
   "version" : "1.0"

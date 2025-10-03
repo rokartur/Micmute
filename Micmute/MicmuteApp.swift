@@ -8,7 +8,6 @@ import AppKit
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     let shortcutPreferences: ShortcutPreferences
     @ObservedObject var contentViewModel: ContentViewModel
-    let perAppVolumeManager = PerAppAudioVolumeManager()
     let settingsUpdaterModel: SettingsUpdaterModel
     var statusBarItem: NSStatusItem!
     var statusBarMenu: NSMenu!
@@ -78,8 +77,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             },
             onAppear: { [weak self ] in self?.openMenu() },
             onDisappear: { [weak self ] in self?.closeMenu() }
-        )
-        .environmentObject(perAppVolumeManager))
+        ))
         volumeView.translatesAutoresizingMaskIntoConstraints = false
 
         let targetWidth = MainMenuView.preferredWidth
@@ -129,7 +127,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             preferencesWindow = PreferencesWindow()
             let preferencesRoot = PreferencesView()
                 .environmentObject(settingsUpdaterModel)
-                .environmentObject(perAppVolumeManager)
                 .environmentObject(shortcutPreferences)
                 .environmentObject(contentViewModel)
             let hostedPrefView = NSHostingView(rootView: preferencesRoot)

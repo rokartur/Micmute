@@ -11,7 +11,6 @@ import CoreAudio
 
 @MainActor
 struct MainMenuView: View {
-    @EnvironmentObject private var perAppVolumeManager: PerAppAudioVolumeManager
     @Binding var unmuteGain: CGFloat
     @Binding var selectedDeviceID: AudioDeviceID
     @Binding var availableDevices: [AudioDeviceID: String]
@@ -84,7 +83,6 @@ struct MainMenuView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: interSectionSpacing) {
-//                ApplicationVolumeListView(manager: perAppVolumeManager)
 
                 outputSection
 
