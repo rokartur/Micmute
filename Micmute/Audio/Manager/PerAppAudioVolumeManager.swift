@@ -4,11 +4,11 @@ import Foundation
 import os.log
 
 @MainActor
-public final class PerAppAudioVolumeManager: ObservableObject {
-    @Published public private(set) var applications: [AudioApplication] = []
-    @Published public private(set) var driverState: DriverState = .idle
+final class PerAppAudioVolumeManager: ObservableObject {
+    @Published private(set) var applications: [AudioApplication] = []
+    @Published private(set) var driverState: DriverState = .idle
 
-    public enum DriverState: Equatable {
+    enum DriverState: Equatable {
         case idle
         case notInstalled
         case installing
@@ -16,51 +16,44 @@ public final class PerAppAudioVolumeManager: ObservableObject {
         case initializing
         case ready
         case installFailure(DriverInstallerError)
-        case failure(VirtualDriverBridgeError)
+        case unavailable(String)
     }
 
-    private let driver: VirtualDriverBridge
-    private let monitor: ApplicationAudioMonitor
-    private var cancellables = Set<AnyCancellable>()
+    private let backend: BGMHALBackend
+    private var refreshTimer: AnyCancellable?
+    private let refreshInterval: TimeInterval
     private let logger = Logger(subsystem: "com.rokartur.Micmute", category: "PerAppAudioVolumeManager")
 
-    public init(driver: VirtualDriverBridge? = nil, monitor: ApplicationAudioMonitor? = nil) {
-        self.driver = driver ?? VirtualDriverBridge.shared
-        self.monitor = monitor ?? ApplicationAudioMonitor(driver: self.driver)
-
-        self.monitor.applicationPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] apps in
-                Task { @MainActor in
-                    self?.mergeApplications(apps)
-                }
-            }
-            .store(in: &cancellables)
-
-        // Check driver installation status but don't auto-install
+    init(backend: BGMHALBackend = BGMHALBackend(), refreshInterval: TimeInterval = 1.0) {
+        self.backend = backend
+        self.refreshInterval = refreshInterval
+        scheduleRefreshTimer()
         Task { await checkDriverStatus() }
-        self.monitor.start()
     }
 
-    public func installDriver() {
+    deinit {
+        refreshTimer?.cancel()
+    }
+
+    func installDriver() {
         Task { await performDriverInstallation(force: false) }
     }
 
-    public func reinstallDriver() {
+    func reinstallDriver() {
         Task { await performDriverInstallation(force: true) }
     }
 
-    public func uninstallDriver() {
+    func uninstallDriver() {
         Task { await performDriverUninstallation() }
     }
 
-    public func refresh() {
-        monitor.refresh()
+    func refresh() {
+        refreshApplications()
     }
 
-    public func setVolume(bundleID: String, volume: Double) {
+    func setVolume(bundleID: String, volume: Double) {
         let clampedVolume = min(max(volume, 0.0), 1.25)
-        switch driver.setVolume(bundleID: bundleID, volume: Float(clampedVolume)) {
+        switch backend.setVolume(bundleID: bundleID, volume: Float(clampedVolume)) {
         case .success:
             updateLocalState(bundleID: bundleID) { $0.volume = clampedVolume }
         case .failure(let error):
@@ -68,13 +61,69 @@ public final class PerAppAudioVolumeManager: ObservableObject {
         }
     }
 
-    public func setMuted(bundleID: String, muted: Bool) {
-        switch driver.mute(bundleID: bundleID, muted: muted) {
+    func setMuted(bundleID: String, muted: Bool) {
+        switch backend.mute(bundleID: bundleID, muted: muted) {
         case .success:
             updateLocalState(bundleID: bundleID) { $0.isMuted = muted }
         case .failure(let error):
             logger.error("Failed to mute \(bundleID, privacy: .public): \(String(describing: error), privacy: .public)")
         }
+    }
+
+    private func scheduleRefreshTimer() {
+        refreshTimer?.cancel()
+        refreshTimer = Timer.publish(every: refreshInterval, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.refreshApplications()
+            }
+    }
+
+    private func refreshApplications() {
+        guard driverState == .ready else {
+            applications = []
+            return
+        }
+
+        let snapshots = backend.processEntries()
+        let runningApps = NSWorkspace.shared.runningApplications
+        let mapping = Dictionary(uniqueKeysWithValues: runningApps.compactMap { app -> (String, NSRunningApplication)? in
+            guard let bundleID = app.bundleIdentifier else { return nil }
+            return (bundleID, app)
+        })
+        let now = Date()
+
+        let newApplications: [AudioApplication] = snapshots.compactMap { snapshot in
+            let bundleID = snapshot.bundleID
+            guard !bundleID.isEmpty else { return nil }
+            let app = mapping[bundleID]
+            return AudioApplication(
+                name: app?.localizedName ?? bundleID,
+                bundleID: bundleID,
+                processID: snapshot.pid,
+                icon: app?.icon,
+                volume: Double(snapshot.volume),
+                isMuted: snapshot.muted,
+                peakLevel: .silent,
+                lastSeen: now
+            )
+        }
+
+        mergeApplications(newApplications, referenceDate: now)
+    }
+
+    private func mergeApplications(_ newApplications: [AudioApplication], referenceDate: Date) {
+        var mergedDictionary = Dictionary(uniqueKeysWithValues: applications.map { ($0.bundleID, $0) })
+
+        for application in newApplications {
+            mergedDictionary[application.bundleID] = application
+        }
+
+        let staleWindow: TimeInterval = 10
+        applications = mergedDictionary.values
+            .filter { referenceDate.timeIntervalSince($0.lastSeen) < staleWindow }
+            .sorted(by: { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending })
     }
 
     private func updateLocalState(bundleID: String, update: (inout AudioApplication) -> Void) {
@@ -84,142 +133,125 @@ public final class PerAppAudioVolumeManager: ObservableObject {
         applications[index] = updated
     }
 
-    private func mergeApplications(_ newApplications: [AudioApplication]) {
-        var mergedDictionary = Dictionary(uniqueKeysWithValues: applications.map { ($0.bundleID, $0) })
-        let now = Date()
-
-        for application in newApplications {
-            if var existing = mergedDictionary[application.bundleID] {
-                existing.volume = application.volume
-                existing.isMuted = application.isMuted
-                existing.peakLevel = application.peakLevel
-                existing.lastSeen = now
-                mergedDictionary[application.bundleID] = existing
-            } else {
-                mergedDictionary[application.bundleID] = application
-            }
-        }
-
-        applications = mergedDictionary.values
-            .sorted(by: { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending })
-    }
-
     private func checkDriverStatus() async {
-        if !DriverInstaller.isDriverInstalled {
+        backend.refreshDevice()
+
+        guard DriverInstaller.isDriverInstalled else {
             driverState = .notInstalled
-            logger.info("Driver not installed - waiting for manual installation")
+            applications = []
+            logger.info("HAL plugin not installed")
             return
         }
 
-        // Driver is installed, try to initialize it
         driverState = .initializing
-        await driver.bootstrapDriver()
-        if driver.isAvailable {
+        backend.refreshDevice()
+
+        if backend.isAvailable {
             driverState = .ready
-            logger.info("Driver initialized successfully")
-        } else if let error = driver.lastKnownError {
-            driverState = .failure(error)
-            logger.error("Driver failed to initialize: \(String(describing: error), privacy: .public)")
+            logger.info("HAL backend initialized successfully")
+            refreshApplications()
         } else {
-            driverState = .idle
+            let reason = "Micmute couldn't locate the HAL plugin device. Try reinstalling the driver."
+            driverState = .unavailable(reason)
+            logger.error("HAL backend unavailable")
         }
     }
 
     private func performDriverInstallation(force: Bool) async {
         driverState = .installing
-        logger.info("Starting driver installation (force: \(force, privacy: .public))")
-        
+        logger.info("Starting HAL plugin installation (force: \(force, privacy: .public))")
+
         do {
             try await Task.detached(priority: .userInitiated) {
                 try DriverInstaller.installDriverIfNeeded(forceInstall: force)
             }.value
-            
-            logger.info("Driver installation completed successfully")
-            
-            // After successful installation, initialize the driver
+
+            logger.info("HAL plugin installation completed successfully")
+
+            backend.refreshDevice()
             await checkDriverStatus()
-            
-            // Show success notification
-            await showSuccessAlert(
-                title: "Driver Installed Successfully",
-                message: "The virtual audio driver has been installed and is now active.\n\nYou can now control the volume of individual applications playing audio on your Mac."
-            )
-            
+
+            await MainActor.run {
+                showSuccessAlert(
+                    title: "Driver Installed Successfully",
+                    message: "Micmute's HAL audio plugin has been installed and is now active.\n\nYou can control the volume of individual applications playing audio on your Mac."
+                )
+            }
+
         } catch let installerError as DriverInstallerError {
             logger.error("Driver installation failed: \(String(describing: installerError), privacy: .public)")
-            
-            // If the bundled driver resource is missing, allow development builds to continue
+
             if case .bundleNotFound = installerError {
-                logger.warning("Bundled driver resource missing; skipping install in dev mode.")
+                logger.warning("Bundled HAL plugin missing; skipping install in dev mode.")
                 driverState = .notInstalled
             } else {
                 driverState = .installFailure(installerError)
-                
-                // Show error alert
-                await showErrorAlert(
-                    title: "Installation Failed",
-                    message: installerError.localizedDescription
-                )
+                await MainActor.run {
+                    showErrorAlert(
+                        title: "Installation Failed",
+                        message: installerError.localizedDescription
+                    )
+                }
             }
         } catch {
             logger.error("Unexpected installation error: \(error.localizedDescription, privacy: .public)")
             driverState = .installFailure(.unknown(error.localizedDescription))
-            
-            // Show error alert
-            await showErrorAlert(
-                title: "Installation Failed",
-                message: error.localizedDescription
-            )
+            await MainActor.run {
+                showErrorAlert(
+                    title: "Installation Failed",
+                    message: error.localizedDescription
+                )
+            }
         }
     }
 
     private func performDriverUninstallation() async {
         driverState = .uninstalling
-        logger.info("Starting driver uninstallation")
-        
+        logger.info("Starting HAL plugin uninstallation")
+
         do {
             let wasUninstalled = try await Task.detached(priority: .userInitiated) {
                 try DriverInstaller.uninstallDriver()
             }.value
-            
+
+            backend.refreshDevice()
+
             if wasUninstalled {
-                logger.info("Driver uninstalled successfully")
+                logger.info("HAL plugin uninstalled successfully")
+                applications = []
                 driverState = .notInstalled
-                
-                // Clear any cached state
-                await driver.bootstrapDriver()
-                
-                // Show success notification
-                await showSuccessAlert(
-                    title: "Driver Uninstalled Successfully",
-                    message: "The virtual audio driver has been removed from your system.\n\nCoreAudio has been restarted. You can reinstall the driver at any time from settings."
-                )
+                await MainActor.run {
+                    showSuccessAlert(
+                        title: "Driver Uninstalled Successfully",
+                        message: "Micmute's HAL audio plugin has been removed. CoreAudio was restarted, and you can reinstall the driver at any time."
+                    )
+                }
             } else {
                 logger.warning("Uninstall operation completed but driver was not present")
                 driverState = .notInstalled
             }
-            
+
         } catch let installerError as DriverInstallerError {
             logger.error("Driver uninstallation failed: \(String(describing: installerError), privacy: .public)")
             driverState = .installFailure(installerError)
-            
-            // Show error alert
-            await showErrorAlert(
-                title: "Uninstallation Failed",
-                message: installerError.localizedDescription
-            )
+            await MainActor.run {
+                showErrorAlert(
+                    title: "Uninstallation Failed",
+                    message: installerError.localizedDescription
+                )
+            }
         } catch {
             logger.error("Unexpected uninstallation error: \(error.localizedDescription, privacy: .public)")
             driverState = .installFailure(.unknown(error.localizedDescription))
-            
-            // Show error alert
-            await showErrorAlert(
-                title: "Uninstallation Failed",
-                message: error.localizedDescription
-            )
+            await MainActor.run {
+                showErrorAlert(
+                    title: "Uninstallation Failed",
+                    message: error.localizedDescription
+                )
+            }
         }
     }
-    
+
     @MainActor
     private func showSuccessAlert(title: String, message: String) {
         let alert = NSAlert()
@@ -230,7 +262,7 @@ public final class PerAppAudioVolumeManager: ObservableObject {
         alert.addButton(withTitle: "OK")
         alert.runModal()
     }
-    
+
     @MainActor
     private func showErrorAlert(title: String, message: String) {
         let alert = NSAlert()

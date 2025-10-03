@@ -13,6 +13,6 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Micmute needs microphone access to mute and monitor input levels.</string>
 	<key>NSSystemAdministrationUsageDescription</key>
-	<string>Micmute requires administrator permission to install its virtual audio driver for per-app volume control.</string>
+	<string>Micmute requires administrator permission to install its HAL audio plugin for per-app volume control.</string>
 </dict>
 </plist>

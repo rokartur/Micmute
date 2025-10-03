@@ -80,6 +80,7 @@ final class ApplicationVolumeListViewModel: ObservableObject {
 
     private func hasActiveAudio(_ application: AudioApplication) -> Bool {
         guard !application.isMuted else { return false }
+        if Date().timeIntervalSince(application.lastSeen) < 5 { return true }
         let maxPeak = max(application.peakLevel.left, application.peakLevel.right)
         return maxPeak > peakThreshold
     }

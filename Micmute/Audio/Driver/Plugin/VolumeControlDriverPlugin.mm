@@ -1095,3 +1095,5 @@ OSStatus VolumeControlDriver_EndIOOperation(AudioServerPlugInDriverRef /*inDrive
     }
     return noErr;
 }
+
+// Legacy Objective-C++ plugin removed. New HAL plugin lives in Audio/HAL/Plugin/BGMPlugIn.cpp.

@@ -15,6 +15,9 @@
         }
       }
     },
+    "Active per-app audio backend" : {
+
+    },
     "Adjust %@'s volume" : {
       "localizations" : {
         "pl" : {
@@ -24,6 +27,9 @@
           }
         }
       }
+    },
+    "Adjust volume for %@" : {
+
     },
     "Always show" : {
       "localizations" : {
@@ -178,9 +184,6 @@
     "Driver not installed" : {
 
     },
-    "Driver unavailable" : {
-
-    },
     "Duration" : {
       "localizations" : {
         "pl" : {
@@ -212,6 +215,29 @@
         }
       }
     },
+    "HAL audio plugin required" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wymagana wtyczka audio HAL"
+          }
+        }
+      }
+    },
+    "HAL audio plugin unavailable" : {
+      "localizations" : {
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wtyczka audio HAL jest niedostępna"
+          }
+        }
+      }
+    },
+    "HAL plugin backend" : {
+
+    },
     "Hold the shortcut to temporarily unmute" : {
       "localizations" : {
         "pl" : {
@@ -235,10 +261,10 @@
         }
       }
     },
-    "Install the virtual audio driver to enable per-app volume control." : {
+    "Install the HAL audio plugin to enable per-app volume control." : {
 
     },
-    "Install the virtual audio driver to enable per-app volume control. You'll need to provide administrator permission." : {
+    "Install the HAL audio plugin to enable per-app volume control. You'll need to provide administrator permission." : {
 
     },
     "Installation issue" : {
@@ -247,12 +273,12 @@
     "Installed" : {
 
     },
-    "Installing virtual audio driver…" : {
+    "Installing HAL audio plugin…" : {
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instalowanie wirtualnego sterownika audio…"
+            "value" : "Instalowanie wtyczki audio HAL…"
           }
         }
       }
@@ -374,12 +400,16 @@
         }
       }
     },
-    "Micmute couldn't start its virtual audio driver. Try reinstalling or rebooting your Mac." : {
+    "Micmute couldn't locate its HAL audio plugin. Try reinstalling or rebooting your Mac." : {
+
+    },
+    "Micmute couldn't start its HAL audio plugin. Try reinstalling or rebooting your Mac." : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Micmute nie mógł uruchomić swojego wirtualnego sterownika audio. Spróbuj ponownie zainstalować sterownik lub zrestartować Maca."
+            "value" : "Micmute nie mógł uruchomić wtyczki audio HAL. Spróbuj ponownie zainstalować wtyczkę lub zrestartować Maca."
           }
         }
       }
@@ -387,12 +417,12 @@
     "Micmute helps you stay in control of your microphone with quick shortcuts, per-app audio and a native macOS design." : {
 
     },
-    "Micmute needs administrator permission to install its virtual audio driver. We'll restart audio services automatically." : {
+    "Micmute needs administrator permission to install its HAL audio plugin. We'll restart audio services automatically." : {
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Micmute potrzebuje uprawnień administratora, aby zainstalować swój wirtualny sterownik audio. Automatycznie ponownie uruchomimy usługi audio."
+            "value" : "Micmute potrzebuje uprawnień administratora, aby zainstalować wtyczkę audio HAL. Automatycznie ponownie uruchomimy usługi audio."
           }
         }
       }
@@ -427,6 +457,9 @@
         }
       }
     },
+    "muted" : {
+
+    },
     "Muted" : {
       "localizations" : {
         "pl" : {
@@ -449,6 +482,9 @@
           }
         }
       }
+    },
+    "No applications matching filter" : {
+
     },
     "No audio sources detected" : {
       "localizations" : {
@@ -563,12 +599,18 @@
         }
       }
     },
-    "Preparing virtual audio driver…" : {
+    "Plugin not installed" : {
+
+    },
+    "Plugin unavailable" : {
+
+    },
+    "Preparing HAL audio plugin…" : {
       "localizations" : {
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przygotowywanie wirtualnego sterownika audio…"
+            "value" : "Przygotowywanie wtyczki audio HAL…"
           }
         }
       }
@@ -609,6 +651,9 @@
         }
       }
     },
+    "Reinstall" : {
+
+    },
     "Reinstall driver" : {
 
     },
@@ -625,7 +670,7 @@
         }
       }
     },
-    "Removing driver and restarting audio services." : {
+    "Removing plugin and restarting audio services." : {
 
     },
     "Repository" : {
@@ -729,6 +774,9 @@
         }
       }
     },
+    "Show only active (last 5s)" : {
+
+    },
     "Showing last \\(releases.count) releases" : {
 
     },
@@ -802,10 +850,10 @@
     "Uninstall driver" : {
 
     },
-    "Uninstall virtual audio driver" : {
+    "Uninstall HAL audio plugin" : {
 
     },
-    "Uninstalling virtual audio driver…" : {
+    "Uninstalling HAL audio plugin…" : {
 
     },
     "Unmute" : {
@@ -929,25 +977,8 @@
         }
       }
     },
-    "Virtual audio driver required" : {
-      "localizations" : {
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wymagany wirtualny sterownik audio"
-          }
-        }
-      }
-    },
-    "Virtual audio driver unavailable" : {
-      "localizations" : {
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wirtualny sterownik audio jest niedostępny"
-          }
-        }
-      }
+    "Volume" : {
+
     },
     "Volume after unmute" : {
       "localizations" : {
@@ -974,6 +1005,7 @@
       }
     },
     "You'll be asked for administrator permission so we can place the driver in the HAL folder." : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -982,6 +1014,9 @@
           }
         }
       }
+    },
+    "You'll be asked for administrator permission so we can place the plugin in the HAL folder." : {
+
     }
   },
   "version" : "1.0"

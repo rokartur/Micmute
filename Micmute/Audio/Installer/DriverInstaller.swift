@@ -44,7 +44,7 @@ extension DriverInstallerError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .bundleNotFound:
-            return "Micmute couldn't find the bundled virtual audio driver."
+            return "Micmute couldn't find the bundled HAL audio plugin."
         case .authorizationFailed(let status):
             return "Administrator authorization failed (status \(status))."
         case .copyFailed(let status):
@@ -54,9 +54,9 @@ extension DriverInstallerError: LocalizedError {
         case .restartCoreAudioFailed(let status):
             return "Failed to restart coreaudiod (status \(status))."
         case .verificationFailed:
-            return "Micmute couldn't verify the virtual audio driver after installation."
+            return "Micmute couldn't verify the HAL audio plugin after installation."
         case .driverNotInstalled:
-            return "Micmute couldn't find the installed virtual audio driver."
+            return "Micmute couldn't find the installed HAL audio plugin."
         case .unknown(let message):
             return message
         }
@@ -64,7 +64,7 @@ extension DriverInstallerError: LocalizedError {
 }
 
 struct DriverInstaller {
-    static let driverBundleName = "VolumeControlDriver"
+    static let driverBundleName = "PerAppVolumeDevice"
 
     private static let logger = Logger(subsystem: "com.rokartur.Micmute", category: "DriverInstaller")
 
@@ -90,6 +90,9 @@ struct DriverInstaller {
         guard needsInstall else { return }
 
         do {
+            // Proactively remove any legacy or renamed driver bundles before installing the new one.
+            // This allows seamless migration if the bundle name changes in future versions.
+            try removeLegacyDriverBundles()
             let exportedDriverURL = try exportBundledDriver()
             defer { try? FileManager.default.removeItem(at: exportedDriverURL.deletingLastPathComponent()) }
 
@@ -103,6 +106,38 @@ struct DriverInstaller {
             throw error
         } catch {
             throw DriverInstallerError.unknown(error.localizedDescription)
+        }
+    }
+
+    /// Potential historical / alternate names that might have been used for the driver.
+    /// Extend this list as naming evolves to ensure only a single Micmute virtual device is present.
+    private static var legacyBundleNames: [String] {
+    // Current official name is PerAppVolumeDevice. List others if ever renamed.
+        return [
+            "VolumeControlDriver",
+            "MicmuteVirtualDriver",
+            "MicmuteAudioDriver"
+        ]
+    }
+
+    /// Removes any legacy-named driver bundles that still exist to avoid duplicate virtual devices.
+    private static func removeLegacyDriverBundles() throws {
+        let halDir = URL(fileURLWithPath: "/Library/Audio/Plug-Ins/HAL", isDirectory: true)
+        for legacy in legacyBundleNames {
+            // Skip if it matches the current canonical name
+            if legacy == driverBundleName { continue }
+            let candidate = halDir.appendingPathComponent("\(legacy).driver", isDirectory: true)
+            if FileManager.default.fileExists(atPath: candidate.path) {
+                logger.info("Removing legacy driver bundle at \(candidate.path, privacy: .public)")
+                do {
+                    try runPrivilegedCommands([
+                        PrivilegedCommand("/bin/rm", arguments: ["-rf", candidate.path])
+                    ])
+                } catch {
+                    // Non-fatal: surface as warning but continue install path
+                    logger.warning("Failed to remove legacy driver \(legacy, privacy: .public): \(error.localizedDescription, privacy: .public)")
+                }
+            }
         }
     }
 
@@ -131,7 +166,7 @@ struct DriverInstaller {
         ]
 
         try runPrivilegedCommands(commands)
-        logger.info("Virtual audio driver uninstalled from \(driverDestinationURL.path, privacy: .public)")
+    logger.info("HAL audio plugin uninstalled from \(driverDestinationURL.path, privacy: .public)")
         return true
     }
 
@@ -270,6 +305,6 @@ struct DriverInstaller {
             throw DriverInstallerError.verificationFailed
         }
 
-        logger.info("Virtual audio driver installed at \(driverDestinationURL.path, privacy: .public)")
+    logger.info("HAL audio plugin installed at \(driverDestinationURL.path, privacy: .public)")
     }
 }

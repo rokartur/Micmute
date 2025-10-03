@@ -39,11 +39,11 @@ struct ApplicationVolumeListView: View {
         case .notInstalled:
             notInstalledPanel
         case .installing:
-            progressPanel(title: "Installing virtual audio driver…", subtitle: "You'll be asked for administrator permission so we can place the driver in the HAL folder.")
+            progressPanel(title: "Installing HAL audio plugin…", subtitle: "You'll be asked for administrator permission so we can place the plugin in the HAL folder.")
         case .uninstalling:
-            progressPanel(title: "Uninstalling virtual audio driver…", subtitle: "Removing driver and restarting audio services.")
+            progressPanel(title: "Uninstalling HAL audio plugin…", subtitle: "Removing plugin and restarting audio services.")
         case .initializing, .idle:
-            progressPanel(title: "Preparing virtual audio driver…", subtitle: "This takes only a moment.")
+            progressPanel(title: "Preparing HAL audio plugin…", subtitle: "This takes only a moment.")
         case .ready:
             if viewModel.hasActiveApplications {
                 listContent
@@ -52,8 +52,8 @@ struct ApplicationVolumeListView: View {
             }
         case .installFailure(let error):
             installFailurePanel(error)
-        case .failure(let driverError):
-            driverFailurePanel(driverError)
+        case .unavailable(let message):
+            pluginUnavailablePanel(message)
         }
     }
 
@@ -77,7 +77,7 @@ struct ApplicationVolumeListView: View {
                     Image(systemName: "trash")
                 }
                 .buttonStyle(.plain)
-                .help("Uninstall virtual audio driver")
+                .help("Uninstall HAL audio plugin")
             }
         }
     }
@@ -137,8 +137,8 @@ struct ApplicationVolumeListView: View {
 
     private func installFailurePanel(_ error: DriverInstallerError) -> some View {
         actionPanel(
-            title: "Virtual audio driver required",
-            primaryMessage: "Micmute needs administrator permission to install its virtual audio driver. We'll restart audio services automatically.",
+            title: "HAL audio plugin required",
+            primaryMessage: "Micmute needs administrator permission to install its HAL audio plugin. We'll restart audio services automatically.",
             secondaryMessage: Text(verbatim: error.localizedDescription)
                 .font(.system(size: 12))
                 .foregroundColor(.secondary),
@@ -151,7 +151,7 @@ struct ApplicationVolumeListView: View {
     private var notInstalledPanel: some View {
         actionPanel(
             title: "Driver not installed",
-            primaryMessage: "Install the virtual audio driver to enable per-app volume control. You'll need to provide administrator permission.",
+            primaryMessage: "Install the HAL audio plugin to enable per-app volume control. You'll need to provide administrator permission.",
             secondaryMessage: nil,
             actionTitle: "Install driver"
         ) {
@@ -159,11 +159,11 @@ struct ApplicationVolumeListView: View {
         }
     }
 
-    private func driverFailurePanel(_ error: VirtualDriverBridgeError) -> some View {
+    private func pluginUnavailablePanel(_ message: String) -> some View {
         actionPanel(
-            title: "Virtual audio driver unavailable",
-            primaryMessage: "Micmute couldn't start its virtual audio driver. Try reinstalling or rebooting your Mac.",
-            secondaryMessage: Text(verbatim: error.localizedDescription)
+            title: "HAL audio plugin unavailable",
+            primaryMessage: "Micmute couldn't locate its HAL audio plugin. Try reinstalling or rebooting your Mac.",
+            secondaryMessage: Text(verbatim: message)
                 .font(.system(size: 12))
                 .foregroundColor(.secondary),
             actionTitle: "Retry installation"
