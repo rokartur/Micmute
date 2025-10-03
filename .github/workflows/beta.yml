@@ -177,10 +177,9 @@ jobs:
           prerelease: true
           make_latest: false
           body: |
-            ### Installation Notes
             This is an unsigned build. You may need to:
-            1. Right-click the app and select "Open" the first time
-            2. Or remove quarantine in Terminal: `xattr -dr com.apple.quarantine /Applications/Micmute.app`
+            - Right-click the app and select "Open" the first time
+            - Or remove quarantine in Terminal: `xattr -dr com.apple.quarantine /Applications/Micmute.app`
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
