@@ -19,7 +19,7 @@ jobs:
         run: |
           brew install cocoapods || true
 
-      - name: Build with Xcode
+      - name: Build per-architecture variants
         run: |
           set -euo pipefail
 
@@ -29,7 +29,7 @@ jobs:
 
           build_variant() {
             local identifier="$1"
-            shift
+            local arch_flag="$2"
 
             rm -rf "build_output/${identifier}"
             xcodebuild clean build \
@@ -41,11 +41,11 @@ jobs:
               CODE_SIGNING_REQUIRED=NO \
               CODE_SIGNING_ALLOWED=NO \
               CODE_SIGN_ENTITLEMENTS="" \
-              "$@"
+              -arch "$arch_flag"
           }
 
-          build_variant arm64 -arch arm64
-          build_variant x86_64 -arch x86_64
+          build_variant arm64 arm64
+          build_variant x86_64 x86_64
 
       - name: Re-seal app bundles
         run: |
@@ -105,7 +105,6 @@ jobs:
           package_variant() {
             local identifier="$1"
             local label="$2"
-
             local source="build_output/${identifier}/Build/Products/Release/Micmute.app"
             local staging="$RELEASE_DIR_ABS/staging-${label}"
 
@@ -119,6 +118,14 @@ jobs:
             popd >/dev/null
 
             rm -rf "$staging"
+
+            local zip_path="$RELEASE_DIR_ABS/Micmute-${label}.zip"
+            if [ ! -f "$zip_path" ]; then
+              echo "Zip not found at $zip_path" >&2
+              exit 1
+            fi
+
+            mv "$zip_path" "$GITHUB_WORKSPACE"/
           }
           package_variant arm64 arm64
           package_variant x86_64 intel

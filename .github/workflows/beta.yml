@@ -48,11 +48,11 @@ jobs:
 
           build_variant arm64 arm64
           build_variant x86_64 x86_64
-        run: |
-      - name: Re-seal app bundles
 
-          PROJECT="Micmute.xcodeproj"
-          SCHEME="Micmute"
+      - name: Re-seal app bundles
+        run: |
+          set -euo pipefail
+
           reseal_variant() {
             local identifier="$1"
             local app_path="build_output/${identifier}/Build/Products/Release/Micmute.app"
@@ -69,11 +69,11 @@ jobs:
 
           reseal_variant arm64
           reseal_variant x86_64
-            CODE_SIGNING_REQUIRED=NO \
-      - name: Verify binaries and bundles
-            CODE_SIGN_ENTITLEMENTS=""
 
-      - name: Verify and re-seal app bundle
+      - name: Verify binaries and bundles
+        run: |
+          set -euo pipefail
+
           verify_variant() {
             local identifier="$1"
             local label="$2"
@@ -95,30 +95,6 @@ jobs:
 
           verify_variant arm64 "arm64"
           verify_variant x86_64 "Intel"
-          # Clear extended attributes that might cause issues
-          xattr -cr "$APP" || true
-
-          # Re-codesign entire bundle ad-hoc for macOS 15 compatibility
-          codesign -f --deep -s - "$APP" || true
-
-      - name: Verify binary and bundle
-        run: |
-          set -euo pipefail
-
-          APP="build_output/universal/Build/Products/Release/Micmute.app"
-
-          echo "=== Binary architecture check ==="
-          file "$APP/Contents/MacOS/Micmute"
-          otool -hv "$APP/Contents/MacOS/Micmute" || true
-
-          echo "=== Bundle Info.plist check ==="
-          plutil -p "$APP/Contents/Info.plist" | egrep 'CFBundleExecutable|CFBundleIdentifier|LSMinimumSystemVersion' || true
-
-          echo "=== Code signing verification ==="
-          codesign -vvv --deep --strict "$APP" || true
-
-          echo "=== Gatekeeper assessment ==="
-          spctl --assess --type execute -v "$APP" || true
 
       - name: Prepare release bundle
         run: |
