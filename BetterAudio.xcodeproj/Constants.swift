@@ -4,9 +4,9 @@ import CoreAudio
 enum AppInfo {
     static let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String
     static let appBuildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as! String
-    static let repo = URL(string: "https://github.com/rokartur/micmute")!
+    static let repo = URL(string: "https://github.com/rokartur/BetterAudio")!
     static let author = URL(string: "https://github.com/rokartur")!
-    static let whatsNew = URL(string: "https://github.com/rokartur/micmute/releases")!
+    static let whatsNew = URL(string: "https://github.com/rokartur/BetterAudio/releases")!
 }
 
 enum AppStorageEntry: String {

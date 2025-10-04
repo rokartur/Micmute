@@ -427,5 +427,5 @@ private extension NSSearchField {
 }
 
 extension Notification.Name {
-    static let shortcutRecorderActiveDidChange = Notification.Name("com.rokartur.Micmute.shortcutRecorderActiveDidChange")
+    static let shortcutRecorderActiveDidChange = Notification.Name("com.rokartur.BetterAudio.shortcutRecorderActiveDidChange")
 }

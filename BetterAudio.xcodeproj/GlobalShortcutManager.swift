@@ -108,7 +108,8 @@ private extension GlobalShortcutManager {
         let keyUp: (() -> Void)?
     }
 
-    static let signature: OSType = 0x4D49434D // 'MICM'
+    // 'BTAD' – BetterAudio
+    static let signature: OSType = 0x42544144
 
     static let eventHandlerCallback: EventHandlerUPP = { _, event, userData in
         guard let event, let userData else { return noErr }

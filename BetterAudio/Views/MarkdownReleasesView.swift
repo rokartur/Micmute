@@ -38,7 +38,7 @@ struct MarkdownReleasesView: View {
 
             Text("Release notes are still loading")
                 .font(.headline)
-            Text("They will appear here right after Micmute fetches them from GitHub.")
+            Text("They will appear here right after BetterAudio fetches them from GitHub.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -126,3 +126,4 @@ struct MarkdownReleasesView: View {
         }
     }
 }
+

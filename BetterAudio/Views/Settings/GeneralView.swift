@@ -82,7 +82,7 @@ struct GeneralView: View {
                     Divider()
 
                     HStack {
-                        Text("Launch Micmute at login")
+                        Text("Launch BetterAudio at login")
                         Spacer()
                         Toggle("", isOn: $launchAtLogin)
                             .controlSize(.mini)

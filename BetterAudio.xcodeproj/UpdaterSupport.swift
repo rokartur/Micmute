@@ -19,9 +19,9 @@ enum UpdaterSupport {
 
         do {
             try fileManager.createDirectory(at: downloadDirectory, withIntermediateDirectories: true)
-            print("[MicmuteUpdater] Created Application Support directory at \(downloadDirectory.path)")
+            print("[BetterAudioUpdater] Created Application Support directory at \(downloadDirectory.path)")
         } catch {
-            print("[MicmuteUpdater] Failed to create Application Support directory: \(error.localizedDescription)")
+            print("[BetterAudioUpdater] Failed to create Application Support directory: \(error.localizedDescription)")
         }
     }
 }

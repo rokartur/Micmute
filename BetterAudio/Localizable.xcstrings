@@ -94,6 +94,12 @@
         }
       }
     },
+    "BetterAudio" : {
+
+    },
+    "BetterAudio helps you stay in control of your microphone with quick shortcuts, per-app audio and a native macOS design." : {
+
+    },
     "Center Bottom" : {
       "localizations" : {
         "pl" : {
@@ -302,7 +308,11 @@
         }
       }
     },
+    "Launch BetterAudio at login" : {
+
+    },
     "Launch Micmute at login" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -377,6 +387,7 @@
       }
     },
     "Micmute" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -396,9 +407,6 @@
           }
         }
       }
-    },
-    "Micmute helps you stay in control of your microphone with quick shortcuts, per-app audio and a native macOS design." : {
-
     },
     "Micmute needs administrator permission to install its HAL audio plugin. We'll restart audio services automatically." : {
       "extractionState" : "stale",
@@ -789,7 +797,11 @@
     "They will appear here once Micmute fetches them from GitHub." : {
 
     },
+    "They will appear here right after BetterAudio fetches them from GitHub." : {
+
+    },
     "They will appear here right after Micmute fetches them from GitHub." : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -870,16 +882,6 @@
         }
       }
     },
-    "v%@ (%@)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "v%1$@ (%2$@)"
-          }
-        }
-      }
-    },
     "v%@ • build %@" : {
       "localizations" : {
         "en" : {
@@ -889,9 +891,6 @@
           }
         }
       }
-    },
-    "Version" : {
-
     },
     "Version %@" : {
       "extractionState" : "stale",

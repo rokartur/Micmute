@@ -81,24 +81,16 @@ struct PreferencesView: View {
 
             Spacer(minLength: 12)
 
-            VStack(alignment: .leading) {
-                Text("Version")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-
-                         Text("v\(AppInfo.appVersion) (\(AppInfo.appBuildNumber))")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundColor(.primary)
-
-                if updatesModel.updateAvailable {
+            if updatesModel.updateAvailable {
+                VStack(alignment: .leading) {
                     Label("Update available", systemImage: "arrow.down.circle.fill")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.orange)
                         .labelStyle(.titleAndIcon)
                 }
+                .padding(.bottom, 12)
+                .padding(.horizontal, 6)
             }
-            .padding(.bottom, 12)
-            .padding(.horizontal, 6)
         }
     }
 

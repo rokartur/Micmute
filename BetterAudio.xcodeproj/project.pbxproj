@@ -53,9 +53,8 @@
 		42016B342C0C3A69002135AB /* PreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesView.swift; sourceTree = "<group>"; };
 		421B6AFC2B37504000946AF4 /* MicmuteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicmuteApp.swift; sourceTree = "<group>"; };
 		421B6B002B37504100946AF4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		421B6B052B37504100946AF4 /* Micmute.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Micmute.entitlements; sourceTree = "<group>"; };
 		421B6B0B2B3764BC00946AF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		42698EBB2C0BD99D00648D4C /* Micmute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Micmute.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		42698EBB2C0BD99D00648D4C /* BetterAudio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BetterAudio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		42698EBC2C0BE7CB00648D4C /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
 		427A86A82C0A0B1A000AFAD4 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSectionView.swift; sourceTree = "<group>"; };
@@ -67,6 +66,7 @@
 		7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarIcons.swift; sourceTree = "<group>"; };
 		754C61872D5A377F00A418EA /* PreferencesWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindow.swift; sourceTree = "<group>"; };
 		754C61892D5A3A9E00A418EA /* GeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralView.swift; sourceTree = "<group>"; };
+		758018432E91A05D00FBCE60 /* BetterAudio.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BetterAudio.entitlements; sourceTree = "<group>"; };
 		75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatesView.swift; sourceTree = "<group>"; };
 		75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownReleasesView.swift; sourceTree = "<group>"; };
@@ -110,13 +110,13 @@
 		421B6AF02B37504000946AF4 = {
 			isa = PBXGroup;
 			children = (
-				421B6AFB2B37504000946AF4 /* Micmute */,
+				421B6AFB2B37504000946AF4 /* BetterAudio */,
 				76F5F0052F0D000000AB0001 /* Products */,
 				42698EC12C0C008C00648D4C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		421B6AFB2B37504000946AF4 /* Micmute */ = {
+		421B6AFB2B37504000946AF4 /* BetterAudio */ = {
 			isa = PBXGroup;
 			children = (
 				427A86A72C0A0B0C000AFAD4 /* Utilities */,
@@ -126,10 +126,10 @@
 				421B6AFC2B37504000946AF4 /* MicmuteApp.swift */,
 				421B6B0B2B3764BC00946AF4 /* Info.plist */,
 				421B6B002B37504100946AF4 /* Assets.xcassets */,
-				421B6B052B37504100946AF4 /* Micmute.entitlements */,
 				75294FD72D598D8F006A58AF /* Localizable.xcstrings */,
+				758018432E91A05D00FBCE60 /* BetterAudio.entitlements */,
 			);
-			path = Micmute;
+			path = BetterAudio;
 			sourceTree = "<group>";
 		};
 		42698EC12C0C008C00648D4C /* Frameworks */ = {
@@ -194,7 +194,7 @@
 		76F5F0052F0D000000AB0001 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				42698EBB2C0BD99D00648D4C /* Micmute.app */,
+				42698EBB2C0BD99D00648D4C /* BetterAudio.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -202,9 +202,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		421B6AF82B37504000946AF4 /* Micmute */ = {
+		421B6AF82B37504000946AF4 /* BetterAudio */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 421B6B082B37504100946AF4 /* Build configuration list for PBXNativeTarget "Micmute" */;
+			buildConfigurationList = 421B6B082B37504100946AF4 /* Build configuration list for PBXNativeTarget "BetterAudio" */;
 			buildPhases = (
 				421B6AF52B37504000946AF4 /* Sources */,
 				421B6AF62B37504000946AF4 /* Frameworks */,
@@ -215,9 +215,9 @@
 			);
 			dependencies = (
 			);
-			name = Micmute;
+			name = BetterAudio;
 			productName = Micmute;
-			productReference = 42698EBB2C0BD99D00648D4C /* Micmute.app */;
+			productReference = 42698EBB2C0BD99D00648D4C /* BetterAudio.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -235,7 +235,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 421B6AF42B37504000946AF4 /* Build configuration list for PBXProject "Micmute" */;
+			buildConfigurationList = 421B6AF42B37504000946AF4 /* Build configuration list for PBXProject "BetterAudio" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -252,7 +252,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				421B6AF82B37504000946AF4 /* Micmute */,
+				421B6AF82B37504000946AF4 /* BetterAudio */,
 			);
 		};
 /* End PBXProject section */
@@ -433,7 +433,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				AUTOMATION_APPLE_EVENTS = NO;
-				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
+				CODE_SIGN_ENTITLEMENTS = BetterAudio/BetterAudio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -450,8 +450,8 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Micmute/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Micmute;
+				INFOPLIST_FILE = BetterAudio/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BetterAudio;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -460,9 +460,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15;
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 4.0.0;
 				"OTHER_CODE_SIGN_FLAGS[sdk=*]" = "--deep";
-				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.BetterAudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
@@ -484,7 +484,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				AUTOMATION_APPLE_EVENTS = NO;
-				CODE_SIGN_ENTITLEMENTS = Micmute/Micmute.entitlements;
+				CODE_SIGN_ENTITLEMENTS = BetterAudio/BetterAudio.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
@@ -501,8 +501,8 @@
 				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Micmute/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Micmute;
+				INFOPLIST_FILE = BetterAudio/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = BetterAudio;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -511,9 +511,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15;
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 4.0.0;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.Micmute;
+				PRODUCT_BUNDLE_IDENTIFIER = com.rokartur.BetterAudio;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
@@ -530,7 +530,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		421B6AF42B37504000946AF4 /* Build configuration list for PBXProject "Micmute" */ = {
+		421B6AF42B37504000946AF4 /* Build configuration list for PBXProject "BetterAudio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				421B6B062B37504100946AF4 /* Debug */,
@@ -539,7 +539,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		421B6B082B37504100946AF4 /* Build configuration list for PBXNativeTarget "Micmute" */ = {
+		421B6B082B37504100946AF4 /* Build configuration list for PBXNativeTarget "BetterAudio" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				421B6B092B37504100946AF4 /* Debug */,

@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "421B6AF82B37504000946AF4"
-               BuildableName = "Micmute.app"
-               BlueprintName = "Micmute"
-               ReferencedContainer = "container:Micmute.xcodeproj">
+               BuildableName = "BetterAudio.app"
+               BlueprintName = "BetterAudio"
+               ReferencedContainer = "container:BetterAudio.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "421B6AF82B37504000946AF4"
-            BuildableName = "Micmute.app"
-            BlueprintName = "Micmute"
-            ReferencedContainer = "container:Micmute.xcodeproj">
+            BuildableName = "BetterAudio.app"
+            BlueprintName = "BetterAudio"
+            ReferencedContainer = "container:BetterAudio.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "421B6AF82B37504000946AF4"
-            BuildableName = "Micmute.app"
-            BlueprintName = "Micmute"
-            ReferencedContainer = "container:Micmute.xcodeproj">
+            BuildableName = "BetterAudio.app"
+            BlueprintName = "BetterAudio"
+            ReferencedContainer = "container:BetterAudio.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

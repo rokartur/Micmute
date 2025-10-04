@@ -21,7 +21,7 @@ struct AboutView: View {
 
                     VStack(alignment: .leading, spacing: 10) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Micmute")
+                            Text("BetterAudio")
                                 .font(.system(size: 28, weight: .bold))
 
                             Text("v\(AppInfo.appVersion) • build \(AppInfo.appBuildNumber)")
@@ -36,7 +36,7 @@ struct AboutView: View {
                                 .font(.system(size: 12))
                                 .foregroundStyle(.secondary)
 
-                            Text("Micmute helps you stay in control of your microphone with quick shortcuts, per-app audio and a native macOS design.")
+                            Text("BetterAudio helps you stay in control of your microphone with quick shortcuts, per-app audio and a native macOS design.")
                                 .font(.system(size: 12))
                                 .foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)

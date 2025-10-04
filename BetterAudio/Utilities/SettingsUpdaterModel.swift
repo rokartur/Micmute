@@ -23,7 +23,7 @@ final class SettingsUpdaterModel: ObservableObject {
     private let repository: String
     private let session: URLSession
     private let userDefaults: UserDefaults
-    private let logger = Logger(subsystem: "com.rokartur.Micmute", category: "Updater")
+    private let logger = Logger(subsystem: "com.rokartur.BetterAudio", category: "Updater")
 
     private var lastFetchDate: Date?
     private var announcement: String? = nil
@@ -33,10 +33,10 @@ final class SettingsUpdaterModel: ObservableObject {
     }
 
     private enum DefaultsKey {
-        static let frequency = "com.rokartur.micmute.updater.frequency"
-        static let nextCheck = "com.rokartur.micmute.updater.nextCheck"
-        static let lastSeenRelease = "com.rokartur.micmute.updater.lastSeenRelease"
-        static let lastFetch = "com.rokartur.micmute.updater.lastFetch"
+        static let frequency = "com.rokartur.betteraudio.updater.frequency"
+        static let nextCheck = "com.rokartur.betteraudio.updater.nextCheck"
+        static let lastSeenRelease = "com.rokartur.betteraudio.updater.lastSeenRelease"
+        static let lastFetch = "com.rokartur.betteraudio.updater.lastFetch"
     }
 
     private enum FetchReason {
@@ -125,7 +125,7 @@ final class SettingsUpdaterModel: ObservableObject {
                 try? FileManager.default.removeItem(at: destination)
 
                 updateAvailable = false
-                progressMessage = "Update installed. Restart Micmute to finish."
+                progressMessage = "Update installed. Restart BetterAudio to finish."
                 progressValue = 1.0
                 restartRequired = true
             } catch UpdaterError.installationCancelled {
@@ -156,15 +156,15 @@ final class SettingsUpdaterModel: ObservableObject {
         configuration.promptsUserIfNeeded = false
 
         restartRequired = false
-        progressMessage = "Restarting Micmute…"
+        progressMessage = "Restarting BetterAudio…"
 
         NSWorkspace.shared.openApplication(at: appURL, configuration: configuration) { [weak self] _, error in
             Task { @MainActor [weak self] in
                 guard let self else { return }
 
                 if let error {
-                    self.logger.error("Failed to relaunch Micmute: \(error.localizedDescription, privacy: .public)")
-                    self.progressMessage = "Couldn't relaunch Micmute. Please start it manually."
+                    self.logger.error("Failed to relaunch BetterAudio: \(error.localizedDescription, privacy: .public)")
+                    self.progressMessage = "Couldn't relaunch BetterAudio. Please start it manually."
                     self.restartRequired = true
                     return
                 }
@@ -273,7 +273,7 @@ final class SettingsUpdaterModel: ObservableObject {
         let url = URL(string: "https://api.github.com/repos/\(owner)/\(repository)/releases")!
         var request = URLRequest(url: url)
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
-        request.setValue("Micmute-Updater", forHTTPHeaderField: "User-Agent")
+        request.setValue("BetterAudio-Updater", forHTTPHeaderField: "User-Agent")
 
         if let token = ProcessInfo.processInfo.environment["GITHUB_TOKEN"], !token.isEmpty {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -409,7 +409,7 @@ final class SettingsUpdaterModel: ObservableObject {
 
     private func downloadAsset(from url: URL) async throws -> Data {
         var request = URLRequest(url: url)
-        request.setValue("Micmute-Updater", forHTTPHeaderField: "User-Agent")
+        request.setValue("BetterAudio-Updater", forHTTPHeaderField: "User-Agent")
 
         if url.host == "api.github.com",
            let token = ProcessInfo.processInfo.environment["GITHUB_TOKEN"], !token.isEmpty {
@@ -781,15 +781,15 @@ private extension UpdaterError {
     var userFacingMessage: String {
         switch self {
         case .invalidResponse:
-            return "Micmute couldn't understand GitHub's response."
+            return "BetterAudio couldn't understand GitHub's response."
         case .invalidDownloadURL:
             return "The release is missing a valid download link."
         case .cannotAccessApplicationSupport:
-            return "Micmute can't access Application Support."
+            return "BetterAudio can't access Application Support."
         case .failedToExtractArchive(let reason):
             return "Couldn't unpack the update (\(reason))."
         case .applicationBundleNotFound:
-            return "Micmute couldn't find the app bundle inside the archive."
+            return "BetterAudio couldn't find the app bundle inside the archive."
         case .installationFailed(let message):
             return message.isEmpty ? "Update installation failed." : message
         case .installationCancelled:
@@ -825,10 +825,11 @@ private extension Bundle {
         }
 
         if let bundleName = object(forInfoDictionaryKey: "CFBundleName") as? String,
-           !bundleName.isEmpty {
+            !bundleName.isEmpty {
             return bundleName
         }
 
         return bundleURL.deletingPathExtension().lastPathComponent
     }
 }
+
