@@ -1,1 +1,0 @@
-// Legacy updater hook removed.
