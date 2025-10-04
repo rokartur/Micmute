@@ -1,10 +1,5 @@
-<div align="center">
-	<img src="Micmute/Assets.xcassets/AppIcon.appiconset/mac1024.png" width="200" height="200">
-	<h1>Micmute</h1>
-	<p>
-		Toggling microphone mute in any app
-	</p>
-</div>
+# Micmute
+**Toggling microphone mute in any app**
 
 ## Download
 
