@@ -338,17 +338,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     // MARK: - Device selection helpers
 
     func updateSelectedDevice(to deviceID: AudioDeviceID) {
+        // Natychmiast zaznacz w UI
         contentViewModel.selectedDeviceID = deviceID
+        // Zaktualizuj gain dla nowego urządzenia
         contentViewModel.loadInputGain(for: deviceID)
+        // Ustaw systemowy default (jeśli się nie powiedzie – nie cofaj wyboru w UI)
         contentViewModel.changeDefaultInputDevice(to: deviceID)
-        contentViewModel.loadAudioDevices()
+        // Nie wywołuj tutaj loadAudioDevices(), żeby nie nadpisać świeżo wybranego urządzenia
+        // (odświeżenia i tak przyjdą z listenerów/timera)
     }
 
     func updateSelectedOutputDevice(to deviceID: AudioDeviceID) {
+        // Natychmiast zaznacz w UI
         contentViewModel.selectedOutputDeviceID = deviceID
+        // Ustaw systemowy default (i ewentualnie efekty dźwiękowe)
         contentViewModel.changeDefaultOutputDevice(to: deviceID)
+        // Odśwież lokalny stan głośności dla nowego urządzenia
         contentViewModel.refreshOutputVolumeState()
-        contentViewModel.loadAudioDevices()
+        // Nie wywołuj tutaj loadAudioDevices(), aby nie przywracać starego wyboru
     }
     
     // MARK: - Lifecycle hooks for menu content

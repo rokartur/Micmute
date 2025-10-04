@@ -97,8 +97,6 @@ class ContentViewModel: ObservableObject {
     func toggleMute(deviceID: AudioDeviceID) {
         let resolvedDeviceID = syncSelectedInputDeviceWithSystemDefault() ?? selectedDeviceID
 
-        // Ustal aktualny stan mute z urządzenia, jeśli to możliwe,
-        // aby przełączenie było zgodne ze stanem systemowym.
         let currentMute = currentDeviceMuteState(deviceID: resolvedDeviceID, scope: kAudioObjectPropertyScopeInput) ?? isMuted
         let targetMute = !currentMute
 
@@ -190,7 +188,6 @@ class ContentViewModel: ObservableObject {
             return
         }
 
-        // Fallback do gain, jeśli brak właściwości mute
         let threshold: Float = 0.0001
         if fallbackGain <= threshold {
             if !isMuted {
@@ -310,14 +307,16 @@ class ContentViewModel: ObservableObject {
         availableDevices = updatedInputDevices
         availableOutputDevices = updatedOutputDevices
 
+        // Preferuj aktualnie wybrane urządzenie; dopiero potem system default; na końcu pierwsze dostępne.
         let systemInputDefault = systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultInputDevice)
         var resolvedInputDevice = selectedDeviceID
 
-        if let systemInputDefault,
-           updatedInputDevices.keys.contains(systemInputDefault) {
-            resolvedInputDevice = systemInputDefault
-        } else if !updatedInputDevices.keys.contains(resolvedInputDevice) {
-            resolvedInputDevice = updatedInputDevices.keys.first ?? kAudioObjectUnknown
+        if !updatedInputDevices.keys.contains(resolvedInputDevice) {
+            if let sys = systemInputDefault, updatedInputDevices.keys.contains(sys) {
+                resolvedInputDevice = sys
+            } else {
+                resolvedInputDevice = updatedInputDevices.keys.first ?? kAudioObjectUnknown
+            }
         }
 
         if selectedDeviceID != resolvedInputDevice {
@@ -328,11 +327,12 @@ class ContentViewModel: ObservableObject {
         let systemOutputDefault = systemDefaultDeviceID(selector: kAudioHardwarePropertyDefaultOutputDevice)
         var resolvedOutputDevice = selectedOutputDeviceID
 
-        if let systemOutputDefault,
-           updatedOutputDevices.keys.contains(systemOutputDefault) {
-            resolvedOutputDevice = systemOutputDefault
-        } else if !updatedOutputDevices.keys.contains(resolvedOutputDevice) {
-            resolvedOutputDevice = updatedOutputDevices.keys.first ?? kAudioObjectUnknown
+        if !updatedOutputDevices.keys.contains(resolvedOutputDevice) {
+            if let sys = systemOutputDefault, updatedOutputDevices.keys.contains(sys) {
+                resolvedOutputDevice = sys
+            } else {
+                resolvedOutputDevice = updatedOutputDevices.keys.first ?? kAudioObjectUnknown
+            }
         }
 
         if selectedOutputDeviceID != resolvedOutputDevice {
@@ -633,7 +633,6 @@ class ContentViewModel: ObservableObject {
     func loadInputGain(for deviceID: AudioDeviceID) {
         guard availableDevices.keys.contains(deviceID) else {
             inputGain = 0.0
-            // Jeśli urządzenie nie jest dostępne, ustaw stan mute na podstawie braku urządzenia
             reconcileMuteState(deviceID: deviceID, fallbackGain: 0.0)
             return
         }
@@ -678,7 +677,6 @@ class ContentViewModel: ObservableObject {
         }
     }
 
-    // Preferowany mechanizm: kAudioDevicePropertyMute
     private func deviceSupportsMute(deviceID: AudioDeviceID, scope: AudioObjectPropertyScope) -> Bool {
         var address = AudioObjectPropertyAddress(
             mSelector: kAudioDevicePropertyMute,
@@ -731,11 +729,9 @@ class ContentViewModel: ObservableObject {
 
         if deviceSupportsMute(deviceID: selectedDevice, scope: kAudioObjectPropertyScopeInput) {
             if setDeviceMute(deviceID: selectedDevice, scope: kAudioObjectPropertyScopeInput, mute: true) {
-                // Po skutecznym mute flagą nie zmieniamy gain (zachowujemy poprzedni)
                 return
             }
         }
-        // Fallback: stare zachowanie
         setInputGain(for: selectedDevice, gain: 0.0)
     }
     
@@ -744,12 +740,10 @@ class ContentViewModel: ObservableObject {
 
         if deviceSupportsMute(deviceID: selectedDevice, scope: kAudioObjectPropertyScopeInput) {
             _ = setDeviceMute(deviceID: selectedDevice, scope: kAudioObjectPropertyScopeInput, mute: false)
-            // Opcjonalnie przywróć głośność po unmute (zachowanie aplikacji)
             setInputGain(for: selectedDevice, gain: unmuteGain)
             return
         }
 
-        // Fallback: stare zachowanie
         setInputGain(for: selectedDevice, gain: unmuteGain)
     }
     
@@ -775,4 +769,3 @@ class ContentViewModel: ObservableObject {
         AudioObjectRemovePropertyListener(AudioObjectID(kAudioObjectSystemObject), &address, deviceChangeListener, nil)
     }
 }
-

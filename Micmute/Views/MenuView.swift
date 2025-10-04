@@ -17,13 +17,14 @@ struct MainMenuView: View {
     @Binding var selectedOutputDeviceID: AudioDeviceID
     @Binding var outputVolume: CGFloat
 
-    @State private var selectedDevice: DeviceEntry.ID? = nil
-    @State private var selectedOutputDevice: DeviceEntry.ID? = nil
-
     @AppStorage(AppStorageEntry.menuInputSectionExpanded.rawValue) private var storedInputExpanded: Bool = true
     @AppStorage(AppStorageEntry.menuOutputSectionExpanded.rawValue) private var storedOutputExpanded: Bool = true
     @State private var isInputExpanded: Bool = true
     @State private var isOutputExpanded: Bool = true
+
+    // Lokalny, natychmiastowy stan zaznaczenia (naprawia opóźnienie przy Bindingach/AppStorage)
+    @State private var localSelectedInputID: AudioDeviceID = kAudioObjectUnknown
+    @State private var localSelectedOutputID: AudioDeviceID = kAudioObjectUnknown
 
     var onDeviceSelected: (AudioDeviceID) -> Void
     var onOutputDeviceSelected: (AudioDeviceID) -> Void
@@ -35,6 +36,9 @@ struct MainMenuView: View {
     static let preferredWidth: CGFloat = 320
     private let contentPadding: CGFloat = 14
     private let interSectionSpacing: CGFloat = 12
+
+    private let volumeEpsilon: CGFloat = 0.005
+    private let debounceInterval: TimeInterval = 0.5
 
     private var inputDeviceEntries: [DeviceEntry] {
         deviceEntries(from: availableDevices)
@@ -50,11 +54,23 @@ struct MainMenuView: View {
     @State private var perInputMute: [AudioDeviceID: Bool] = [:]
     @State private var perInputLastNonZeroVolume: [AudioDeviceID: CGFloat] = [:]
 
+    // UI drag tracking + debounce (input)
+    @State private var draggingInputDevices: Set<AudioDeviceID> = []
+    @State private var inputSetTimers: [AudioDeviceID: DispatchSourceTimer] = [:]
+    @State private var inputPendingVolume: [AudioDeviceID: CGFloat] = [:]
+    @State private var lastInputSetByUI: [AudioDeviceID: CGFloat] = [:]
+
     // MARK: - Per-output-device state and CoreAudio sync
 
     @State private var perOutputVolume: [AudioDeviceID: CGFloat] = [:]
     @State private var perOutputMute: [AudioDeviceID: Bool] = [:]
     @State private var perOutputLastNonZeroVolume: [AudioDeviceID: CGFloat] = [:]
+
+    // UI drag tracking + debounce (output)
+    @State private var draggingOutputDevices: Set<AudioDeviceID> = []
+    @State private var outputSetTimers: [AudioDeviceID: DispatchSourceTimer] = [:]
+    @State private var outputPendingVolume: [AudioDeviceID: CGFloat] = [:]
+    @State private var lastOutputSetByUI: [AudioDeviceID: CGFloat] = [:]
 
     // Inline editing of output percent
     @State private var editingOutputDevicePercent: AudioDeviceID? = nil
@@ -102,7 +118,10 @@ struct MainMenuView: View {
 
         self._isInputExpanded = State(initialValue: storedInputExpanded)
         self._isOutputExpanded = State(initialValue: storedOutputExpanded)
-        self._selectedOutputDevice = State(initialValue: selectedOutputDeviceID.wrappedValue)
+
+        // Inicjalizuj lokalne zaznaczenie na podstawie przekazanych Bindingów
+        self._localSelectedInputID = State(initialValue: selectedDeviceID.wrappedValue)
+        self._localSelectedOutputID = State(initialValue: selectedOutputDeviceID.wrappedValue)
     }
 
     var body: some View {
@@ -123,9 +142,10 @@ struct MainMenuView: View {
         .hideScrollIndicators()
         .frame(width: Self.preferredWidth)
         .onAppear {
-            // Usunięto activateApp(), bo aktywacja w tym momencie zrywa śledzenie menu i je zamyka.
-            selectedDevice = selectedDeviceID
-            selectedOutputDevice = selectedOutputDeviceID
+            // Upewnij się, że lokalny stan jest zsynchronizowany przy otwarciu
+            localSelectedInputID = selectedDeviceID
+            localSelectedOutputID = selectedOutputDeviceID
+
             setupInputDevicesStateAndListeners()
             setupOutputDevicesStateAndListeners()
             onAppear()
@@ -135,18 +155,6 @@ struct MainMenuView: View {
         }
         .onChange(of: availableOutputDevices) { _, _ in
             setupOutputDevicesStateAndListeners()
-        }
-        .onChange(of: selectedDevice) { _, newValue in
-            if let newValue, newValue != selectedDeviceID {
-                selectedDeviceID = newValue
-                onDeviceSelected(newValue)
-            }
-        }
-        .onChange(of: selectedOutputDevice) { _, newValue in
-            if let newValue, newValue != selectedOutputDeviceID {
-                selectedOutputDeviceID = newValue
-                onOutputDeviceSelected(newValue)
-            }
         }
         .onChange(of: isInputExpanded) { _, newValue in
             if storedInputExpanded != newValue {
@@ -168,29 +176,37 @@ struct MainMenuView: View {
                 isOutputExpanded = newValue
             }
         }
-        .onChange(of: selectedOutputDeviceID) { _, newValue in
-            if selectedOutputDevice != newValue {
-                selectedOutputDevice = newValue
+        .onChange(of: outputVolume) { _, newValue in
+            let current = perOutputVolume[selectedOutputDeviceID] ?? 1.0
+            if !approxEqual(current, newValue, eps: volumeEpsilon) {
+                perOutputVolume[selectedOutputDeviceID] = newValue
             }
         }
-        // Synchronizacja zewnętrznych zmian głośności do cache per‑device
-        .onChange(of: outputVolume) { _, newValue in
-            perOutputVolume[selectedOutputDeviceID] = newValue
+        // Synchronizacja lokalnych zaznaczeń z zewnętrznymi Bindingami (gdy zmienią się „z zewnątrz”)
+        .onChange(of: selectedDeviceID) { _, newValue in
+            if localSelectedInputID != newValue {
+                localSelectedInputID = newValue
+            }
+        }
+        .onChange(of: selectedOutputDeviceID) { _, newValue in
+            if localSelectedOutputID != newValue {
+                localSelectedOutputID = newValue
+            }
         }
         .onDisappear {
             tearDownInputListeners()
             tearDownOutputListeners()
+            cancelAllTimers()
             onDisappear()
         }
     }
 
-    // MARK: - Sections (native macOS controls)
+    // MARK: - Sections
 
     private var inputSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             DisclosureGroup(isExpanded: $isInputExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
-                    // Available input devices (each with slider + mute)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Input devices")
                             .font(.caption)
@@ -229,7 +245,9 @@ struct MainMenuView: View {
             },
             set: { newValue in
                 let clamped = CGFloat(min(max(newValue, 0), 1))
-                setInputVolume(entry.id, clamped)
+                perInputVolume[entry.id] = clamped
+                let isDragging = draggingInputDevices.contains(entry.id)
+                debouncedSetInputVolume(entry.id, clamped, isEditing: isDragging)
             }
         )
         let isMuted = perInputMute[entry.id] ?? false
@@ -239,12 +257,17 @@ struct MainMenuView: View {
             return Int((min(max(vol, 0), 1) * 100).rounded())
         }()
 
-        let isSelected = (selectedDevice ?? selectedDeviceID) == entry.id
+        let isSelected = localSelectedInputID == entry.id
 
         return HStack(spacing: 8) {
-            // Select indicator + Device name (clickable)
             Button {
-                selectedDevice = entry.id
+                if localSelectedInputID != entry.id {
+                    // Najpierw natychmiastowa aktualizacja UI
+                    localSelectedInputID = entry.id
+                    // Aktualizacja Bindingu + callback do logiki wyżej
+                    selectedDeviceID = entry.id
+                    onDeviceSelected(entry.id)
+                }
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
@@ -260,9 +283,16 @@ struct MainMenuView: View {
             .help(isSelected ? "Selected input device" : "Set as active input device")
 
             if supportsVolume {
-                // Slider + percent only if device supports volume
                 Slider(value: volumeBinding, in: 0...1, onEditingChanged: { isEditing in
                     onSliderEditingChanged(isEditing)
+                    if isEditing {
+                        draggingInputDevices.insert(entry.id)
+                    } else {
+                        draggingInputDevices.remove(entry.id)
+                        if let final = perInputVolume[entry.id] {
+                            debouncedSetInputVolume(entry.id, final, isEditing: false)
+                        }
+                    }
                 })
                 .controlSize(.small)
 
@@ -317,7 +347,6 @@ struct MainMenuView: View {
             }
 
             if supportsMute {
-                // Mute/Unmute only if device supports mute
                 Button {
                     toggleInputMute(entry.id)
                 } label: {
@@ -343,7 +372,6 @@ struct MainMenuView: View {
         VStack(alignment: .leading, spacing: 8) {
             DisclosureGroup(isExpanded: $isOutputExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
-                    // Available output devices (name + per-device slider + mute button)
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Output devices")
                             .font(.caption)
@@ -370,7 +398,7 @@ struct MainMenuView: View {
     }
 
     private func outputDeviceRow(entry: DeviceEntry) -> some View {
-        let isSelected = (selectedOutputDevice ?? selectedOutputDeviceID) == entry.id
+        let isSelected = localSelectedOutputID == entry.id
         let supportsVolume = hasOutputVolume(entry.id)
         let supportsMute = hasOutputMute(entry.id)
         let hasTrailingControls = supportsVolume || supportsMute
@@ -382,7 +410,9 @@ struct MainMenuView: View {
             },
             set: { newValue in
                 let clamped = CGFloat(min(max(newValue, 0), 1))
-                setOutputVolume(entry.id, clamped)
+                perOutputVolume[entry.id] = clamped
+                let isDragging = draggingOutputDevices.contains(entry.id)
+                debouncedSetOutputVolume(entry.id, clamped, isEditing: isDragging)
             }
         )
 
@@ -395,7 +425,13 @@ struct MainMenuView: View {
 
         return HStack(spacing: 8) {
             Button {
-                selectedOutputDevice = entry.id
+                if localSelectedOutputID != entry.id {
+                    // Najpierw natychmiastowa aktualizacja UI
+                    localSelectedOutputID = entry.id
+                    // Aktualizacja Bindingu + callback do logiki wyżej
+                    selectedOutputDeviceID = entry.id
+                    onOutputDeviceSelected(entry.id)
+                }
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
@@ -411,9 +447,16 @@ struct MainMenuView: View {
             .help(isSelected ? "Selected output device" : "Set as active output device")
 
             if supportsVolume {
-                // Slider + percent only if device supports volume
                 Slider(value: volumeBinding, in: 0...1, onEditingChanged: { isEditing in
                     onSliderEditingChanged(isEditing)
+                    if isEditing {
+                        draggingOutputDevices.insert(entry.id)
+                    } else {
+                        draggingOutputDevices.remove(entry.id)
+                        if let final = perOutputVolume[entry.id] {
+                            debouncedSetOutputVolume(entry.id, final, isEditing: false)
+                        }
+                    }
                 })
                 .controlSize(.small)
 
@@ -425,7 +468,6 @@ struct MainMenuView: View {
                                 return String(value)
                             },
                             set: { newValue in
-                                // allow only digits and clamp to 0...100, limit to 3 chars
                                 let digits = newValue.filter { $0.isNumber }
                                 let limited = String(digits.prefix(3))
                                 let intVal = Int(limited) ?? 0
@@ -443,13 +485,11 @@ struct MainMenuView: View {
                         .monospacedDigit()
                         .focused($focusedOutputPercentEditor, equals: entry.id)
                         .onAppear {
-                            // Ustaw fokus po wejściu w tryb edycji
                             DispatchQueue.main.async {
                                 focusedOutputPercentEditor = entry.id
                             }
                         }
                         .onChange(of: focusedOutputPercentEditor) { _, newFocus in
-                            // Zatwierdź przy utracie fokusu
                             if editingOutputDevicePercent == entry.id, newFocus != entry.id {
                                 commitOutputPercent(for: entry.id)
                             }
@@ -461,7 +501,6 @@ struct MainMenuView: View {
                             .monospacedDigit()
                             .frame(width: 42, alignment: .trailing)
                             .onTapGesture(count: 2) {
-                                // start editing
                                 editingOutputDevicePercent = entry.id
                                 tempOutputPercent[entry.id] = currentPercent
                                 focusedOutputPercentEditor = entry.id
@@ -472,7 +511,6 @@ struct MainMenuView: View {
             }
 
             if supportsMute {
-                // Mute/Unmute only if device supports mute
                 Button {
                     toggleOutputMute(entry.id)
                 } label: {
@@ -500,8 +538,8 @@ struct MainMenuView: View {
         let raw = tempOutputPercent[deviceID] ?? 0
         let clamped = max(0, min(100, raw))
         let scalar = CGFloat(clamped) / 100.0
+        cancelTimer(for: deviceID, output: true)
         setOutputVolume(deviceID, scalar)
-        // wyczyść tryb edycji
         editingOutputDevicePercent = nil
         focusedOutputPercentEditor = nil
     }
@@ -510,6 +548,7 @@ struct MainMenuView: View {
         let raw = tempInputPercent[deviceID] ?? 0
         let clamped = max(0, min(100, raw))
         let scalar = CGFloat(clamped) / 100.0
+        cancelTimer(for: deviceID, output: false)
         setInputVolume(deviceID, scalar)
         editingInputDevicePercent = nil
         focusedInputPercentEditor = nil
@@ -520,16 +559,89 @@ struct MainMenuView: View {
             .map { DeviceEntry(id: $0.key, name: $0.value) }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
+
+    // MARK: - Debounce helpers
+
+    private func debouncedSetOutputVolume(_ deviceID: AudioDeviceID, _ volume: CGFloat, isEditing: Bool) {
+        guard deviceID != kAudioObjectUnknown else { return }
+        if !isEditing {
+            cancelTimer(for: deviceID, output: true)
+            setOutputVolume(deviceID, volume)
+            return
+        }
+        outputPendingVolume[deviceID] = volume
+        if let t = outputSetTimers.removeValue(forKey: deviceID) {
+            t.cancel()
+        }
+        let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        timer.schedule(deadline: .now() + debounceInterval, repeating: .never)
+        timer.setEventHandler {
+            guard let pending = self.outputPendingVolume[deviceID] else { return }
+            self.setOutputVolume(deviceID, pending)
+            self.outputPendingVolume.removeValue(forKey: deviceID)
+            self.outputSetTimers.removeValue(forKey: deviceID)?.cancel()
+        }
+        outputSetTimers[deviceID] = timer
+        timer.resume()
+    }
+
+    private func debouncedSetInputVolume(_ deviceID: AudioDeviceID, _ volume: CGFloat, isEditing: Bool) {
+        guard deviceID != kAudioObjectUnknown else { return }
+        if !isEditing {
+            cancelTimer(for: deviceID, output: false)
+            setInputVolume(deviceID, volume)
+            return
+        }
+        inputPendingVolume[deviceID] = volume
+        if let t = inputSetTimers.removeValue(forKey: deviceID) {
+            t.cancel()
+        }
+        let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+        timer.schedule(deadline: .now() + debounceInterval, repeating: .never)
+        timer.setEventHandler {
+            guard let pending = self.inputPendingVolume[deviceID] else { return }
+            self.setInputVolume(deviceID, pending)
+            self.inputPendingVolume.removeValue(forKey: deviceID)
+            self.inputSetTimers.removeValue(forKey: deviceID)?.cancel()
+        }
+        inputSetTimers[deviceID] = timer
+        timer.resume()
+    }
+
+    private func cancelTimer(for deviceID: AudioDeviceID, output: Bool) {
+        if output {
+            if let t = outputSetTimers.removeValue(forKey: deviceID) {
+                t.cancel()
+            }
+            outputPendingVolume.removeValue(forKey: deviceID)
+        } else {
+            if let t = inputSetTimers.removeValue(forKey: deviceID) {
+                t.cancel()
+            }
+            inputPendingVolume.removeValue(forKey: deviceID)
+        }
+    }
+
+    private func cancelAllTimers() {
+        for (_, t) in outputSetTimers { t.cancel() }
+        for (_, t) in inputSetTimers { t.cancel() }
+        outputSetTimers.removeAll()
+        inputSetTimers.removeAll()
+        outputPendingVolume.removeAll()
+        inputPendingVolume.removeAll()
+    }
+
+    private func approxEqual(_ a: CGFloat, _ b: CGFloat, eps: CGFloat) -> Bool {
+        return abs(a - b) <= eps
+    }
 }
 
-// MARK: - CoreAudio helpers for input devices (volume + mute) and listeners
+// MARK: - CoreAudio helpers (input)
 
 private extension MainMenuView {
-    // 'vmvc' selector used by HAL for virtual master scalar volume when available
     static let virtualMasterScalarVolumeSelector = AudioObjectPropertySelector(0x766D7663) // 'vmvc'
 
     func setupInputDevicesStateAndListeners() {
-        // Remove listeners for devices that disappeared
         let currentIDs = Set(availableDevices.keys)
         for (deviceID, entries) in listeners {
             if !currentIDs.contains(deviceID) {
@@ -538,12 +650,12 @@ private extension MainMenuView {
                 perInputVolume.removeValue(forKey: deviceID)
                 perInputMute.removeValue(forKey: deviceID)
                 perInputLastNonZeroVolume.removeValue(forKey: deviceID)
+                lastInputSetByUI.removeValue(forKey: deviceID)
+                cancelTimer(for: deviceID, output: false)
             }
         }
 
-        // Ensure state + listeners for all current devices
         for deviceID in currentIDs {
-            // Load initial volume and mute
             let vol = loadInputVolume(for: deviceID) ?? 1.0
             perInputVolume[deviceID] = vol
             if vol > 0 {
@@ -553,11 +665,9 @@ private extension MainMenuView {
             if let mute = loadInputMute(for: deviceID) {
                 perInputMute[deviceID] = mute
             } else {
-                // If device has no mute property, infer muted from volume==0
                 perInputMute[deviceID] = (vol <= 0.0001)
             }
 
-            // Register listeners if not yet registered
             if listeners[deviceID] == nil {
                 var newEntries: [ListenerEntry] = []
 
@@ -565,13 +675,19 @@ private extension MainMenuView {
                     let block: AudioObjectPropertyListenerBlock = { _, _ in
                         let newVol = self.loadInputVolume(for: deviceID) ?? self.perInputVolume[deviceID] ?? 1.0
                         Task { @MainActor in
-                            self.perInputVolume[deviceID] = newVol
-                            if newVol > 0 {
-                                self.perInputLastNonZeroVolume[deviceID] = newVol
+                            if let lastUI = self.lastInputSetByUI[deviceID], self.approxEqual(lastUI, newVol, eps: self.volumeEpsilon) {
+                                self.lastInputSetByUI.removeValue(forKey: deviceID)
+                                return
                             }
-                            // For devices without mute property, derive mute from volume
-                            if self.loadInputMute(for: deviceID) == nil {
-                                self.perInputMute[deviceID] = (newVol <= 0.0001)
+                            let current = self.perInputVolume[deviceID] ?? 1.0
+                            if !self.approxEqual(current, newVol, eps: self.volumeEpsilon) {
+                                self.perInputVolume[deviceID] = newVol
+                                if newVol > 0 {
+                                    self.perInputLastNonZeroVolume[deviceID] = newVol
+                                }
+                                if self.loadInputMute(for: deviceID) == nil {
+                                    self.perInputMute[deviceID] = (newVol <= 0.0001)
+                                }
                             }
                         }
                     }
@@ -584,7 +700,9 @@ private extension MainMenuView {
                         let newMute = self.loadInputMute(for: deviceID)
                         Task { @MainActor in
                             if let newMute {
-                                self.perInputMute[deviceID] = newMute
+                                if self.perInputMute[deviceID] != newMute {
+                                    self.perInputMute[deviceID] = newMute
+                                }
                             }
                         }
                     }
@@ -612,8 +730,6 @@ private extension MainMenuView {
             AudioObjectRemovePropertyListenerBlock(deviceID, &address, DispatchQueue.main, entry.block)
         }
     }
-
-    // MARK: Volume (Input)
 
     func inputVolumePropertyAddress(for deviceID: AudioDeviceID) -> AudioObjectPropertyAddress? {
         var vmvc = AudioObjectPropertyAddress(
@@ -654,20 +770,21 @@ private extension MainMenuView {
               var address = inputVolumePropertyAddress(for: deviceID) else {
             return
         }
-        var clamped: Float32 = Float32(min(max(volume, 0), 1))
+        let clampedCGFloat = CGFloat(min(max(volume, 0), 1))
+        var clamped: Float32 = Float32(clampedCGFloat)
         let size = UInt32(MemoryLayout.size(ofValue: clamped))
         let status = AudioObjectSetPropertyData(deviceID, &address, 0, nil, size, &clamped)
         if status == noErr {
-            perInputVolume[deviceID] = CGFloat(clamped)
-            if clamped > 0 {
-                perInputLastNonZeroVolume[deviceID] = CGFloat(clamped)
+            let cg = CGFloat(clamped)
+            perInputVolume[deviceID] = cg
+            lastInputSetByUI[deviceID] = cg
+            if cg > 0 {
+                perInputLastNonZeroVolume[deviceID] = cg
             }
         } else {
             // Ignore errors silently in UI
         }
     }
-
-    // MARK: Mute (Input)
 
     func inputMutePropertyAddress(for deviceID: AudioDeviceID) -> AudioObjectPropertyAddress? {
         let address = AudioObjectPropertyAddress(
@@ -715,16 +832,13 @@ private extension MainMenuView {
             let current = loadInputMute(for: deviceID) ?? (perInputMute[deviceID] ?? false)
             let success = setInputMute(deviceID, !current)
             if success, !current == false {
-                // If unmuting, optionally restore last non-zero volume
                 if let last = perInputLastNonZeroVolume[deviceID], last > 0 {
                     setInputVolume(deviceID, last)
                 } else {
-                    // fallback to unmuteGain when no previous volume known
                     setInputVolume(deviceID, unmuteGain)
                 }
             }
         } else {
-            // Fallback by volume
             let isCurrentlyMuted = (perInputVolume[deviceID] ?? 0) <= 0.0001
             if isCurrentlyMuted {
                 let restore = perInputLastNonZeroVolume[deviceID] ?? unmuteGain
@@ -740,7 +854,6 @@ private extension MainMenuView {
         }
     }
 
-    // UI helpers: capability checks (Input)
     func hasInputVolume(_ deviceID: AudioDeviceID) -> Bool {
         return inputVolumePropertyAddress(for: deviceID) != nil
     }
@@ -751,11 +864,10 @@ private extension MainMenuView {
     }
 }
 
-// MARK: - CoreAudio helpers for OUTPUT devices (volume + mute) and listeners
+// MARK: - CoreAudio helpers (output)
 
 private extension MainMenuView {
     func setupOutputDevicesStateAndListeners() {
-        // Remove listeners for devices that disappeared
         let currentIDs = Set(availableOutputDevices.keys)
         for (deviceID, entries) in outputListeners {
             if !currentIDs.contains(deviceID) {
@@ -764,12 +876,12 @@ private extension MainMenuView {
                 perOutputVolume.removeValue(forKey: deviceID)
                 perOutputMute.removeValue(forKey: deviceID)
                 perOutputLastNonZeroVolume.removeValue(forKey: deviceID)
+                lastOutputSetByUI.removeValue(forKey: deviceID)
+                cancelTimer(for: deviceID, output: true)
             }
         }
 
-        // Ensure state + listeners for all current output devices
         for deviceID in currentIDs {
-            // Load initial volume and mute
             let vol = loadOutputVolume(for: deviceID) ?? 1.0
             perOutputVolume[deviceID] = vol
             if vol > 0 {
@@ -782,7 +894,6 @@ private extension MainMenuView {
                 perOutputMute[deviceID] = (vol <= 0.0001)
             }
 
-            // Register listeners if not yet registered
             if outputListeners[deviceID] == nil {
                 var newEntries: [ListenerEntry] = []
 
@@ -790,12 +901,22 @@ private extension MainMenuView {
                     let block: AudioObjectPropertyListenerBlock = { _, _ in
                         let newVol = self.loadOutputVolume(for: deviceID) ?? self.perOutputVolume[deviceID] ?? 1.0
                         Task { @MainActor in
-                            self.perOutputVolume[deviceID] = newVol
-                            if newVol > 0 {
-                                self.perOutputLastNonZeroVolume[deviceID] = newVol
+                            if let lastUI = self.lastOutputSetByUI[deviceID], self.approxEqual(lastUI, newVol, eps: self.volumeEpsilon) {
+                                self.lastOutputSetByUI.removeValue(forKey: deviceID)
+                                return
                             }
-                            if self.loadOutputMute(for: deviceID) == nil {
-                                self.perOutputMute[deviceID] = (newVol <= 0.0001)
+                            let current = self.perOutputVolume[deviceID] ?? 1.0
+                            if !self.approxEqual(current, newVol, eps: self.volumeEpsilon) {
+                                self.perOutputVolume[deviceID] = newVol
+                                if newVol > 0 {
+                                    self.perOutputLastNonZeroVolume[deviceID] = newVol
+                                }
+                                if self.loadOutputMute(for: deviceID) == nil {
+                                    self.perOutputMute[deviceID] = (newVol <= 0.0001)
+                                }
+                                if deviceID == self.selectedOutputDeviceID {
+                                    self.onOutputVolumeChange(newVol)
+                                }
                             }
                         }
                     }
@@ -808,7 +929,9 @@ private extension MainMenuView {
                         let newMute = self.loadOutputMute(for: deviceID)
                         Task { @MainActor in
                             if let newMute {
-                                self.perOutputMute[deviceID] = newMute
+                                if self.perOutputMute[deviceID] != newMute {
+                                    self.perOutputMute[deviceID] = newMute
+                                }
                             }
                         }
                     }
@@ -829,8 +952,6 @@ private extension MainMenuView {
         }
         outputListeners.removeAll()
     }
-
-    // MARK: Volume (Output)
 
     func outputVolumePropertyAddress(for deviceID: AudioDeviceID) -> AudioObjectPropertyAddress? {
         var vmvc = AudioObjectPropertyAddress(
@@ -871,24 +992,24 @@ private extension MainMenuView {
               var address = outputVolumePropertyAddress(for: deviceID) else {
             return
         }
-        var clamped: Float32 = Float32(min(max(volume, 0), 1))
+        let clampedCGFloat = CGFloat(min(max(volume, 0), 1))
+        var clamped: Float32 = Float32(clampedCGFloat)
         let size = UInt32(MemoryLayout.size(ofValue: clamped))
         let status = AudioObjectSetPropertyData(deviceID, &address, 0, nil, size, &clamped)
         if status == noErr {
-            perOutputVolume[deviceID] = CGFloat(clamped)
-            if clamped > 0 {
-                perOutputLastNonZeroVolume[deviceID] = CGFloat(clamped)
+            let cg = CGFloat(clamped)
+            perOutputVolume[deviceID] = cg
+            lastOutputSetByUI[deviceID] = cg
+            if cg > 0 {
+                perOutputLastNonZeroVolume[deviceID] = cg
             }
-            // jeśli to wybrane urządzenie, przekaż w górę (utrzymujemy dotychczasowe API)
             if deviceID == selectedOutputDeviceID {
-                onOutputVolumeChange(CGFloat(clamped))
+                onOutputVolumeChange(cg)
             }
         } else {
             // Ignore errors silently in UI
         }
     }
-
-    // MARK: Mute (Output)
 
     func outputMutePropertyAddress(for deviceID: AudioDeviceID) -> AudioObjectPropertyAddress? {
         let address = AudioObjectPropertyAddress(
@@ -936,7 +1057,6 @@ private extension MainMenuView {
             let current = loadOutputMute(for: deviceID) ?? (perOutputMute[deviceID] ?? false)
             let success = setOutputMute(deviceID, !current)
             if success, !current == false {
-                // If unmuting, restore last non-zero volume or fallback
                 if let last = perOutputLastNonZeroVolume[deviceID], last > 0 {
                     setOutputVolume(deviceID, last)
                 } else {
@@ -944,7 +1064,6 @@ private extension MainMenuView {
                 }
             }
         } else {
-            // Fallback by volume
             let isCurrentlyMuted = (perOutputVolume[deviceID] ?? 0) <= 0.0001
             if isCurrentlyMuted {
                 let restore = perOutputLastNonZeroVolume[deviceID] ?? unmuteGain
@@ -960,7 +1079,6 @@ private extension MainMenuView {
         }
     }
 
-    // UI helpers: capability checks (Output)
     func hasOutputVolume(_ deviceID: AudioDeviceID) -> Bool {
         return outputVolumePropertyAddress(for: deviceID) != nil
     }
@@ -981,3 +1099,4 @@ private extension View {
         }
     }
 }
+
