@@ -65,7 +65,8 @@ struct PreferencesView: View {
             sidebar
                 .frame(width: sidebarWidth)
                 .frame(maxHeight: .infinity, alignment: .top)
-                
+                // Zablokowanie szerokości sidebara (min = ideal = max)
+                .navigationSplitViewColumnWidth(min: sidebarWidth, ideal: sidebarWidth, max: sidebarWidth)
         } detail: {
             contentArea
                 .frame(minWidth: contentMinWidth, maxWidth: contentMaxWidth)
