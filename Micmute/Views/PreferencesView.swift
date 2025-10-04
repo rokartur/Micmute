@@ -31,6 +31,24 @@ enum PreferenceTab: String, CaseIterable {
     }
 }
 
+struct SidebarItem: Identifiable, Hashable {
+    let id = UUID()
+    let title: String
+    let systemImage: String
+}
+
+struct DetailView: View {
+    let item: SidebarItem
+
+    var body: some View {
+        VStack {
+            Text("Wybrano: \(item.title)")
+                .font(.largeTitle)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
 struct PreferencesView: View {
     @EnvironmentObject private var updatesModel: SettingsUpdaterModel
     @Environment(\.colorScheme) private var colorScheme
@@ -45,31 +63,28 @@ struct PreferencesView: View {
     private let chromeHorizontalInset: CGFloat = 26
     private let chromeBottomInset: CGFloat = 24
 
+    @State private var selection: SidebarItem? = SidebarItem(title: "Home", systemImage: "house")
+    let sidebarItems: [SidebarItem] = [
+        SidebarItem(title: "Home", systemImage: "house"),
+        SidebarItem(title: "Settings", systemImage: "gear"),
+        SidebarItem(title: "Profile", systemImage: "person.crop.circle")
+    ]
+    
     var body: some View {
-        HStack(spacing: 0) {
+        NavigationSplitView {
             sidebar
                 .frame(width: sidebarWidth)
                 .frame(maxHeight: .infinity, alignment: .top)
-
-            Divider()
-                .frame(maxHeight: .infinity)
-                .overlay(Color.white.opacity(0.05))
-
+                
+        } detail: {
             contentArea
                 .frame(minWidth: contentMinWidth, maxWidth: contentMaxWidth)
                 .frame(maxHeight: .infinity, alignment: .top)
         }
-        .frame(minWidth: sidebarWidth + contentMinWidth, idealWidth: sidebarWidth + contentMaxWidth, minHeight: windowMinHeight)
-        .background(chromeBackground)
-        .clipShape(RoundedRectangle(cornerRadius: chromeCornerRadius, style: .continuous))
-        .overlay(chromeBorder)
-        .background(Color.clear)
     }
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 16) {
-            closeButtonRow
-
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(PreferenceTab.allCases, id: \.self) { tab in
                     SettingsSidebarButton(
@@ -104,13 +119,6 @@ struct PreferencesView: View {
         }
     .padding(.vertical, 18)
     .padding(.horizontal, 14)
-    }
-
-    private var closeButtonRow: some View {
-        HStack(spacing: 0) {
-            SidebarCloseButton(action: closePreferencesWindow)
-            Spacer(minLength: 0)
-        }
     }
 
     private var contentArea: some View {
@@ -247,49 +255,6 @@ private struct SettingsSidebarButton: View {
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(SettingsSidebarButtonStyle(isSelected: isSelected, isHovered: isHovered))
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.12)) {
-                isHovered = hovering
-            }
-        }
-    }
-}
-
-private struct SidebarCloseButton: View {
-    let action: () -> Void
-
-    @State private var isHovered = false
-
-    var body: some View {
-        Button(action: action) {
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(isHovered ? 0.28 : 0.2),
-                                Color.white.opacity(isHovered ? 0.16 : 0.08)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .overlay(
-                        Circle()
-                            .stroke(Color.white.opacity(isHovered ? 0.55 : 0.35), lineWidth: 0.9)
-                    )
-                    .shadow(color: Color.black.opacity(isHovered ? 0.25 : 0.18), radius: isHovered ? 6 : 4, y: 3)
-                    .frame(width: 28, height: 28)
-
-                Image(systemName: "xmark")
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.primary)
-                    .offset(y: -0.5)
-            }
-        }
-        .buttonStyle(.plain)
-        .contentShape(Circle())
-        .accessibilityLabel("Close settings window")
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.12)) {
                 isHovered = hovering

@@ -3,22 +3,54 @@ import CoreAudio
 import CoreAudioKit
 import AppKit
 
+private final class MenuPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+    
+    init(contentRect: NSRect) {
+        super.init(
+            contentRect: contentRect,
+            styleMask: [.nonactivatingPanel, .borderless],
+            backing: .buffered,
+            defer: false
+        )
+        isOpaque = false
+        hasShadow = true
+        level = .statusBar
+        collectionBehavior = [.fullScreenAuxiliary, .moveToActiveSpace]
+        // nonactivatingPanel + makeKeyAndOrderFront po aktywacji appki da nam fokus bez „zrywania menu”,
+        // bo to nie jest już NSMenu tracking.
+        isMovableByWindowBackground = false
+        hidesOnDeactivate = false
+        titleVisibility = .hidden
+        titlebarAppearsTransparent = true
+        backgroundColor = .clear
+    }
+}
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     let shortcutPreferences: ShortcutPreferences
     @ObservedObject var contentViewModel: ContentViewModel
     let settingsUpdaterModel: SettingsUpdaterModel
     var statusBarItem: NSStatusItem!
-    var statusBarMenu: NSMenu!
-    var statusBarMenuItem: NSMenuItem!
+
+    // NSPanel zamiast NSMenu/NSPopover
+    private var panel: MenuPanel?
+    private var outsideGlobalMonitor: Any?
+    private var outsideLocalMonitor: Any?
 
     private var preferencesWindow: PreferencesWindow!
     var micMute: NSImage = getMicMuteImage()
     var micUnmute: NSImage = getMicUnmuteImage()
 
     private let refreshInterval: TimeInterval = 1.0
-    @State private var refreshTimer: Timer?
+    private var refreshTimer: Timer?
+    
+    // Marginesy wewnętrzne dla zawartości panelu (tło jak menu systemowe)
+    private let panelInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+    // Promień zaokrąglenia rogów „menu”
+    private let panelCornerRadius: CGFloat = 10
     
     override init() {
         let shortcutPreferences = ShortcutPreferences()
@@ -40,18 +72,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusBarItem.button?.action = #selector(self.statusBarButtonClicked(sender:))
         statusBarItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
 
-        statusBarMenu = NSMenu()
-        statusBarMenu.delegate = self
-        statusBarMenuItem = NSMenuItem()
-        menuView()
-        statusBarMenu.addItem(statusBarMenuItem)
-        
-        if contentViewModel.menuBehaviorOnClick == .menu {
-            statusBarItem.menu = statusBarMenu
-        } else {
-            statusBarItem.menu = nil
-        }
-    
+        // Ukryj ewentualne okna startowe
         for window in NSApplication.shared.windows {
             window.orderOut(nil)
         }
@@ -61,8 +82,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
            object: nil)
     }
 
-    @objc func menuView() {
-        let volumeView = NSHostingView(rootView: MainMenuView(
+    // MARK: - Panel content
+
+    private func buildPanelController() -> NSHostingController<MainMenuView> {
+        let root = MainMenuView(
             unmuteGain: $contentViewModel.unmuteGain,
             selectedDeviceID: $contentViewModel.selectedDeviceID,
             availableDevices: $contentViewModel.availableDevices,
@@ -72,40 +95,204 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             onDeviceSelected: { [weak self] deviceID in self?.updateSelectedDevice(to: deviceID) },
             onOutputDeviceSelected: { [weak self] deviceID in self?.updateSelectedOutputDevice(to: deviceID) },
             onOutputVolumeChange: { [weak self] newVolume in
-                guard let self else { return }
-                self.contentViewModel.setOutputVolume(for: self.contentViewModel.selectedOutputDeviceID, volume: newVolume)
+                // Nie wykonuj ponownie CoreAudio set – to już zrobił MainMenuView.
+                // Tylko zsynchronizuj stan ViewModelu, aby inne części UI wiedziały o zmianie.
+                self?.contentViewModel.outputVolume = newVolume
             },
-            onAppear: { [weak self ] in self?.openMenu() },
-            onDisappear: { [weak self ] in self?.closeMenu() }
-        ))
-        volumeView.translatesAutoresizingMaskIntoConstraints = false
+            onSliderEditingChanged: { [weak self] isEditing in
+                guard let self else { return }
+                if isEditing {
+                    self.stopAutoRefresh()
+                } else {
+                    self.startAutoRefresh()
+                }
+            },
+            onAppear: { [weak self] in self?.openMenu() },
+            onDisappear: { [weak self] in self?.closeMenu() }
+        )
 
-        let targetWidth = MainMenuView.preferredWidth
-        let tempView = NSView()
-        tempView.addSubview(volumeView)
-        volumeView.frame = NSRect(x: 0, y: 0, width: targetWidth, height: 10)
-        volumeView.layoutSubtreeIfNeeded()
-        let fittingSize = volumeView.fittingSize
-        volumeView.removeFromSuperview()
-
-        volumeView.frame = NSRect(x: 0, y: 0, width: targetWidth, height: fittingSize.height)
-        statusBarMenuItem.view = volumeView
+        let hosting = NSHostingController(rootView: root)
+        return hosting
     }
+
+    private func desiredPanelSize(for hosting: NSHostingController<MainMenuView>) -> NSSize {
+        hosting.view.layoutSubtreeIfNeeded()
+        let fitting = hosting.view.fittingSize
+        let width = MainMenuView.preferredWidth + panelInsets.left + panelInsets.right
+        let height = max(1, fitting.height) + panelInsets.top + panelInsets.bottom
+        return NSSize(width: width, height: height)
+    }
+
+    private func positionPanel(_ panel: NSPanel, size: NSSize) {
+        guard let button = statusBarItem.button,
+              let window = button.window else { return }
+
+        // Rect przycisku w koordynatach ekranu
+        let buttonRectInWindow = button.convert(button.bounds, to: nil)
+        let buttonRectOnScreen = window.convertToScreen(buttonRectInWindow)
+
+        // Domyślnie pod przyciskiem
+        var x = buttonRectOnScreen.midX - size.width / 2
+        var y = buttonRectOnScreen.minY - size.height - 6
+
+        // Dopasuj do ekranu
+        let screen = NSScreen.screens.first(where: { NSMaxX($0.visibleFrame) >= buttonRectOnScreen.midX && NSMinX($0.visibleFrame) <= buttonRectOnScreen.midX }) ?? NSScreen.main
+        let visible = screen?.visibleFrame ?? NSScreen.main!.visibleFrame
+
+        if x < visible.minX { x = visible.minX + 4 }
+        if x + size.width > visible.maxX { x = visible.maxX - size.width - 4 }
+        if y < visible.minY { y = buttonRectOnScreen.maxY + 6 } // jeśli nie ma miejsca pod spodem, pokaż nad
+
+        panel.setFrame(NSRect(x: x, y: y, width: size.width, height: size.height), display: true)
+    }
+
+    // MARK: - Show / Hide
+
+    private func showPanel() {
+        // Zbuduj kontroler i wylicz rozmiar
+        let hosting = buildPanelController()
+        let size = desiredPanelSize(for: hosting)
+
+        // Stwórz panel
+        let panel = MenuPanel(contentRect: NSRect(origin: .zero, size: size))
+        panel.delegate = self
+
+        // Utwórz tło jak menu systemowe
+        let effectView = NSVisualEffectView()
+        effectView.translatesAutoresizingMaskIntoConstraints = false
+        if #available(macOS 12.0, *) {
+            effectView.material = .menu
+        } else {
+            effectView.material = .popover
+        }
+        effectView.state = .active
+        effectView.blendingMode = .withinWindow
+        effectView.wantsLayer = true
+        effectView.layer?.cornerRadius = panelCornerRadius
+        effectView.layer?.masksToBounds = true
+
+        // Kontener VC, żeby utrzymać hosting przy życiu i nie nadpisać tła
+        let containerVC = NSViewController()
+        containerVC.view = effectView
+        containerVC.addChild(hosting)
+
+        // Osadź SwiftUI w tle z marginesami
+        let contentView = hosting.view
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+
+        panel.contentView = effectView
+        panel.contentViewController = containerVC
+
+        effectView.addSubview(contentView)
+        NSLayoutConstraint.activate([
+            contentView.leadingAnchor.constraint(equalTo: effectView.leadingAnchor, constant: panelInsets.left),
+            contentView.trailingAnchor.constraint(equalTo: effectView.trailingAnchor, constant: -panelInsets.right),
+            contentView.topAnchor.constraint(equalTo: effectView.topAnchor, constant: panelInsets.top),
+            contentView.bottomAnchor.constraint(equalTo: effectView.bottomAnchor, constant: -panelInsets.bottom),
+        ])
+
+        // Pozycjonuj przy status barze
+        positionPanel(panel, size: size)
+
+        // Pokaż i aktywuj appkę, daj fokus panelowi
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        panel.makeKeyAndOrderFront(nil)
+
+        // Monitory kliknięć poza panelem
+        installOutsideClickMonitors(for: panel)
+
+        self.panel = panel
+    }
+
+    private func closePanel() {
+        removeOutsideClickMonitors()
+        panel?.orderOut(nil)
+        panel = nil
+    }
+
+    // MARK: - Outside click monitors
+
+    private func installOutsideClickMonitors(for panel: NSPanel) {
+        removeOutsideClickMonitors()
+
+        outsideLocalMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self, weak panel] event in
+            guard let self, let panel else { return event }
+            if self.shouldClosePanel(on: event, panel: panel) {
+                self.closePanel()
+                return nil
+            }
+            return event
+        }
+
+        outsideGlobalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self, weak panel] event in
+            guard let self, let panel else { return }
+            if self.shouldClosePanel(on: event, panel: panel) {
+                self.closePanel()
+            }
+        }
+    }
+
+    // Bezpieczna wersja na Main Actor
+    private func removeOutsideClickMonitors() {
+        if let global = outsideGlobalMonitor {
+            NSEvent.removeMonitor(global)
+            outsideGlobalMonitor = nil
+        }
+        if let local = outsideLocalMonitor {
+            NSEvent.removeMonitor(local)
+            outsideLocalMonitor = nil
+        }
+    }
+
+    private func shouldClosePanel(on event: NSEvent, panel: NSPanel) -> Bool {
+        // Lokalizacja kursora w koord. ekranu
+        let location = NSEvent.mouseLocation
+        // Jeśli kliknięto wewnątrz panelu – nie zamykaj
+        if panel.frame.contains(location) { return false }
+        // Jeśli kliknięto w przycisk status bara – potraktuj jako toggle (zamknięcie nastąpi w handlerze)
+        if let button = statusBarItem.button,
+           let window = button.window {
+            let buttonRectInWindow = button.convert(button.bounds, to: nil)
+            let buttonRectOnScreen = window.convertToScreen(buttonRectInWindow)
+            if buttonRectOnScreen.contains(location) {
+                return false
+            }
+        }
+        return true
+    }
+
+    // MARK: - NSWindowDelegate
+
+    func windowDidResignKey(_ notification: Notification) {
+        // Opcjonalnie zamykaj, gdy traci fokus
+        // closePanel()
+    }
+
+    // MARK: - Status item actions
 
     @objc func statusBarButtonClicked(sender: NSStatusBarButton) {
         let event = NSApp.currentEvent!
         
         if event.type == .rightMouseUp {
-            statusBarItem.menu = statusBarMenu
-            statusBarItem.button?.performClick(nil)
+            // Prawy klik – toggle panel
+            if panel != nil {
+                closePanel()
+            } else {
+                showPanel()
+            }
         } else if event.type == .leftMouseUp {
             if contentViewModel.menuBehaviorOnClick == .mute {
-                statusBarItem.menu = nil
+                // Tryb „mute na klik”
+                closePanel()
                 contentViewModel.toggleMute(deviceID: contentViewModel.selectedDeviceID)
                 updateStatusBarImage()
             } else if contentViewModel.menuBehaviorOnClick == .menu {
-                statusBarItem.menu = statusBarMenu
-                statusBarItem.button?.performClick(nil)
+                // Tryb „pokaż panel”
+                if panel != nil {
+                    closePanel()
+                } else {
+                    showPanel()
+                }
             }
         }
     }
@@ -114,14 +301,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let isMuted = contentViewModel.isMuted
         statusBarItem.button?.image = isMuted ? micMute : micUnmute
     }
-    
-    @objc func menuDidClose(_ menu: NSMenu) {
-        statusBarItem.menu = nil
-    }
 
     @objc func showPreferences(_ sender: AnyObject?) {
-        statusBarMenu.cancelTracking()
-        statusBarItem.menu = nil
+        // Zamknij panel przed otwarciem preferencji
+        closePanel()
 
         if preferencesWindow == nil {
             preferencesWindow = PreferencesWindow()
@@ -152,6 +335,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
+    // MARK: - Device selection helpers
+
     func updateSelectedDevice(to deviceID: AudioDeviceID) {
         contentViewModel.selectedDeviceID = deviceID
         contentViewModel.loadInputGain(for: deviceID)
@@ -166,6 +351,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         contentViewModel.loadAudioDevices()
     }
     
+    // MARK: - Lifecycle hooks for menu content
+
     func openMenu() {
         contentViewModel.loadAudioDevices()
         contentViewModel.syncSelectedInputDeviceWithSystemDefault()
@@ -180,6 +367,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     func startAutoRefresh() {
+        // Na wszelki wypadek — nie dubluj timerów
+        stopAutoRefresh()
         refreshTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { @MainActor [weak self] in
@@ -193,17 +382,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         refreshTimer?.invalidate()
         refreshTimer = nil
     }
-    
-    func menuWillOpen(_ menu: NSMenu) {
-        menuView()
-    }
 
     func applicationWillTerminate(_ notification: Notification) {
+        // Porządki na Main Actor
+        removeOutsideClickMonitors()
         contentViewModel.tearDown()
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+        // deinit of a @MainActor class is nonisolated; do not call main-actor-isolated APIs here.
+        // Cleanup is performed in applicationWillTerminate(_:).
         print("AppDelegate deinitialized")
     }
 }

@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    "%lld%%" : {
+
+    },
     "About" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -71,6 +74,7 @@
 
     },
     "Available devices" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -137,9 +141,6 @@
     "Close" : {
 
     },
-    "Close settings window" : {
-
-    },
     "Disabled" : {
       "localizations" : {
         "pl" : {
@@ -159,6 +160,9 @@
           }
         }
       }
+    },
+    "Double-click to edit" : {
+
     },
     "Download update" : {
 
@@ -237,6 +241,9 @@
       }
     },
     "Input" : {
+
+    },
+    "Input devices" : {
 
     },
     "Install driver" : {
@@ -424,11 +431,7 @@
     "Micmute won't check automatically — you'll need to run manual checks." : {
 
     },
-    "Microphone volume after unmute" : {
-
-    },
     "Mute" : {
-      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -471,6 +474,12 @@
           }
         }
       }
+    },
+    "No input devices found" : {
+
+    },
+    "No output devices found" : {
+
     },
     "No release description provided." : {
 
@@ -529,10 +538,7 @@
     "Output" : {
 
     },
-    "Output device volume" : {
-
-    },
-    "Output volume" : {
+    "Output devices" : {
 
     },
     "Padding" : {
@@ -717,6 +723,18 @@
         }
       }
     },
+    "Selected input device" : {
+
+    },
+    "Selected output device" : {
+
+    },
+    "Set as active input device" : {
+
+    },
+    "Set as active output device" : {
+
+    },
     "Settings" : {
 
     },
@@ -813,7 +831,6 @@
       }
     },
     "Unmute" : {
-      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -935,6 +952,7 @@
       }
     },
     "Volume after unmute" : {
+      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {
@@ -943,9 +961,6 @@
           }
         }
       }
-    },
-    "Wait 2.5 seconds between interactions." : {
-
     },
     "What's New" : {
       "extractionState" : "stale",
@@ -957,6 +972,9 @@
           }
         }
       }
+    },
+    "Wybrano: %@" : {
+
     },
     "You'll be asked for administrator permission so we can place the driver in the HAL folder." : {
       "extractionState" : "stale",

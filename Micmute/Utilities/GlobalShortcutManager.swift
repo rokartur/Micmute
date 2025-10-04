@@ -47,7 +47,7 @@ final class GlobalShortcutManager {
     }
 
     private func installEventHandler() {
-        var eventTypeSpecs = [
+        let eventTypeSpecs = [
             EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
             EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyReleased))
         ]
