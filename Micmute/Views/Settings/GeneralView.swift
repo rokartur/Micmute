@@ -1,10 +1,3 @@
-//
-//  GeneralView.swift
-//  Micmute
-//
-//  Created by artur on 10/02/2025.
-//
-
 import SwiftUI
 
 struct GeneralView: View {

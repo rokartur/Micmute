@@ -1,10 +1,3 @@
-//
-//  MenuBarIcons.swift
-//  Micmute
-//
-//  Created by artur on 10/02/2025.
-//
-
 import SwiftUI
 
 func getMicMuteImage() -> NSImage {

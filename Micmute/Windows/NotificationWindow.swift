@@ -1,10 +1,3 @@
-//
-//  CustomNotificationView.swift
-//  Micmute
-//
-//  Created by Artur Rok on 01/06/2024.
-//
-
 import SwiftUI
 import Cocoa
 

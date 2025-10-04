@@ -1,10 +1,3 @@
-//
-//  Constants.swift
-//  Micmute
-//
-//  Created by Artur Rok on 31/05/2024.
-//
-
 import SwiftUI
 import CoreAudio
 

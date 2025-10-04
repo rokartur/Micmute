@@ -1,9 +1,7 @@
 import Foundation
 import MachO
 import os.log
-#if canImport(AppKit)
 import AppKit
-#endif
 
 @MainActor
 final class SettingsUpdaterModel: ObservableObject {

@@ -1,10 +1,3 @@
-//
-//  KeyboardShortcutSettingsView.swift
-//  Micmute
-//
-//  Created by Artur Rok on 31/05/2024.
-//
-
 import SwiftUI
 
 struct CustomSectionView<Content: View>: View {

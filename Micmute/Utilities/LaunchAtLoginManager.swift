@@ -1,10 +1,3 @@
-//
-//  LaunchAtLoginManager.swift
-//  Micmute
-//
-//  Created by Artur Rok on 11/02/2025.
-//
-
 import Foundation
 import ServiceManagement
 

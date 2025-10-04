@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  Micmute
-//
-//  Created by artur on 10/02/2025.
-//
-
 import SwiftUI
 import CoreAudio
 import CoreAudioKit

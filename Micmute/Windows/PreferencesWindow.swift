@@ -1,10 +1,3 @@
-//
-//  PreferencesWindow.swift
-//  Micmute
-//
-//  Created by artur on 09/02/2025.
-//
-
 import Foundation
 import AppKit
 
@@ -14,15 +7,28 @@ final class PreferencesWindow: NSWindow {
     init() {
         super.init(
             contentRect: NSRect(origin: .zero, size: Self.defaultSize),
-            styleMask: [.titled, .closable, .fullSizeContentView],
+            styleMask: [
+                .titled,
+                .closable,
+                .fullSizeContentView
+            ],
             backing: .buffered,
             defer: false
         )
 
+        titleVisibility = .hidden
+        titlebarAppearsTransparent = true
+        title = "Settings"
+        
+        contentMinSize = Self.defaultSize
+        contentMaxSize = Self.defaultSize
+
         isMovableByWindowBackground = true
         isReleasedWhenClosed = false
         isOpaque = false
-        center()
         tabbingMode = .disallowed
+        titlebarSeparatorStyle = .none
+
+        center()
     }
 }

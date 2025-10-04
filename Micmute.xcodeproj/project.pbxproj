@@ -27,7 +27,6 @@
 		75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */; };
 		75F1C0E12E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */; };
 		76B7D5A12F0A8BF500AB1234 /* UpdaterSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */; };
-		76E1FA092F0B145500AB5678 /* LiquidGlassModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1FA192F0B145500AB5678 /* LiquidGlassModifier.swift */; };
 		76F5F0112F0D000000AB0001 /* Shortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0012F0D000000AB0001 /* Shortcut.swift */; };
 		76F5F0122F0D000000AB0001 /* ShortcutPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0022F0D000000AB0001 /* ShortcutPreferences.swift */; };
 		76F5F0132F0D000000AB0001 /* ShortcutRecorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */; };
@@ -70,7 +69,6 @@
 		75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Release+Markdown.swift"; sourceTree = "<group>"; };
 		75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsUpdaterModel.swift; sourceTree = "<group>"; };
 		76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterSupport.swift; sourceTree = "<group>"; };
-		76E1FA192F0B145500AB5678 /* LiquidGlassModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassModifier.swift; sourceTree = "<group>"; };
 		76F0A0302F0C020000AB5678 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		76F0A0312F0C020000AB5678 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		76F0A0322F0C020000AB5678 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -140,14 +138,10 @@
 		427A869D2C0A0142000AFAD4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				75A0019B2E9166C200817E6C /* Settings */,
 				752628CA2D596C2400B54A0B /* MenuView.swift */,
 				427A86C02C0A52D1000AFAD4 /* CustomSectionView.swift */,
-				754C61892D5A3A9E00A418EA /* GeneralView.swift */,
 				76F5F0032F0D000000AB0001 /* ShortcutRecorderView.swift */,
-				42698EBC2C0BE7CB00648D4C /* NotificationView.swift */,
-				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
-				42016B342C0C3A69002135AB /* PreferencesView.swift */,
-				75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */,
 				75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */,
 			);
 			path = Views;
@@ -173,9 +167,20 @@
 				75F1C0D42E9A0C8700A1B2C3 /* Release+Markdown.swift */,
 				75F1C0E02E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift */,
 				76B7D5A02F0A8BF500AB1234 /* UpdaterSupport.swift */,
-				76E1FA192F0B145500AB5678 /* LiquidGlassModifier.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		75A0019B2E9166C200817E6C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				754C61892D5A3A9E00A418EA /* GeneralView.swift */,
+				42698EBC2C0BE7CB00648D4C /* NotificationView.swift */,
+				427A86C22C0A5358000AFAD4 /* AboutView.swift */,
+				42016B342C0C3A69002135AB /* PreferencesView.swift */,
+				75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		76F5F0052F0D000000AB0001 /* Products */ = {
@@ -281,7 +286,6 @@
 				75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */,
 				75F1C0D52E9A0C8700A1B2C3 /* Release+Markdown.swift in Sources */,
 				75F1C0E12E9A0C9000A1B2C3 /* SettingsUpdaterModel.swift in Sources */,
-				76E1FA092F0B145500AB5678 /* LiquidGlassModifier.swift in Sources */,
 				76B7D5A12F0A8BF500AB1234 /* UpdaterSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

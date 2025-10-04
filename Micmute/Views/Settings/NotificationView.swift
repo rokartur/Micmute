@@ -1,10 +1,3 @@
-//
-//  NotificationView.swift
-//  Micmute
-//
-//  Created by Artur Rok on 02/06/2024.
-//
-
 import SwiftUI
 
 struct RoundedBorder: ViewModifier {

@@ -2,17 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SUAutomaticallyUpdate</key>
-	<true/>
 	<key>SMLoginItemEnabled</key>
-	<true/>
-	<key>SUEnableDownloaderService</key>
 	<true/>
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Micmute needs microphone access to mute and monitor input levels.</string>
-	<key>NSSystemAdministrationUsageDescription</key>
-	<string>Micmute requires administrator permission to install its HAL audio plugin for per-app volume control.</string>
 </dict>
 </plist>

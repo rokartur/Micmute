@@ -1,16 +1,8 @@
-//
-//  SettingsView.swift
-//  Micmute
-//
-//  Created by Artur Rok on 02/06/2024.
-//
-
 import SwiftUI
 import AppKit
 
 enum PreferenceTab: String, CaseIterable {
     case general = "General"
-    // case perAppAudio = "Per-app Audio"
     case notification = "Notification"
     case updates = "Updates"
     case about = "About"
@@ -19,8 +11,6 @@ enum PreferenceTab: String, CaseIterable {
         switch self {
         case .general:
             return "gearshape"
-        // case .perAppAudio:
-        //     return "slider.horizontal.3"
         case .notification:
             return "bell.badge"
         case .updates:
