@@ -17,11 +17,6 @@ struct MainMenuView: View {
     @Binding var selectedOutputDeviceID: AudioDeviceID
     @Binding var outputVolume: CGFloat
 
-    @AppStorage(AppStorageEntry.menuInputSectionExpanded.rawValue) private var storedInputExpanded: Bool = true
-    @AppStorage(AppStorageEntry.menuOutputSectionExpanded.rawValue) private var storedOutputExpanded: Bool = true
-    @State private var isInputExpanded: Bool = true
-    @State private var isOutputExpanded: Bool = true
-
     // Lokalny, natychmiastowy stan zaznaczenia (naprawia opóźnienie przy Bindingach/AppStorage)
     @State private var localSelectedInputID: AudioDeviceID = kAudioObjectUnknown
     @State private var localSelectedOutputID: AudioDeviceID = kAudioObjectUnknown
@@ -82,6 +77,10 @@ struct MainMenuView: View {
     @State private var tempInputPercent: [AudioDeviceID: Int] = [:]
     @FocusState private var focusedInputPercentEditor: AudioDeviceID?
 
+    // Hover states for device selection buttons
+    @State private var hoveredInputButtons: Set<AudioDeviceID> = []
+    @State private var hoveredOutputButtons: Set<AudioDeviceID> = []
+
     private struct ListenerEntry {
         var address: AudioObjectPropertyAddress
         var block: AudioObjectPropertyListenerBlock
@@ -116,9 +115,6 @@ struct MainMenuView: View {
         self.onAppear = onAppear
         self.onDisappear = onDisappear
 
-        self._isInputExpanded = State(initialValue: storedInputExpanded)
-        self._isOutputExpanded = State(initialValue: storedOutputExpanded)
-
         // Inicjalizuj lokalne zaznaczenie na podstawie przekazanych Bindingów
         self._localSelectedInputID = State(initialValue: selectedDeviceID.wrappedValue)
         self._localSelectedOutputID = State(initialValue: selectedOutputDeviceID.wrappedValue)
@@ -128,6 +124,9 @@ struct MainMenuView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: interSectionSpacing) {
                 outputSection
+                
+                Divider()
+                
                 inputSection
 
                 Button {
@@ -135,9 +134,9 @@ struct MainMenuView: View {
                 } label: {
                     Label("Settings", systemImage: "gearshape")
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 12)
         }
         .hideScrollIndicators()
         .frame(width: Self.preferredWidth)
@@ -155,26 +154,6 @@ struct MainMenuView: View {
         }
         .onChange(of: availableOutputDevices) { _, _ in
             setupOutputDevicesStateAndListeners()
-        }
-        .onChange(of: isInputExpanded) { _, newValue in
-            if storedInputExpanded != newValue {
-                storedInputExpanded = newValue
-            }
-        }
-        .onChange(of: storedInputExpanded) { _, newValue in
-            if newValue != isInputExpanded {
-                isInputExpanded = newValue
-            }
-        }
-        .onChange(of: isOutputExpanded) { _, newValue in
-            if storedOutputExpanded != newValue {
-                storedOutputExpanded = newValue
-            }
-        }
-        .onChange(of: storedOutputExpanded) { _, newValue in
-            if newValue != isOutputExpanded {
-                isOutputExpanded = newValue
-            }
         }
         .onChange(of: outputVolume) { _, newValue in
             let current = perOutputVolume[selectedOutputDeviceID] ?? 1.0
@@ -205,31 +184,24 @@ struct MainMenuView: View {
 
     private var inputSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            DisclosureGroup(isExpanded: $isInputExpanded) {
-                VStack(alignment: .leading, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Input devices")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+            // Statyczny nagłówek sekcji (bez możliwość zwijania)
+            Label("Input", systemImage: "mic.fill")
+                .font(.system(size: 13, weight: .semibold))
 
-                        if inputDeviceEntries.isEmpty {
-                            Label("No input devices found", systemImage: "mic.slash.fill")
-                                .font(.system(size: 12))
-                                .foregroundStyle(.secondary)
-                        } else {
-                            VStack(spacing: 8) {
-                                ForEach(inputDeviceEntries) { entry in
-                                    inputDeviceRow(entry: entry)
-                                }
-                            }
+            VStack(alignment: .leading, spacing: 8) {
+                if inputDeviceEntries.isEmpty {
+                    Label("No input devices found", systemImage: "mic.slash.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                } else {
+                    VStack(spacing: 2) {
+                        ForEach(inputDeviceEntries) { entry in
+                            inputDeviceRow(entry: entry)
                         }
                     }
                 }
-                .padding(.top, 6)
-            } label: {
-                Label("Input", systemImage: "mic.fill")
-                    .font(.system(size: 13, weight: .semibold))
             }
+            .padding(.top, 2)
         }
     }
 
@@ -258,6 +230,7 @@ struct MainMenuView: View {
         }()
 
         let isSelected = localSelectedInputID == entry.id
+        let isHovered = hoveredInputButtons.contains(entry.id)
 
         return HStack(spacing: 8) {
             Button {
@@ -278,8 +251,21 @@ struct MainMenuView: View {
                         .foregroundStyle(isSelected ? .primary : .secondary)
                 }
                 .frame(width: hasTrailingControls ? 150 : nil, alignment: .leading)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(isHovered ? Color.primary.opacity(0.06) : Color.clear)
+                )
             }
             .buttonStyle(.plain)
+            .onHover { hovering in
+                if hovering {
+                    hoveredInputButtons.insert(entry.id)
+                } else {
+                    hoveredInputButtons.remove(entry.id)
+                }
+            }
             .help(isSelected ? "Selected input device" : "Set as active input device")
 
             if supportsVolume {
@@ -351,9 +337,12 @@ struct MainMenuView: View {
                     toggleInputMute(entry.id)
                 } label: {
                     if isMuted {
-                        Image(systemName: "speaker.slash.fill")
+                        Image(systemName: "mic.slash.fill")
+                            .foregroundColor(.red)
+                            .frame(width: 24, height: 24)
                     } else {
-                        Image(systemName: "speaker.wave.2.fill")
+                        Image(systemName: "mic.fill")
+                            .frame(width: 24, height: 24)
                     }
                 }
                 .help(isMuted ? "Unmute" : "Mute")
@@ -370,29 +359,22 @@ struct MainMenuView: View {
 
     private var outputSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            DisclosureGroup(isExpanded: $isOutputExpanded) {
-                VStack(alignment: .leading, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Output devices")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+            // Statyczny nagłówek sekcji (bez możliwość zwijania)
+            Label("Output", systemImage: "speaker.wave.2.fill")
+                .font(.system(size: 13, weight: .semibold))
 
-                        if outputDeviceEntries.isEmpty {
-                            Label("No output devices found", systemImage: "questionmark.circle")
-                                .font(.system(size: 12))
-                                .foregroundStyle(.secondary)
-                        } else {
-                            VStack(spacing: 8) {
-                                ForEach(outputDeviceEntries) { entry in
-                                    outputDeviceRow(entry: entry)
-                                }
-                            }
+            VStack(alignment: .leading, spacing: 8) {
+                if outputDeviceEntries.isEmpty {
+                    Label("No output devices found", systemImage: "questionmark.circle")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                } else {
+                    VStack(spacing: 2) {
+                        ForEach(outputDeviceEntries) { entry in
+                            outputDeviceRow(entry: entry)
                         }
                     }
                 }
-            } label: {
-                Label("Output", systemImage: "speaker.wave.2.fill")
-                    .font(.system(size: 13, weight: .semibold))
             }
         }
     }
@@ -422,6 +404,7 @@ struct MainMenuView: View {
         }()
 
         let isMuted = perOutputMute[entry.id] ?? false
+        let isHovered = hoveredOutputButtons.contains(entry.id)
 
         return HStack(spacing: 8) {
             Button {
@@ -442,8 +425,21 @@ struct MainMenuView: View {
                         .foregroundStyle(isSelected ? .primary : .secondary)
                 }
                 .frame(width: hasTrailingControls ? 150 : nil, alignment: .leading)
+                .padding(.vertical, 4)
+                .padding(.horizontal, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(isHovered ? Color.primary.opacity(0.06) : Color.clear)
+                )
             }
             .buttonStyle(.plain)
+            .onHover { hovering in
+                if hovering {
+                    hoveredOutputButtons.insert(entry.id)
+                } else {
+                    hoveredOutputButtons.remove(entry.id)
+                }
+            }
             .help(isSelected ? "Selected output device" : "Set as active output device")
 
             if supportsVolume {
@@ -516,8 +512,11 @@ struct MainMenuView: View {
                 } label: {
                     if isMuted {
                         Image(systemName: "speaker.slash.fill")
+                            .foregroundColor(.red)
+                            .frame(width: 24, height: 24)
                     } else {
                         Image(systemName: "speaker.wave.2.fill")
+                            .frame(width: 24, height: 24)
                     }
                 }
                 .help(isMuted ? "Unmute" : "Mute")

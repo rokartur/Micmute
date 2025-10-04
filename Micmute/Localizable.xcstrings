@@ -243,9 +243,6 @@
     "Input" : {
 
     },
-    "Input devices" : {
-
-    },
     "Install driver" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -536,9 +533,6 @@
       }
     },
     "Output" : {
-
-    },
-    "Output devices" : {
 
     },
     "Padding" : {

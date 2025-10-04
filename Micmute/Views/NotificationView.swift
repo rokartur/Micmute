@@ -84,6 +84,7 @@ struct NotificationView: View {
                                 .labelsHidden()
                                 .controlSize(.mini)
                                 .toggleStyle(.switch)
+                                .tint(.accentColor) // kolor akcentu systemu dla przełącznika
                                 .onChange(of: isNotificationEnabled) { _, _ in
                                     notifyConfigurationChanged()
                                 }
@@ -226,3 +227,4 @@ struct NotificationView: View {
         .padding()
     }
 }
+
