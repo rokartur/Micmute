@@ -588,9 +588,6 @@
         }
       }
     },
-    "Pulled straight from GitHub" : {
-
-    },
     "Push to talk" : {
       "localizations" : {
         "pl" : {
@@ -753,11 +750,7 @@
         }
       }
     },
-    "Showing last \\(releases.count) releases" : {
-
-    },
     "Showing last %lld releases" : {
-      "extractionState" : "stale",
       "localizations" : {
         "pl" : {
           "stringUnit" : {

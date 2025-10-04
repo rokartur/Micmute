@@ -36,7 +36,7 @@ final class SettingsUpdaterModel: ObservableObject {
         static let frequency = "com.rokartur.micmute.updater.frequency"
         static let nextCheck = "com.rokartur.micmute.updater.nextCheck"
         static let lastSeenRelease = "com.rokartur.micmute.updater.lastSeenRelease"
-    static let lastFetch = "com.rokartur.micmute.updater.lastFetch"
+        static let lastFetch = "com.rokartur.micmute.updater.lastFetch"
     }
 
     private enum FetchReason {
@@ -93,9 +93,9 @@ final class SettingsUpdaterModel: ObservableObject {
             return
         }
 
-    progressMessage = "Preparing download…"
-    progressValue = 0.1
-    restartRequired = false
+        progressMessage = "Preparing download…"
+        progressValue = 0.1
+        restartRequired = false
 
         Task { [weak self] in
             guard let self else { return }
@@ -152,8 +152,8 @@ final class SettingsUpdaterModel: ObservableObject {
         let appURL = Bundle.main.bundleURL
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.activates = true
-    configuration.createsNewApplicationInstance = true
-    configuration.promptsUserIfNeeded = false
+        configuration.createsNewApplicationInstance = true
+        configuration.promptsUserIfNeeded = false
 
         restartRequired = false
         progressMessage = "Restarting Micmute…"
@@ -290,9 +290,11 @@ final class SettingsUpdaterModel: ObservableObject {
     }
 
     private func handleFetchedReleases(_ releases: [GitHubReleaseDTO]) {
+        // GitHub zwraca w kolejności od najnowszych – filtrujemy i przycinamy do 3
         let visible = releases.filter { !$0.draft && !$0.prerelease }
-        self.releases = visible.map { SettingsRelease(dto: $0) }
-        let latest = visible.first
+        let top3 = Array(visible.prefix(3))
+        self.releases = top3.map { SettingsRelease(dto: $0) }
+        let latest = top3.first
         updateAvailable = determineUpdateAvailability(from: latest)
         updateAnnouncementState(using: latest)
 
@@ -551,10 +553,10 @@ final class SettingsUpdaterModel: ObservableObject {
 
         defer { try? fileManager.removeItem(at: scriptURL) }
 
-    let command = "/bin/sh \(shellEscapedPath(scriptURL.path))"
-    let appleScript = """
-    do shell script \"\(command)\" with administrator privileges
-    """
+        let command = "/bin/sh \(shellEscapedPath(scriptURL.path))"
+        let appleScript = """
+        do shell script \"\(command)\" with administrator privileges
+        """
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")

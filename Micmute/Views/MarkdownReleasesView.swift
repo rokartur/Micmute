@@ -5,21 +5,23 @@ struct MarkdownReleasesView: View {
     let releases: [SettingsRelease]
 
     var body: some View {
+        let releasesToShow = Array(releases.prefix(3))
+
         VStack(alignment: .leading, spacing: 12) {
-            if releases.isEmpty {
+            if releasesToShow.isEmpty {
                 emptyState
             } else {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 16) {
-                        ForEach(releases, id: \.id) { release in
-                            releaseView(for: release)
+                        ForEach(releasesToShow, id: \.id) { release in
+                            releaseView(for: release, releasesToShow: releasesToShow)
                         }
                     }
                     .padding(.vertical, 4)
                     .padding(.horizontal, 1)
                 }
 
-                Text("Showing last \\(releases.count) releases")
+                Text("Showing last \(releasesToShow.count) releases")
                     .font(.callout)
                     .opacity(0.55)
                     .padding(.horizontal, 2)
@@ -47,8 +49,8 @@ struct MarkdownReleasesView: View {
     }
 
     @ViewBuilder
-    private func releaseView(for release: SettingsRelease) -> some View {
-        let isLatest = release.id == releases.first?.id
+    private func releaseView(for release: SettingsRelease, releasesToShow: [SettingsRelease]) -> some View {
+        let isLatest = release.id == releasesToShow.first?.id
 
         VStack(alignment: .leading, spacing: 12) {
             header(for: release, isLatest: isLatest)

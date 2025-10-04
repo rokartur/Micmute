@@ -86,6 +86,16 @@ struct UpdatesView: View {
                         Text("v\(updatesModel.currentVersion)")
                             .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(.primary)
+
+                        if !updatesModel.releases.isEmpty {
+                            Button {
+                                activeSheet = .releaseNotes
+                            } label: {
+                                Text("Release notes")
+                                    .font(.system(size: 11, weight: .medium))
+                            }
+                            .buttonStyle(.link)
+                        }
                     }
                 }
             }
@@ -93,14 +103,16 @@ struct UpdatesView: View {
             HStack(spacing: 12) {
                 if let descriptor = currentOperationStatusDescriptor {
                     UpdateOperationStatusView(descriptor: descriptor)
-                        .frame(maxWidth: .infinity)
                 } else {
-                    Button(action: updatesModel.checkForUpdates) {
-                        Label("Check for updates", systemImage: "arrow.clockwise")
-                            .font(.system(size: 13, weight: .semibold))
-                            .labelStyle(.titleAndIcon)
+                    // Pokaż ręczne sprawdzanie tylko, gdy auto-check = Never
+                    if updatesModel.frequency == .never {
+                        Button(action: updatesModel.checkForUpdates) {
+                            Label("Check for updates", systemImage: "arrow.clockwise")
+                                .font(.system(size: 13, weight: .semibold))
+                                .labelStyle(.titleAndIcon)
+                        }
+                        .buttonStyle(UpdatesPrimaryButtonStyle()) // domyślny akcentowy kolor
                     }
-                    .buttonStyle(UpdatesPrimaryButtonStyle())
                 }
 
                 if currentOperationStatusDescriptor == nil && updatesModel.updateAvailable {
@@ -109,27 +121,7 @@ struct UpdatesView: View {
                             .font(.system(size: 13, weight: .semibold))
                             .labelStyle(.titleAndIcon)
                     }
-                    .buttonStyle(UpdatesSecondaryButtonStyle())
-                }
-
-                // if updatesModel.announcementAvailable {
-                //     Button {
-                //         activeSheet = .announcement
-                //     } label: {
-                //         Label("View announcement", systemImage: "sparkles")
-                //             .font(.system(size: 12, weight: .medium))
-                //     }
-                //     .buttonStyle(.link)
-                // }
-
-                if !updatesModel.releases.isEmpty {
-                    Button {
-                        activeSheet = .releaseNotes
-                    } label: {
-                        Label("Release notes", systemImage: "doc.richtext")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .buttonStyle(.link)
+                    .buttonStyle(UpdatesPrimaryButtonStyle(color: .orange))
                 }
             }
 
@@ -153,11 +145,10 @@ struct UpdatesView: View {
                         Spacer()
                         Button(action: updatesModel.restartApplication) {
                             Label("Restart", systemImage: "power")
-                                .font(.system(size: 12, weight: .semibold))
-                                .padding(.vertical, 4)
-                                .padding(.horizontal, 10)
+                                .font(.system(size: 13, weight: .semibold))
+                                .labelStyle(.titleAndIcon)
                         }
-                        .buttonStyle(.borderedProminent)
+                        .buttonStyle(UpdatesPrimaryButtonStyle(color: .blue))
                     }
                 }
                 .padding(14)
@@ -459,16 +450,18 @@ private struct ReleaseNotesSheet: View {
     let onDismiss: () -> Void
 
     var body: some View {
-        VStack(spacing: 16) {
-            header
+        let releasesToShow = Array(releases.prefix(3))
 
-            if releases.isEmpty {
+        VStack(spacing: 16) {
+            header(count: releasesToShow.count)
+
+            if releasesToShow.isEmpty {
                 emptyState
             } else {
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 18) {
-                            ForEach(releases, id: \.id) { release in
-                            releaseCard(for: release)
+                        ForEach(releasesToShow, id: \.id) { release in
+                            releaseCard(for: release, releasesToShow: releasesToShow)
                                 .padding(.horizontal, 2)
                         }
                     }
@@ -482,7 +475,7 @@ private struct ReleaseNotesSheet: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var header: some View {
+    private func header(count: Int) -> some View {
         HStack(alignment: .center, spacing: 10) {
             Image(systemName: "doc.richtext")
                 .font(.system(size: 20, weight: .semibold))
@@ -491,7 +484,7 @@ private struct ReleaseNotesSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Recent release notes")
                     .font(.headline)
-                Text("Pulled straight from GitHub")
+                Text("Showing last \(count) releases")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -517,9 +510,9 @@ private struct ReleaseNotesSheet: View {
     }
 
     @ViewBuilder
-    private func releaseCard(for release: SettingsRelease) -> some View {
+    private func releaseCard(for release: SettingsRelease, releasesToShow: [SettingsRelease]) -> some View {
         let title = release.tagName.isEmpty ? release.displayTitle : release.tagName
-        let isLatest = release.id == releases.first?.id
+        let isLatest = release.id == releasesToShow.first?.id
 
         VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .center, spacing: 8) {
@@ -564,39 +557,66 @@ private struct ReleaseNotesSheet: View {
 private struct UpdateOperationStatusView: View {
     let descriptor: UpdateOperationStatusDescriptor
 
+    // Nie skalujemy widoku, gdy pokazujemy spinner — to eliminuje błąd NSProgressIndicator.
+    private var scale: CGFloat {
+        if descriptor.showsSpinner { return 1.0 }
+        if let progress = descriptor.progress {
+            return 1.0 + CGFloat(min(max(progress, 0), 1)) * 0.04
+        }
+        return 1.0
+    }
+
     var body: some View {
-        HStack(alignment: .center, spacing: 12) {
+        let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
+        let base = descriptor.iconColor
+
+        HStack(alignment: .center, spacing: 10) {
             if descriptor.showsSpinner {
                 ProgressView()
                     .controlSize(.small)
+                    .tint(.white)
+                    .frame(width: 16, height: 16)
             } else if let icon = descriptor.iconName {
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(descriptor.iconColor)
-                    .frame(width: 18)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color.white)
+                    .frame(width: 16, height: 16)
             }
 
             Text(descriptor.title)
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(descriptor.textColor)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(Color.white)
 
             if let progress = descriptor.progress {
                 Text(progressFormatted(progress))
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(descriptor.iconColor)
+                    .foregroundStyle(Color.white.opacity(0.95))
             }
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 12)
+        .fixedSize(horizontal: true, vertical: false)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 14)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(descriptor.background)
+            ZStack {
+                shape.fill(
+                    LinearGradient(
+                        colors: [base.opacity(0.98), base.opacity(0.78)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                shape.stroke(Color.white.opacity(0.18), lineWidth: 0.6)
+                    .blur(radius: 0.4)
+                    .clipShape(shape)
+            }
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(descriptor.border, lineWidth: 1)
+            shape.stroke(base.opacity(0.55), lineWidth: 1)
         )
+        .shadow(color: base.opacity(0.45), radius: 6, y: 4)
+        // Animację skali włączamy tylko, gdy spinner nie jest aktywny.
+        .scaleEffect(scale)
+        .animation(descriptor.showsSpinner ? nil : .easeInOut(duration: 0.2), value: scale)
     }
 
     private func progressFormatted(_ value: Double) -> String {
@@ -662,7 +682,7 @@ private struct FrequencyOptionButtonStyle: ButtonStyle {
             .background(
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(.ultraThinMaterial)
+                        .fill(Color.white.opacity(0.03))
 
                     if isHovered {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -680,26 +700,22 @@ private struct FrequencyOptionButtonStyle: ButtonStyle {
                     }
                 }
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Color.white.opacity(isSelected ? 0.3 : 0.12), lineWidth: isSelected ? 1.1 : 1)
-            )
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 
 private struct UpdatesPrimaryButtonStyle: ButtonStyle {
+    var color: Color = .accentColor
     @Environment(\.isEnabled) private var isEnabled
 
     func makeBody(configuration: Configuration) -> some View {
         let shape = RoundedRectangle(cornerRadius: 12, style: .continuous)
-        let accent = Color.accentColor
         let activeOpacity: Double = configuration.isPressed ? 0.85 : 1.0
         let inactiveOpacity: Double = configuration.isPressed ? 0.65 : 0.78
         let gradientColors: [Color] = isEnabled
-            ? [accent.opacity(activeOpacity), accent.opacity(inactiveOpacity)]
-            : [accent.opacity(0.42), accent.opacity(0.32)]
+            ? [color.opacity(activeOpacity), color.opacity(inactiveOpacity)]
+            : [color.opacity(0.42), color.opacity(0.32)]
 
         return configuration.label
             .foregroundColor(isEnabled ? Color.white : Color.white.opacity(0.7))
@@ -717,9 +733,9 @@ private struct UpdatesPrimaryButtonStyle: ButtonStyle {
                 }
             )
             .overlay(
-                shape.stroke(accent.opacity(isEnabled ? 0.55 : 0.32), lineWidth: 1)
+                shape.stroke(color.opacity(isEnabled ? 0.55 : 0.32), lineWidth: 1)
             )
-            .shadow(color: accent.opacity(isEnabled ? 0.45 : 0.2), radius: configuration.isPressed ? 4 : 8, y: configuration.isPressed ? 2 : 6)
+            .shadow(color: color.opacity(isEnabled ? 0.45 : 0.2), radius: configuration.isPressed ? 4 : 8, y: configuration.isPressed ? 2 : 6)
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
     }
