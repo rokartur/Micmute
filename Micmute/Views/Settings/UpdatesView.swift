@@ -28,8 +28,8 @@ struct UpdatesView: View {
                 }
 
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .padding(.horizontal)
         }
         .frame(maxWidth: .infinity)
         .onAppear {

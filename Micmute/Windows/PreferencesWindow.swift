@@ -2,7 +2,7 @@ import Foundation
 import AppKit
 
 final class PreferencesWindow: NSWindow {
-    static let defaultSize = NSSize(width: 860, height: 605)
+    static let defaultSize = NSSize(width: 830, height: 630)
 
     init() {
         super.init(
@@ -18,7 +18,7 @@ final class PreferencesWindow: NSWindow {
 
         titleVisibility = .hidden
         titlebarAppearsTransparent = true
-        title = "Settings"
+        title = ""
         
         contentMinSize = Self.defaultSize
         contentMaxSize = Self.defaultSize

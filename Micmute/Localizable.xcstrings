@@ -777,6 +777,9 @@
         }
       }
     },
+    "Sidebar" : {
+
+    },
     "Small" : {
       "localizations" : {
         "pl" : {
@@ -966,9 +969,6 @@
           }
         }
       }
-    },
-    "Wybrano: %@" : {
-
     },
     "You'll be asked for administrator permission so we can place the driver in the HAL folder." : {
       "extractionState" : "stale",

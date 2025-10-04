@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import SwiftUIIntrospect
 
 enum PreferenceTab: String, CaseIterable {
     case general = "General"
@@ -21,29 +22,11 @@ enum PreferenceTab: String, CaseIterable {
     }
 }
 
-struct SidebarItem: Identifiable, Hashable {
-    let id = UUID()
-    let title: String
-    let systemImage: String
-}
-
-struct DetailView: View {
-    let item: SidebarItem
-
-    var body: some View {
-        VStack {
-            Text("Wybrano: \(item.title)")
-                .font(.largeTitle)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
 struct PreferencesView: View {
     @EnvironmentObject private var updatesModel: SettingsUpdaterModel
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedTab: PreferenceTab = .general
-
+    
     private let sidebarWidth: CGFloat = 216
     private let contentMinWidth: CGFloat = 520
     private let contentMaxWidth: CGFloat = 640
@@ -52,31 +35,40 @@ struct PreferencesView: View {
     private let chromeTopInset: CGFloat = 30
     private let chromeHorizontalInset: CGFloat = 26
     private let chromeBottomInset: CGFloat = 24
-
-    @State private var selection: SidebarItem? = SidebarItem(title: "Home", systemImage: "house")
-    let sidebarItems: [SidebarItem] = [
-        SidebarItem(title: "Home", systemImage: "house"),
-        SidebarItem(title: "Settings", systemImage: "gear"),
-        SidebarItem(title: "Profile", systemImage: "person.crop.circle")
-    ]
     
     var body: some View {
-        NavigationSplitView {
+        NavigationSplitView(columnVisibility: .constant(.all)) {
             sidebar
                 .frame(width: sidebarWidth)
-                .frame(maxHeight: .infinity, alignment: .top)
-                // Zablokowanie szerokości sidebara (min = ideal = max)
                 .navigationSplitViewColumnWidth(min: sidebarWidth, ideal: sidebarWidth, max: sidebarWidth)
+                .navigationTitle("Sidebar")
+                .toolbarRole(.automatic)
+                .toolbar {
+                    ToolbarItemGroup(placement: .navigation) {
+                        Text("")
+                    }
+                }
+                .toolbar(removing: .sidebarToggle)
         } detail: {
             contentArea
                 .frame(minWidth: contentMinWidth, maxWidth: contentMaxWidth)
                 .frame(maxHeight: .infinity, alignment: .top)
         }
+        .introspect(.navigationSplitView, on: .macOS(.v14, .v15, .v26)) { splitView in
+            guard let svc = splitView.delegate as? NSSplitViewController,
+                  let sidebarItem = svc.splitViewItems.first else { return }
+            sidebarItem.minimumThickness = sidebarWidth
+            sidebarItem.maximumThickness = sidebarWidth
+            sidebarItem.canCollapse = false
+            if #available(macOS 14.0, *) {
+                sidebarItem.canCollapseFromWindowResize = false
+            }
+        }
     }
 
     private var sidebar: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading) {
+            VStack(alignment: .leading) {
                 ForEach(PreferenceTab.allCases, id: \.self) { tab in
                     SettingsSidebarButton(
                         tab: tab,
@@ -84,12 +76,12 @@ struct PreferencesView: View {
                         action: { selectedTab = tab }
                     )
                 }
+                .padding(.horizontal, 10)
             }
-            .padding(.top, 6)
 
             Spacer(minLength: 12)
 
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading) {
                 Text("Version")
                     .font(.caption2)
                     .foregroundColor(.secondary)
@@ -108,18 +100,19 @@ struct PreferencesView: View {
             .padding(.bottom, 12)
             .padding(.horizontal, 6)
         }
-    .padding(.vertical, 18)
-    .padding(.horizontal, 14)
     }
 
     private var contentArea: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 contentView
+                    .id(selectedTab)
+                    .transition(.opacity)
+                    .modifier(ContentOpacityTransitionIfAvailable())
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
         }
+        .animation(.easeInOut(duration: 0.22), value: selectedTab)
     }
 
     @ViewBuilder
@@ -127,8 +120,6 @@ struct PreferencesView: View {
         switch selectedTab {
         case .general:
             GeneralView()
-//        case .perAppAudio:
-//            PerAppAudioView()
         case .notification:
             NotificationView()
         case .updates:
@@ -213,81 +204,82 @@ private extension PreferencesView {
     }
 }
 
+struct NonDraggableView<Content: View>: NSViewRepresentable {
+    let content: Content
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    func makeNSView(context: Context) -> NSHostingView<AnyView> {
+        NonDraggableHostingView(rootView: AnyView(content))
+    }
+
+    func updateNSView(_ nsView: NSHostingView<AnyView>, context: Context) {
+        nsView.rootView = AnyView(content)
+    }
+
+    private final class NonDraggableHostingView: NSHostingView<AnyView> {
+        override var mouseDownCanMoveWindow: Bool { false }
+    }
+}
+
 private struct SettingsSidebarButton: View {
     let tab: PreferenceTab
     let isSelected: Bool
     let action: () -> Void
 
-    @State private var isHovered = false
-
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: tab.icon)
-                    .font(.system(size: 16, weight: .semibold))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
-                    .frame(width: 20)
+        NonDraggableView {
+            Button(action: action) {
+                HStack(spacing: 12) {
+                    Image(systemName: tab.icon)
+                        .font(.system(size: 16, weight: .medium))
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(isSelected ? Color.accentColor : Color.secondary)
+                        .frame(width: 20)
+                        .animation(nil, value: isSelected)
 
-                Text(tab.rawValue)
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-
-                Spacer(minLength: 8)
-
-                if isSelected {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(Color.accentColor)
-                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                    Text(tab.rawValue)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .animation(nil, value: isSelected)
                 }
             }
-            .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(SettingsSidebarButtonStyle(isSelected: isSelected, isHovered: isHovered))
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.12)) {
-                isHovered = hovering
-            }
+            .buttonStyle(SettingsSidebarButtonStyle(isSelected: isSelected))
         }
     }
 }
 
 private struct SettingsSidebarButtonStyle: ButtonStyle {
     var isSelected: Bool
-    var isHovered: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 10)
             .padding(.horizontal, 12)
             .background(
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(.ultraThinMaterial)
-
-                    if isHovered {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.white.opacity(0.08))
-                    }
-
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.accentColor.opacity(0.2))
-                    }
-
-                    if configuration.isPressed {
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.white.opacity(0.14))
-                    }
-                }
-            )
-            .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Color.white.opacity(isSelected ? 0.3 : 0.12), lineWidth: isSelected ? 1.1 : 1)
+                    .fill(Color.accentColor)
+                    .opacity(isSelected ? 0.20 : 0)
             )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .animation(.easeInOut(duration: 0.12), value: configuration.isPressed)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.white)
+                    .opacity(configuration.isPressed ? 0.10 : 0)
+            )
+            .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+
+private struct ContentOpacityTransitionIfAvailable: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 14.0, *) {
+            content.contentTransition(.opacity)
+        } else {
+            content
+        }
     }
 }

@@ -66,7 +66,7 @@ struct NotificationView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack {
             CustomSectionView(title: "Behavior") {
                 Grid(horizontalSpacing: 12, verticalSpacing: 12) {
                     GridRow {
@@ -216,8 +216,8 @@ struct NotificationView: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .padding(.horizontal)
     }
 }
 

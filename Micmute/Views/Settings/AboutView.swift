@@ -76,7 +76,8 @@ struct AboutView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .padding(.horizontal)
     }
 }
 

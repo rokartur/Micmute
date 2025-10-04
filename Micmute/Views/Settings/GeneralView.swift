@@ -128,6 +128,6 @@ struct GeneralView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
-        .padding()
+        .padding(.horizontal)
     }
 }

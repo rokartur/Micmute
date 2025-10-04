@@ -24,7 +24,6 @@ private final class MenuPanel: NSPanel {
         hidesOnDeactivate = false
         titleVisibility = .hidden
         titlebarAppearsTransparent = true
-        backgroundColor = .clear
     }
 }
 

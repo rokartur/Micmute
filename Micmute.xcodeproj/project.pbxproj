@@ -21,6 +21,10 @@
 		7535635C2D5A9F55003391A1 /* MenuBarIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535635B2D5A9F3D003391A1 /* MenuBarIcons.swift */; };
 		754C61882D5A378500A418EA /* PreferencesWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61872D5A377F00A418EA /* PreferencesWindow.swift */; };
 		754C618A2D5A3AA000A418EA /* GeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754C61892D5A3A9E00A418EA /* GeneralView.swift */; };
+		75A0019E2E91708500817E6C /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 75A0019D2E91708500817E6C /* SwiftUIIntrospect */; };
+		75A001A52E91730200817E6C /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 75A001A42E91730200817E6C /* SwiftUIIntrospect */; };
+		75A001A82E91732D00817E6C /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 75A001A72E91732D00817E6C /* SwiftUIIntrospect */; };
+		75A001AB2E91740500817E6C /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 75A001AA2E91740500817E6C /* SwiftUIIntrospect */; };
 		75A98F022D5B04DC00246E68 /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A98F012D5B04D600246E68 /* LaunchAtLoginManager.swift */; };
 		75D8A5A32E8C3C48004E13A3 /* UpdatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D8A5A22E8C3C48004E13A3 /* UpdatesView.swift */; };
 		75F1C0D12E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F1C0D02E9A0C5D00A1B2C3 /* MarkdownReleasesView.swift */; };
@@ -84,6 +88,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75A0019E2E91708500817E6C /* SwiftUIIntrospect in Frameworks */,
+				75A001A82E91732D00817E6C /* SwiftUIIntrospect in Frameworks */,
+				75A001A52E91730200817E6C /* SwiftUIIntrospect in Frameworks */,
+				75A001AB2E91740500817E6C /* SwiftUIIntrospect in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,6 +246,7 @@
 			);
 			mainGroup = 421B6AF02B37504000946AF4;
 			packageReferences = (
+				75A001A92E91740500817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 			);
 			productRefGroup = 76F5F0052F0D000000AB0001 /* Products */;
 			projectDirPath = "";
@@ -540,6 +549,64 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		75A0019C2E91708500817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 26.0.0;
+			};
+		};
+		75A001A32E91730200817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 26.0.0;
+			};
+		};
+		75A001A62E91732D00817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 26.0.0;
+			};
+		};
+		75A001A92E91740500817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 26.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		75A0019D2E91708500817E6C /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75A0019C2E91708500817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		75A001A42E91730200817E6C /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75A001A32E91730200817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		75A001A72E91732D00817E6C /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75A001A62E91732D00817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+		75A001AA2E91740500817E6C /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75A001A92E91740500817E6C /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 421B6AF12B37504000946AF4 /* Project object */;
 }
