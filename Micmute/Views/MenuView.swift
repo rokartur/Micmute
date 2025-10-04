@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreAudio
+import Carbon.HIToolbox
 
 @MainActor
 struct MainMenuView: View {
@@ -194,7 +195,7 @@ struct MainMenuView: View {
                         .font(.system(size: 12))
                         .foregroundStyle(.secondary)
                 } else {
-                    VStack(spacing: 2) {
+                    VStack(spacing: 8) {
                         ForEach(inputDeviceEntries) { entry in
                             inputDeviceRow(entry: entry)
                         }
@@ -232,12 +233,11 @@ struct MainMenuView: View {
         let isSelected = localSelectedInputID == entry.id
         let isHovered = hoveredInputButtons.contains(entry.id)
 
-        return HStack(spacing: 8) {
+        return VStack(alignment: .leading) {
+            // Górny rząd: przycisk wyboru + nazwa
             Button {
                 if localSelectedInputID != entry.id {
-                    // Najpierw natychmiastowa aktualizacja UI
                     localSelectedInputID = entry.id
-                    // Aktualizacja Bindingu + callback do logiki wyżej
                     selectedDeviceID = entry.id
                     onDeviceSelected(entry.id)
                 }
@@ -249,109 +249,129 @@ struct MainMenuView: View {
                         .font(.system(size: 12, weight: .medium))
                         .lineLimit(1)
                         .foregroundStyle(isSelected ? .primary : .secondary)
+                    Spacer(minLength: 0)
                 }
-                .frame(width: hasTrailingControls ? 150 : nil, alignment: .leading)
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
                 .padding(.horizontal, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(isHovered ? Color.primary.opacity(0.06) : Color.clear)
-                )
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .onHover { hovering in
-                if hovering {
-                    hoveredInputButtons.insert(entry.id)
-                } else {
-                    hoveredInputButtons.remove(entry.id)
-                }
-            }
             .help(isSelected ? "Selected input device" : "Set as active input device")
 
-            if supportsVolume {
-                Slider(value: volumeBinding, in: 0...1, onEditingChanged: { isEditing in
-                    onSliderEditingChanged(isEditing)
-                    if isEditing {
-                        draggingInputDevices.insert(entry.id)
-                    } else {
-                        draggingInputDevices.remove(entry.id)
-                        if let final = perInputVolume[entry.id] {
-                            debouncedSetInputVolume(entry.id, final, isEditing: false)
-                        }
-                    }
-                })
-                .controlSize(.small)
-
-                Group {
-                    if editingInputDevicePercent == entry.id {
-                        let textBinding = Binding<String>(
-                            get: {
-                                let value = tempInputPercent[entry.id] ?? currentPercent
-                                return String(value)
-                            },
-                            set: { newValue in
-                                let digits = newValue.filter { $0.isNumber }
-                                let limited = String(digits.prefix(3))
-                                let intVal = Int(limited) ?? 0
-                                tempInputPercent[entry.id] = max(0, min(100, intVal))
+            // Dolny rząd: suwak + procent + mute (jeśli dostępne)
+            if hasTrailingControls {
+                HStack(spacing: 8) {
+                    if supportsVolume {
+                        Slider(value: volumeBinding, in: 0...1, onEditingChanged: { isEditing in
+                            onSliderEditingChanged(isEditing)
+                            if isEditing {
+                                draggingInputDevices.insert(entry.id)
+                            } else {
+                                draggingInputDevices.remove(entry.id)
+                                if let final = perInputVolume[entry.id] {
+                                    debouncedSetInputVolume(entry.id, final, isEditing: false)
+                                }
                             }
-                        )
-
-                        TextField("", text: textBinding, onCommit: {
-                            commitInputPercent(for: entry.id)
                         })
-                        .textFieldStyle(.roundedBorder)
                         .controlSize(.small)
-                        .frame(width: 42, alignment: .trailing)
-                        .multilineTextAlignment(.trailing)
-                        .monospacedDigit()
-                        .focused($focusedInputPercentEditor, equals: entry.id)
-                        .onAppear {
-                            DispatchQueue.main.async {
-                                focusedInputPercentEditor = entry.id
+                        .frame(minWidth: 75, maxWidth: .infinity)
+
+                        Group {
+                            if editingInputDevicePercent == entry.id {
+                                let textBinding = Binding<String>(
+                                    get: {
+                                        let value = tempInputPercent[entry.id] ?? currentPercent
+                                        return String(value)
+                                    },
+                                    set: { newValue in
+                                        let digits = newValue.filter { $0.isNumber }
+                                        let limited = String(digits.prefix(3))
+                                        let intVal = Int(limited) ?? 0
+                                        tempInputPercent[entry.id] = max(0, min(100, intVal))
+                                    }
+                                )
+
+                                TextField("", text: textBinding, onCommit: {
+                                    commitInputPercent(for: entry.id)
+                                })
+                                .textFieldStyle(.roundedBorder)
+                                .controlSize(.small)
+                                .frame(width: 42, alignment: .trailing)
+                                .multilineTextAlignment(.trailing)
+                                .monospacedDigit()
+                                .focused($focusedInputPercentEditor, equals: entry.id)
+                                .onAppear {
+                                    DispatchQueue.main.async {
+                                        focusedInputPercentEditor = entry.id
+                                    }
+                                }
+                                .onChange(of: focusedInputPercentEditor) { _, newFocus in
+                                    if editingInputDevicePercent == entry.id, newFocus != entry.id {
+                                        commitInputPercent(for: entry.id)
+                                    }
+                                }
+                                .background(
+                                    EscapeKeyHandler {
+                                        commitInputPercent(for: entry.id)
+                                    }
+                                )
+                            } else {
+                                Text("\(currentPercent)%")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .frame(width: 42, alignment: .trailing)
+                                    .onTapGesture(count: 2) {
+                                        editingInputDevicePercent = entry.id
+                                        tempInputPercent[entry.id] = currentPercent
+                                        focusedInputPercentEditor = entry.id
+                                    }
+                                    .help("Double-click to edit")
                             }
                         }
-                        .onChange(of: focusedInputPercentEditor) { _, newFocus in
-                            if editingInputDevicePercent == entry.id, newFocus != entry.id {
-                                commitInputPercent(for: entry.id)
+                    }
+
+                    if supportsMute {
+                        Button {
+                            toggleInputMute(entry.id)
+                        } label: {
+                            if isMuted {
+                                Image(systemName: "mic.slash.fill")
+                                    .foregroundColor(.red)
+                                    .frame(width: 24, height: 24)
+                            } else {
+                                Image(systemName: "mic.fill")
+                                    .frame(width: 24, height: 24)
                             }
                         }
-                    } else {
-                        Text("\(currentPercent)%")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
-                            .frame(width: 42, alignment: .trailing)
-                            .onTapGesture(count: 2) {
-                                editingInputDevicePercent = entry.id
-                                tempInputPercent[entry.id] = currentPercent
-                                focusedInputPercentEditor = entry.id
-                            }
-                            .help("Double-click to edit")
+                        .help(isMuted ? "Unmute" : "Mute")
+                        .buttonStyle(.borderless)
+                        .controlSize(.small)
                     }
                 }
+                .padding(.horizontal, 6)
+                .padding(.bottom, 6)
             }
-
-            if supportsMute {
-                Button {
-                    toggleInputMute(entry.id)
-                } label: {
-                    if isMuted {
-                        Image(systemName: "mic.slash.fill")
-                            .foregroundColor(.red)
-                            .frame(width: 24, height: 24)
-                    } else {
-                        Image(systemName: "mic.fill")
-                            .frame(width: 24, height: 24)
-                    }
-                }
-                .help(isMuted ? "Unmute" : "Mute")
-                .buttonStyle(.borderless)
-                .controlSize(.small)
+        }
+        .padding(.top, 2)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(isHovered ? Color.primary.opacity(0.06) : Color.clear)
+        )
+        .contentShape(Rectangle())
+        .onHover { hovering in
+            if hovering {
+                hoveredInputButtons.insert(entry.id)
+            } else {
+                hoveredInputButtons.remove(entry.id)
             }
-
-            if !hasTrailingControls {
-                Spacer(minLength: 0)
+        }
+        // Wybór urządzenia po kliknięciu w dowolnym miejscu wiersza
+        .onTapGesture {
+            if localSelectedInputID != entry.id {
+                localSelectedInputID = entry.id
+                selectedDeviceID = entry.id
+                onDeviceSelected(entry.id)
             }
         }
         .opacity(isSelected ? 1.0 : 0.7)
@@ -369,7 +389,7 @@ struct MainMenuView: View {
                         .font(.system(size: 12))
                         .foregroundStyle(.secondary)
                 } else {
-                    VStack(spacing: 2) {
+                    VStack(spacing: 8) {
                         ForEach(outputDeviceEntries) { entry in
                             outputDeviceRow(entry: entry)
                         }
@@ -406,12 +426,11 @@ struct MainMenuView: View {
         let isMuted = perOutputMute[entry.id] ?? false
         let isHovered = hoveredOutputButtons.contains(entry.id)
 
-        return HStack(spacing: 8) {
+        return VStack(alignment: .leading, spacing: 6) {
+            // Górny rząd: przycisk wyboru + nazwa
             Button {
                 if localSelectedOutputID != entry.id {
-                    // Najpierw natychmiastowa aktualizacja UI
                     localSelectedOutputID = entry.id
-                    // Aktualizacja Bindingu + callback do logiki wyżej
                     selectedOutputDeviceID = entry.id
                     onOutputDeviceSelected(entry.id)
                 }
@@ -423,109 +442,129 @@ struct MainMenuView: View {
                         .font(.system(size: 12, weight: .medium))
                         .lineLimit(1)
                         .foregroundStyle(isSelected ? .primary : .secondary)
+                    Spacer(minLength: 0)
                 }
-                .frame(width: hasTrailingControls ? 150 : nil, alignment: .leading)
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
                 .padding(.horizontal, 6)
-                .background(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(isHovered ? Color.primary.opacity(0.06) : Color.clear)
-                )
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .onHover { hovering in
-                if hovering {
-                    hoveredOutputButtons.insert(entry.id)
-                } else {
-                    hoveredOutputButtons.remove(entry.id)
-                }
-            }
             .help(isSelected ? "Selected output device" : "Set as active output device")
 
-            if supportsVolume {
-                Slider(value: volumeBinding, in: 0...1, onEditingChanged: { isEditing in
-                    onSliderEditingChanged(isEditing)
-                    if isEditing {
-                        draggingOutputDevices.insert(entry.id)
-                    } else {
-                        draggingOutputDevices.remove(entry.id)
-                        if let final = perOutputVolume[entry.id] {
-                            debouncedSetOutputVolume(entry.id, final, isEditing: false)
-                        }
-                    }
-                })
-                .controlSize(.small)
-
-                Group {
-                    if editingOutputDevicePercent == entry.id {
-                        let textBinding = Binding<String>(
-                            get: {
-                                let value = tempOutputPercent[entry.id] ?? currentPercent
-                                return String(value)
-                            },
-                            set: { newValue in
-                                let digits = newValue.filter { $0.isNumber }
-                                let limited = String(digits.prefix(3))
-                                let intVal = Int(limited) ?? 0
-                                tempOutputPercent[entry.id] = max(0, min(100, intVal))
+            // Dolny rząd: suwak + procent + mute (jeśli dostępne)
+            if hasTrailingControls {
+                HStack(spacing: 8) {
+                    if supportsVolume {
+                        Slider(value: volumeBinding, in: 0...1, onEditingChanged: { isEditing in
+                            onSliderEditingChanged(isEditing)
+                            if isEditing {
+                                draggingOutputDevices.insert(entry.id)
+                            } else {
+                                draggingOutputDevices.remove(entry.id)
+                                if let final = perOutputVolume[entry.id] {
+                                    debouncedSetOutputVolume(entry.id, final, isEditing: false)
+                                }
                             }
-                        )
-
-                        TextField("", text: textBinding, onCommit: {
-                            commitOutputPercent(for: entry.id)
                         })
-                        .textFieldStyle(.roundedBorder)
                         .controlSize(.small)
-                        .frame(width: 42, alignment: .trailing)
-                        .multilineTextAlignment(.trailing)
-                        .monospacedDigit()
-                        .focused($focusedOutputPercentEditor, equals: entry.id)
-                        .onAppear {
-                            DispatchQueue.main.async {
-                                focusedOutputPercentEditor = entry.id
+                        .frame(minWidth: 75, maxWidth: .infinity)
+
+                        Group {
+                            if editingOutputDevicePercent == entry.id {
+                                let textBinding = Binding<String>(
+                                    get: {
+                                        let value = tempOutputPercent[entry.id] ?? currentPercent
+                                        return String(value)
+                                    },
+                                    set: { newValue in
+                                        let digits = newValue.filter { $0.isNumber }
+                                        let limited = String(digits.prefix(3))
+                                        let intVal = Int(limited) ?? 0
+                                        tempOutputPercent[entry.id] = max(0, min(100, intVal))
+                                    }
+                                )
+
+                                TextField("", text: textBinding, onCommit: {
+                                    commitOutputPercent(for: entry.id)
+                                })
+                                .textFieldStyle(.roundedBorder)
+                                .controlSize(.small)
+                                .frame(width: 42, alignment: .trailing)
+                                .multilineTextAlignment(.trailing)
+                                .monospacedDigit()
+                                .focused($focusedOutputPercentEditor, equals: entry.id)
+                                .onAppear {
+                                    DispatchQueue.main.async {
+                                        focusedOutputPercentEditor = entry.id
+                                    }
+                                }
+                                .onChange(of: focusedOutputPercentEditor) { _, newFocus in
+                                    if editingOutputDevicePercent == entry.id, newFocus != entry.id {
+                                        commitOutputPercent(for: entry.id)
+                                    }
+                                }
+                                .background(
+                                    EscapeKeyHandler {
+                                        commitOutputPercent(for: entry.id)
+                                    }
+                                )
+                            } else {
+                                Text("\(currentPercent)%")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(.secondary)
+                                    .monospacedDigit()
+                                    .frame(width: 42, alignment: .trailing)
+                                    .onTapGesture(count: 2) {
+                                        editingOutputDevicePercent = entry.id
+                                        tempOutputPercent[entry.id] = currentPercent
+                                        focusedOutputPercentEditor = entry.id
+                                    }
+                                    .help("Double-click to edit")
                             }
                         }
-                        .onChange(of: focusedOutputPercentEditor) { _, newFocus in
-                            if editingOutputDevicePercent == entry.id, newFocus != entry.id {
-                                commitOutputPercent(for: entry.id)
+                    }
+
+                    if supportsMute {
+                        Button {
+                            toggleOutputMute(entry.id)
+                        } label: {
+                            if isMuted {
+                                Image(systemName: "speaker.slash.fill")
+                                    .foregroundColor(.red)
+                                    .frame(width: 24, height: 24)
+                            } else {
+                                Image(systemName: "speaker.wave.2.fill")
+                                    .frame(width: 24, height: 24)
                             }
                         }
-                    } else {
-                        Text("\(currentPercent)%")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .monospacedDigit()
-                            .frame(width: 42, alignment: .trailing)
-                            .onTapGesture(count: 2) {
-                                editingOutputDevicePercent = entry.id
-                                tempOutputPercent[entry.id] = currentPercent
-                                focusedOutputPercentEditor = entry.id
-                            }
-                            .help("Double-click to edit")
+                        .help(isMuted ? "Unmute" : "Mute")
+                        .buttonStyle(.borderless)
+                        .controlSize(.small)
                     }
                 }
+                .padding(.horizontal, 6)
+                .padding(.bottom, 6)
             }
-
-            if supportsMute {
-                Button {
-                    toggleOutputMute(entry.id)
-                } label: {
-                    if isMuted {
-                        Image(systemName: "speaker.slash.fill")
-                            .foregroundColor(.red)
-                            .frame(width: 24, height: 24)
-                    } else {
-                        Image(systemName: "speaker.wave.2.fill")
-                            .frame(width: 24, height: 24)
-                    }
-                }
-                .help(isMuted ? "Unmute" : "Mute")
-                .buttonStyle(.borderless)
-                .controlSize(.small)
+        }
+        .padding(.top, 2)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(isHovered ? Color.primary.opacity(0.06) : Color.clear)
+        )
+        .contentShape(Rectangle())
+        .onHover { hovering in
+            if hovering {
+                hoveredOutputButtons.insert(entry.id)
+            } else {
+                hoveredOutputButtons.remove(entry.id)
             }
-
-            if !hasTrailingControls {
-                Spacer(minLength: 0)
+        }
+        // Wybór urządzenia po kliknięciu w dowolnym miejscu wiersza
+        .onTapGesture {
+            if localSelectedOutputID != entry.id {
+                localSelectedOutputID = entry.id
+                selectedOutputDeviceID = entry.id
+                onOutputDeviceSelected(entry.id)
             }
         }
         .opacity(isSelected ? 1.0 : 0.7)
@@ -1099,3 +1138,61 @@ private extension View {
     }
 }
 
+// MARK: - Escape key handler for inline editors
+
+private struct EscapeKeyHandler: NSViewRepresentable {
+    var onEscape: () -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onEscape: onEscape)
+    }
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        context.coordinator.attach(to: view)
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        context.coordinator.onEscape = onEscape
+    }
+
+    final class Coordinator {
+        var onEscape: () -> Void
+        private weak var view: NSView?
+        private var monitor: Any?
+
+        init(onEscape: @escaping () -> Void) {
+            self.onEscape = onEscape
+        }
+
+        func attach(to view: NSView) {
+            self.view = view
+            installMonitor()
+        }
+
+        deinit {
+            removeMonitor()
+        }
+
+        private func installMonitor() {
+            removeMonitor()
+            monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                guard let self else { return event }
+                if event.keyCode == UInt16(kVK_Escape) {
+                    self.onEscape()
+                    // Consume event so default escape behavior doesn't interfere
+                    return nil
+                }
+                return event
+            } as Any
+        }
+
+        private func removeMonitor() {
+            if let monitor {
+                NSEvent.removeMonitor(monitor)
+                self.monitor = nil
+            }
+        }
+    }
+}
