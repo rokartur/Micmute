@@ -15,7 +15,21 @@
   </a>
 </div>
 
+## Sponsors
+*You can be here!*
+
 ## Installation
 1. Download the [latest version](https://github.com/rokartur/BetterAudio/releases)
 2. Unzip the `.zip` file and move the app to `/Applications` folder.
 3. All done! You can now use BetterAudio.
+
+## Star History
+<div align="center">
+  <a href="https://www.star-history.com/#rokartur/BetterAudio&Date">
+   <picture>
+     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=rokartur/BetterAudio&type=Date&theme=dark" />
+     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=rokartur/BetterAudio&type=Date" />
+     <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=rokartur/BetterAudio&type=Date" />
+   </picture>
+  </a>
+</div>
