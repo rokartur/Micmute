@@ -16,6 +16,7 @@
 </div>
 
 ## Sponsors
+<img src="https://img.shields.io/github/sponsors/rokartur?style=for-the-badge&color=white" />
 *You can be here!*
 
 ## Installation
