@@ -23,6 +23,9 @@
 2. Unzip the `.zip` file and move the app to `/Applications` folder.
 3. All done! You can now use BetterAudio.
 
+# Get a Plus license to unlock all features
+*info*
+
 ## Star History
 <div align="center">
   <a href="https://www.star-history.com/#rokartur/BetterAudio&Date">
