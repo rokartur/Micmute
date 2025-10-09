@@ -2,7 +2,7 @@
   <a href="https://github.com/rokartur/BetterAudio/releases"><img src="https://github.com/user-attachments/assets/8672d769-a82c-4f7a-941e-462671638e97" width="256" height="256" align="center"/></a>
   <h1>BetterAudio</h1>
   <p>
-  Revolutionize audio control with per-app volume adjustment, system-wide device management for i/o, customizable media keys, menu bar access, floating notifications and configurable shortcuts.
+  Revolutionize audio control with per-app volume adjustment, system-wide device management for input/output, customizable media keys, menu bar access, floating notifications and configurable shortcuts.
   </p>
   <a href="https://github.com/rokartur/BetterAudio/releases">
     <img src="https://img.shields.io/github/release/rokartur/BetterAudio?style=for-the-badge&color=white&include_prereleases" alt="latest version"/>
