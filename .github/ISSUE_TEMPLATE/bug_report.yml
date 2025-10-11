@@ -35,9 +35,8 @@ body:
   - type: checkboxes
     id: assign
     attributes:
-      label: "Would you like to work on this issue?"
       options:
-        - "Yes"
+        - label: "I want to work on this issue"
   - type: markdown
     attributes:
       value: |
