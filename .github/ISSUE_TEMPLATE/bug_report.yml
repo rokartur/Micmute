@@ -37,7 +37,7 @@ body:
     attributes:
       label: I want to work on this issue
       options:
-        - label: Yes
+        - label: "Yes"
           required: false
   - type: markdown
     attributes:
