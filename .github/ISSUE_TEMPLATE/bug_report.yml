@@ -35,8 +35,10 @@ body:
   - type: checkboxes
     id: assign
     attributes:
+      label: I want to work on this issue
       options:
-        - label: "I want to work on this issue"
+        - label: Yes
+          required: false
   - type: markdown
     attributes:
       value: |
