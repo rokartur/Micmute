@@ -1,7 +1,6 @@
 name: Bug Report
 description: Create a report to help us improve
 labels: ["bug"]
-assignees: ["rokartur"]
 body:
   - type: markdown
     attributes:
@@ -33,12 +32,10 @@ body:
     id: screenshots
     attributes:
       label: Put here any screenshots or videos (optional)
-  - type: dropdown
+  - type: checkbox
     id: assign
     attributes:
       label: "Would you like to work on this issue?"
-      options:
-        - "Yes"
   - type: markdown
     attributes:
       value: |
